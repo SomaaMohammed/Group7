@@ -1,0 +1,1335 @@
+/* ============================================================
+   1. CSS RESET
+============================================================ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  /* Prevent font size inflation on mobile orientation change */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  /* Smooth anchor scrolling */
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  /* Prevent horizontal scroll on mobile */
+  overflow-x: hidden;
+}
+
+/* Media defaults */
+img,
+video,
+svg {
+  max-width: 100%;
+  display: block;
+}
+
+/* Remove list styling */
+ul,
+ol {
+  list-style: none;
+}
+
+/* Normalize links */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Buttons: remove browser defaults and inherit font */
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font: inherit;           /* browsers do NOT inherit font on buttons by default */
+  color: inherit;
+  -webkit-tap-highlight-color: transparent; /* remove tap flash on mobile */
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+/* Inputs & textareas inherit font */
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+  border: none;
+  outline: none;
+  background: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+textarea {
+  resize: vertical;
+}
+
+/* Tables */
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* HR */
+hr {
+  border: none;
+  border-top: 1px solid var(--color-border);
+}
+
+
+/* ============================================================
+   2. DESIGN TOKENS - CSS CUSTOM PROPERTIES
+============================================================ */
+
+:root {
+  --color-primary:        #7c6ff7;
+  --color-primary-hover:  #6c5fe6;
+  --color-primary-subtle: rgba(124, 111, 247, 0.15); /* Tinted bg for active nav items */
+
+  --color-danger:         #e05252;   /* Destructive actions: delete, errors */
+  --color-danger-hover:   #c94444;
+  --color-danger-subtle:  rgba(224, 82, 82, 0.12);
+
+  --color-success:        #4caf82;   /* Confirmation feedback */
+  --color-warning:        #f5a623;   /* Non-critical warnings */
+}
+
+[data-theme="dark"] {
+  /* Elevation stack - each step is visibly lighter */
+  --elevation-0: #111113;   /* Page background */
+  --elevation-1: #1c1c1f;   /* Cards, nav bar, header */
+  --elevation-2: #232328;   /* Inputs inside cards, dropdowns */
+  --elevation-3: #2a2a30;   /* Modals, dialogs */
+  --elevation-4: #313138;   /* UI sitting inside modals (e.g. input in modal) */
+
+  /* Shadows: dark mode uses minimal shadow - elevation handles depth */
+  --shadow-card:   none;
+  --shadow-modal:  0 24px 48px rgba(0, 0, 0, 0.6);
+  --shadow-raised: 0 4px 16px rgba(0, 0, 0, 0.4);  /* for FAB, raised elements */
+
+  /* Text */
+  --color-text-primary:   #f0eff5;   /* Main content, usernames */
+  --color-text-secondary: #8b8a9a;   /* Timestamps, counts, placeholder, bio */
+  --color-text-disabled:  #4a4a5a;
+
+  /* Borders & dividers */
+  --color-border: #2e2e38;
+
+  /* Like button active state */
+  --color-like-active: #e05252;
+
+  /* Overlay backdrop */
+  --color-backdrop: rgba(0, 0, 0, 0.7);
+
+  /* Scrollbar */
+  --color-scrollbar-thumb: #2e2e38;
+  --color-scrollbar-track: #111113;
+}
+
+/* ── 2c. Light Theme ───────────────────────────────────────── */
+[data-theme="light"] {
+  /* Elevation stack - light mode surfaces are near-white, depth via shadows */
+  --elevation-0: #f2f2f7;   /* Page background (slightly off-white, not blinding) */
+  --elevation-1: #ffffff;   /* Cards, nav bar, header */
+  --elevation-2: #f7f7fb;   /* Inputs, secondary surfaces */
+  --elevation-3: #ffffff;   /* Modals (shadow does the heavy lifting here) */
+  --elevation-4: #f2f2f7;   /* Nested inputs in modals */
+
+  /* Shadows: light mode uses shadows for elevation perception */
+  --shadow-card:   0 1px 3px rgba(0, 0, 0, 0.07), 0 1px 8px rgba(0, 0, 0, 0.04);
+  --shadow-modal:  0 8px 30px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-raised: 0 4px 16px rgba(0, 0, 0, 0.12);
+
+  /* Text */
+  --color-text-primary:   #111113;
+  --color-text-secondary: #6e6e80;
+  --color-text-disabled:  #b0b0c0;
+
+  /* Borders & dividers */
+  --color-border: #e4e4ef;
+
+  /* Like button active state */
+  --color-like-active: #e05252;
+
+  /* Overlay backdrop */
+  --color-backdrop: rgba(0, 0, 0, 0.45);
+
+  /* Scrollbar */
+  --color-scrollbar-thumb: #d0d0e0;
+  --color-scrollbar-track: #f2f2f7;
+}
+
+
+/* ── 2d. Typography Scale ─────────────────────────────────── */
+:root {
+  --font-family-base: 'DM Sans', system-ui, -apple-system, sans-serif;
+  --font-family-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  --font-size-xs:   0.6875rem;  /* 11px */
+  --font-size-sm:   0.8125rem;  /* 13px */
+  --font-size-base: 0.9375rem;  /* 15px */
+  --font-size-md:   1rem;       /* 16px */
+  --font-size-lg:   1.125rem;   /* 18px */
+  --font-size-xl:   1.25rem;    /* 20px */
+  --font-size-2xl:  1.5rem;     /* 24px */
+  --font-size-3xl:  1.875rem;   /* 30px */
+
+  --font-weight-normal:   400;
+  --font-weight-medium:   500;
+  --font-weight-semibold: 600;
+  --font-weight-bold:     700;
+
+  --line-height-tight:  1.25;
+  --line-height-base:   1.5;
+  --line-height-loose:  1.75;
+}
+
+:root {
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-7:  28px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+}
+
+:root {
+  --radius-xs:   4px;
+  --radius-sm:   8px;
+  --radius-md:   12px;
+  --radius-lg:   16px;
+  --radius-xl:   20px;
+  --radius-full: 9999px;  /* Perfect circle / pill */
+}
+
+
+:root {
+  --transition-fast:    120ms ease;
+  --transition-normal:  220ms ease;
+  --transition-slow:    350ms ease;
+  --transition-bounce:  350ms cubic-bezier(0.34, 1.56, 0.64, 1); /* springy feel */
+}
+
+:root {
+  --z-base:     1;
+  --z-sticky:   50;    /* Sticky header */
+  --z-dropdown: 100;   /* Menus, tooltips */
+  --z-overlay:  200;   /* Modal backdrop */
+  --z-modal:    300;   /* Modal content */
+  --z-toast:    400;   /* Toast on top of everything */
+}
+
+/* ── 2i. Breakpoints (reference - cannot be used in @media) ─ */
+/*
+   --bp-sm:  480px   (large phones)
+   --bp-md:  640px   (tablet portrait)
+   --bp-lg:  1024px  (tablet landscape / desktop)
+   --bp-xl:  1280px  (wide desktop)
+*/
+
+
+/* ============================================================
+   3. BASE / BODY STYLES
+============================================================ */
+
+body {
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+  background-color: var(--elevation-0);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Smooth theme switching */
+  transition:
+    background-color var(--transition-normal),
+    color var(--transition-normal);
+}
+
+
+/* ============================================================
+   4. TYPOGRAPHY DEFAULTS
+============================================================ */
+
+h1, h2, h3, h4, h5, h6 {
+  line-height: var(--line-height-tight);
+  color: var(--color-text-primary);
+}
+
+h1 { font-size: var(--font-size-3xl); font-weight: var(--font-weight-bold); }
+h2 { font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); }
+h3 { font-size: var(--font-size-xl);  font-weight: var(--font-weight-semibold); }
+h4 { font-size: var(--font-size-lg);  font-weight: var(--font-weight-semibold); }
+h5 { font-size: var(--font-size-md);  font-weight: var(--font-weight-medium); }
+h6 { font-size: var(--font-size-base); font-weight: var(--font-weight-medium); }
+
+p {
+  line-height: var(--line-height-base);
+}
+
+small {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+code,
+pre {
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-sm);
+}
+
+
+/* ============================================================
+   5. SCROLLBAR STYLING
+============================================================ */
+
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-scrollbar-track);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-scrollbar-thumb);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-disabled);
+}
+
+
+/* ============================================================
+   6. FOCUS STYLES (Accessibility)
+============================================================ */
+
+/* Keyboard navigation focus ring */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-xs);
+}
+
+/* Remove focus ring for mouse/touch users */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+
+/* ============================================================
+   7. UTILITY CLASSES
+============================================================ */
+
+/* ── 7a. Display & Layout ─────────────────────────────────── */
+.flex           { display: flex; }
+.flex-col       { display: flex; flex-direction: column; }
+.flex-center    { display: flex; align-items: center; justify-content: center; }
+.flex-between   { display: flex; align-items: center; justify-content: space-between; }
+.flex-start     { display: flex; align-items: center; justify-content: flex-start; }
+.flex-end       { display: flex; align-items: center; justify-content: flex-end; }
+.items-center   { align-items: center; }
+.items-start    { align-items: flex-start; }
+.justify-center { justify-content: center; }
+.flex-1         { flex: 1; }
+.flex-shrink-0  { flex-shrink: 0; }
+.flex-wrap      { flex-wrap: wrap; }
+
+.grid           { display: grid; }
+
+.text-xs        { font-size: var(--font-size-xs); }
+.text-sm        { font-size: var(--font-size-sm); }
+.text-base      { font-size: var(--font-size-base); }
+.text-lg        { font-size: var(--font-size-lg); }
+.text-xl        { font-size: var(--font-size-xl); }
+
+.text-primary   { color: var(--color-text-primary); }
+.text-secondary { color: var(--color-text-secondary); }
+.text-muted     { color: var(--color-text-disabled); }
+.text-accent    { color: var(--color-primary); }
+.text-danger    { color: var(--color-danger); }
+
+.font-normal    { font-weight: var(--font-weight-normal); }
+.font-medium    { font-weight: var(--font-weight-medium); }
+.font-semibold  { font-weight: var(--font-weight-semibold); }
+.font-bold      { font-weight: var(--font-weight-bold); }
+
+.text-left      { text-align: left; }
+.text-center    { text-align: center; }
+.text-right     { text-align: right; }
+
+/* Truncate single line with ellipsis */
+.text-truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Clamp to 2 or 3 lines */
+.text-clamp-2 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.text-clamp-3 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+}
+
+.gap-1  { gap: var(--space-1); }
+.gap-2  { gap: var(--space-2); }
+.gap-3  { gap: var(--space-3); }
+.gap-4  { gap: var(--space-4); }
+.gap-6  { gap: var(--space-6); }
+.gap-8  { gap: var(--space-8); }
+
+.p-2  { padding: var(--space-2); }
+.p-3  { padding: var(--space-3); }
+.p-4  { padding: var(--space-4); }
+.p-6  { padding: var(--space-6); }
+
+.w-full  { width: 100%; }
+.h-full  { height: 100%; }
+
+.hidden {
+  display: none !important;
+}
+
+/* Visible but invisible (keeps layout space) */
+.invisible {
+  visibility: hidden;
+}
+
+/* Accessible screen-reader-only text */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+
+/* ============================================================
+   8. COMPONENT BASE STYLES
+============================================================ */
+
+.avatar {
+  border-radius: var(--radius-full);
+  object-fit: cover;
+  flex-shrink: 0;
+  background-color: var(--elevation-2); /* fallback bg when image is loading */
+  display: block;
+}
+
+.avatar-xs  { width: 24px;  height: 24px; }
+.avatar-sm  { width: 32px;  height: 32px; }
+.avatar-md  { width: 40px;  height: 40px; }
+.avatar-lg  { width: 56px;  height: 56px; }
+.avatar-xl  { width: 80px;  height: 80px; }
+.avatar-2xl { width: 112px; height: 112px; }
+
+/* Avatar with initials fallback (applied to a div, not img) */
+.avatar-placeholder {
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-primary-subtle);
+  color: var(--color-primary);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-sm);
+  user-select: none;
+}
+
+
+/* Base button - always applied alongside a variant */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-5);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+  transition:
+    background-color var(--transition-fast),
+    opacity         var(--transition-fast),
+    transform       var(--transition-fast),
+    box-shadow      var(--transition-fast);
+  user-select: none;
+}
+
+.btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* Filled - primary */
+.btn-primary {
+  background-color: var(--color-primary);
+  color: #ffffff;
+}
+.btn-primary:hover:not(:disabled) {
+  background-color: var(--color-primary-hover);
+}
+
+/* Filled - danger */
+.btn-danger {
+  background-color: var(--color-danger);
+  color: #ffffff;
+}
+.btn-danger:hover:not(:disabled) {
+  background-color: var(--color-danger-hover);
+}
+
+/* Outlined / ghost */
+.btn-ghost {
+  background-color: transparent;
+  color: var(--color-text-primary);
+  border: 1.5px solid var(--color-border);
+}
+.btn-ghost:hover:not(:disabled) {
+  background-color: var(--elevation-2);
+}
+
+/* Outlined - primary color border */
+.btn-outline {
+  background-color: transparent;
+  color: var(--color-primary);
+  border: 1.5px solid var(--color-primary);
+}
+.btn-outline:hover:not(:disabled) {
+  background-color: var(--color-primary-subtle);
+}
+
+/* Subtle / text-only */
+.btn-subtle {
+  background-color: transparent;
+  color: var(--color-text-secondary);
+}
+.btn-subtle:hover:not(:disabled) {
+  background-color: var(--elevation-2);
+  color: var(--color-text-primary);
+}
+
+/* Follow / Unfollow toggle - special variant */
+.btn-follow {
+  background-color: var(--color-primary);
+  color: #ffffff;
+  min-width: 88px;
+}
+.btn-follow:hover:not(:disabled) {
+  background-color: var(--color-primary-hover);
+}
+.btn-follow.following {
+  background-color: transparent;
+  color: var(--color-text-primary);
+  border: 1.5px solid var(--color-border);
+}
+.btn-follow.following:hover:not(:disabled) {
+  background-color: var(--color-danger-subtle);
+  border-color: var(--color-danger);
+  color: var(--color-danger);
+}
+
+/* Size modifiers */
+.btn-sm {
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--font-size-xs);
+}
+
+.btn-lg {
+  padding: var(--space-3) var(--space-8);
+  font-size: var(--font-size-md);
+}
+
+/* Full width */
+.btn-block {
+  width: 100%;
+}
+
+.input,
+.textarea {
+  width: 100%;
+  background-color: var(--elevation-2);
+  color: var(--color-text-primary);
+  border: 1.5px solid transparent;
+  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+  transition:
+    border-color var(--transition-fast),
+    box-shadow   var(--transition-fast),
+    background-color var(--transition-fast);
+}
+
+.input:focus,
+.textarea:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-subtle);
+  background-color: var(--elevation-3);
+}
+
+.input::placeholder,
+.textarea::placeholder {
+  color: var(--color-text-disabled);
+}
+
+/* Error state */
+.input.error,
+.textarea.error {
+  border-color: var(--color-danger);
+  box-shadow: 0 0 0 3px var(--color-danger-subtle);
+}
+
+.textarea {
+  min-height: 100px;
+}
+
+/* Input wrapper for label + field stacking */
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.input-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+}
+
+/* Validation feedback text below input */
+.input-hint {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+.input-hint.error {
+  color: var(--color-danger);
+}
+.input-hint.success {
+  color: var(--color-success);
+}
+
+/* Character counter - sits below a textarea */
+.char-counter {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  text-align: right;
+}
+.char-counter.near-limit {
+  color: var(--color-warning);
+}
+.char-counter.at-limit {
+  color: var(--color-danger);
+  font-weight: var(--font-weight-semibold);
+}
+
+.card {
+  background-color: var(--elevation-1);
+  box-shadow: var(--shadow-card);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  transition: background-color var(--transition-normal);
+}
+
+/* Clickable card - post cards, user cards */
+.card-interactive {
+  cursor: pointer;
+  transition:
+    background-color var(--transition-fast),
+    transform        var(--transition-fast),
+    box-shadow       var(--transition-fast);
+}
+
+.card-interactive:hover {
+  background-color: var(--elevation-2);
+}
+
+.card-interactive:active {
+  transform: scale(0.995);
+}
+
+.divider {
+  width: 100%;
+  height: 1px;
+  background-color: var(--color-border);
+  border: none;
+  margin: var(--space-4) 0;
+}
+
+.divider-vertical {
+  width: 1px;
+  height: 100%;
+  background-color: var(--color-border);
+  margin: 0 var(--space-4);
+}
+
+
+/* Like / comment count button */
+.count-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-medium);
+  transition:
+    color            var(--transition-fast),
+    background-color var(--transition-fast),
+    transform        var(--transition-bounce);
+  user-select: none;
+}
+
+.count-btn:hover {
+  background-color: var(--elevation-2);
+  color: var(--color-text-primary);
+}
+
+.count-btn.liked {
+  color: var(--color-like-active);
+}
+
+.count-btn:active {
+  transform: scale(0.9);
+}
+
+/* Liked heart pop animation */
+@keyframes like-pop {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.4); }
+  100% { transform: scale(1); }
+}
+
+.count-btn.like-animate .count-btn-icon {
+  animation: like-pop 300ms var(--transition-bounce);
+}
+
+/* Numeric badge (e.g. notification dot) */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 var(--space-1);
+  border-radius: var(--radius-full);
+  background-color: var(--color-primary);
+  color: #ffffff;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  line-height: 1;
+}
+
+/* Backdrop overlay */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: var(--color-backdrop);
+  z-index: var(--z-overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+
+  /* Entry animation */
+  animation: backdrop-in var(--transition-normal) ease forwards;
+}
+
+@keyframes backdrop-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Hidden state */
+.modal-backdrop.hidden {
+  display: none !important;
+}
+
+/* Modal box */
+.modal {
+  position: relative;
+  background-color: var(--elevation-3);
+  box-shadow: var(--shadow-modal);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  width: min(90vw, 480px);
+  max-height: 90vh;
+  overflow-y: auto;
+  z-index: var(--z-modal);
+
+  animation: modal-in var(--transition-normal) var(--transition-bounce) forwards;
+}
+
+@keyframes modal-in {
+  from { opacity: 0; transform: scale(0.94) translateY(8px); }
+  to   { opacity: 1; transform: scale(1)    translateY(0); }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-5);
+}
+
+.modal-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+}
+
+.modal-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  color: var(--color-text-secondary);
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+.modal-close:hover {
+  background-color: var(--elevation-2);
+  color: var(--color-text-primary);
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
+}
+
+
+.spinner {
+  display: inline-block;
+  border-radius: var(--radius-full);
+  border-style: solid;
+  border-color: var(--elevation-2);
+  border-top-color: var(--color-primary);
+  animation: spin 0.65s linear infinite;
+  flex-shrink: 0;
+}
+
+/* Size variants */
+.spinner-sm  { width: 16px; height: 16px; border-width: 2px; }
+.spinner-md  { width: 24px; height: 24px; border-width: 3px; }
+.spinner-lg  { width: 40px; height: 40px; border-width: 4px; }
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Full page loader */
+.spinner-page {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--elevation-0);
+  z-index: var(--z-modal);
+}
+
+.toast-container {
+  position: fixed;
+  bottom: calc(var(--bottom-nav-height, 64px) + var(--space-4));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: var(--z-toast);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  pointer-events: none;  /* clicks pass through */
+}
+
+.toast {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-5);
+  background-color: var(--elevation-4);
+  color: var(--color-text-primary);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  box-shadow: var(--shadow-modal);
+  white-space: nowrap;
+  pointer-events: auto;
+
+  animation: toast-in 300ms var(--transition-bounce) forwards;
+}
+
+.toast.toast-success { border-left: 3px solid var(--color-success); }
+.toast.toast-danger  { border-left: 3px solid var(--color-danger); }
+.toast.toast-info    { border-left: 3px solid var(--color-primary); }
+
+.toast.toast-out {
+  animation: toast-out 250ms ease forwards;
+}
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(12px) scale(0.95); }
+  to   { opacity: 1; transform: translateY(0)    scale(1); }
+}
+
+@keyframes toast-out {
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to   { opacity: 0; transform: translateY(8px) scale(0.95); }
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--space-12) var(--space-6);
+  gap: var(--space-4);
+}
+
+.empty-state-icon {
+  font-size: 3rem;
+  opacity: 0.4;
+  margin-bottom: var(--space-2);
+}
+
+.empty-state-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.empty-state-description {
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  max-width: 280px;
+  line-height: var(--line-height-loose);
+}
+
+
+/* A bare icon in a tappable circular region */
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  color: var(--color-text-secondary);
+  transition:
+    background-color var(--transition-fast),
+    color            var(--transition-fast),
+    transform        var(--transition-fast);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.icon-btn:hover {
+  background-color: var(--elevation-2);
+  color: var(--color-text-primary);
+}
+
+.icon-btn:active {
+  transform: scale(0.9);
+}
+
+.icon-btn.active {
+  color: var(--color-primary);
+  background-color: var(--color-primary-subtle);
+}
+
+
+/* ============================================================
+   9. APP SHELL
+============================================================ */
+
+
+:root {
+  --header-height:    56px;
+  --bottom-nav-height: 64px;
+  --sidebar-width:    240px;
+  --feed-max-width:   600px;
+}
+
+/* The outer shell wrapping everything */
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+
+.app-header {
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--header-height);
+  background-color: var(--elevation-1);
+  box-shadow: var(--shadow-card);
+  border-bottom: 1px solid var(--color-border);
+  z-index: var(--z-sticky);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-4);
+
+  transition: background-color var(--transition-normal);
+}
+
+.app-header-identity {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.app-header-username {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+/* Sub-header for drill-down pages (Post page, User page) */
+.app-subheader {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background-color: var(--elevation-1);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.app-subheader-title {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+}
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--bottom-nav-height);
+  background-color: var(--elevation-1);
+  border-top: 1px solid var(--color-border);
+  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.08);
+  z-index: var(--z-sticky);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 var(--space-4);
+  padding-bottom: env(safe-area-inset-bottom, 0); /* iPhone home bar */
+
+  transition: background-color var(--transition-normal);
+}
+
+.bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  flex: 1;
+  height: 100%;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  transition: color var(--transition-fast);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.bottom-nav-item.active {
+  color: var(--color-primary);
+}
+
+.bottom-nav-item svg {
+  transition: transform var(--transition-bounce);
+}
+
+.bottom-nav-item:active svg {
+  transform: scale(0.85);
+}
+
+/* Raised FAB-style Create Post button */
+.bottom-nav-fab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-primary);
+  color: #ffffff;
+  box-shadow: var(--shadow-raised);
+  flex-shrink: 0;
+  transition:
+    background-color var(--transition-fast),
+    transform        var(--transition-bounce),
+    box-shadow       var(--transition-fast);
+  -webkit-tap-highlight-color: transparent;
+  margin-bottom: var(--space-2); /* lift it slightly above the bar */
+}
+
+.bottom-nav-fab:hover {
+  background-color: var(--color-primary-hover);
+}
+
+.bottom-nav-fab:active {
+  transform: scale(0.92);
+  box-shadow: none;
+}
+
+
+/* Hidden on mobile, visible on desktop */
+.app-sidebar {
+  display: none;
+}
+
+.sidebar-brand {
+  padding: var(--space-6) var(--space-5) var(--space-8);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  letter-spacing: -0.5px;
+}
+
+.sidebar-nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: 0 var(--space-3);
+}
+
+.sidebar-nav-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  transition:
+    background-color var(--transition-fast),
+    color            var(--transition-fast);
+}
+
+.sidebar-nav-item:hover {
+  background-color: var(--elevation-2);
+  color: var(--color-text-primary);
+}
+
+.sidebar-nav-item.active {
+  background-color: var(--color-primary-subtle);
+  color: var(--color-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* New Post button in sidebar */
+.sidebar-new-post {
+  margin: var(--space-5) var(--space-4);
+}
+
+/* User identity at the bottom of sidebar */
+.sidebar-user {
+  padding: var(--space-4) var(--space-5);
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  cursor: pointer;
+  border-radius: var(--radius-md);
+  transition: background-color var(--transition-fast);
+}
+
+.sidebar-user:hover {
+  background-color: var(--elevation-2);
+}
+
+.sidebar-user-info {
+  flex: 1;
+  min-width: 0; /* allows text-truncate to work inside flex */
+}
+
+.sidebar-user-name {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.sidebar-user-handle {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
+
+/* The scrollable area below the header */
+.app-main {
+  flex: 1;
+  padding-bottom: var(--bottom-nav-height); /* avoid content behind bottom nav */
+  padding-top: var(--space-2);
+}
+
+/* Centered content column (feed, post detail, etc.) */
+.content-column {
+  width: 100%;
+  max-width: var(--feed-max-width);
+  margin: 0 auto;
+  padding: 0 var(--space-4);
+}
+
+/* Page section heading */
+.page-title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  padding: var(--space-4) 0 var(--space-2);
+}
+
+
+/* ============================================================
+   10. PAGE TRANSITIONS
+============================================================ */
+
+/* Used on page-level containers to fade in on navigation */
+.page-enter {
+  animation: page-fade-in 200ms ease forwards;
+}
+
+@keyframes page-fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+
+/* ============================================================
+   11. VALIDATION & FORM FEEDBACK
+============================================================ */
+
+/* Shake animation for invalid form submission */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%       { transform: translateX(-6px); }
+  40%       { transform: translateX(6px); }
+  60%       { transform: translateX(-4px); }
+  80%       { transform: translateX(4px); }
+}
+
+.shake {
+  animation: shake 400ms ease;
+}
+
+/* Inline validation state colors are handled via .input.error 
+   and .input-hint.error above */
+
+
+/* ============================================================
+   12. RESPONSIVE OVERRIDES
+   
+   Mobile-first: base styles target mobile (<1024px).
+   Desktop styles are added inside the @media block.
+============================================================ */
+
+@media (min-width: 1024px) {
+
+  /* ── Restructure the app shell for desktop ── */
+
+  .app-shell {
+    flex-direction: row;
+  }
+
+  /* Show sidebar, hide mobile elements */
+  .app-sidebar {
+    display: flex;
+    flex-direction: column;
+    width: var(--sidebar-width);
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    background-color: var(--elevation-1);
+    border-right: 1px solid var(--color-border);
+    flex-shrink: 0;
+    overflow-y: auto;
+    transition: background-color var(--transition-normal);
+  }
+
+  .app-header {
+    display: none; /* replaced by sidebar on desktop */
+  }
+
+  .bottom-nav {
+    display: none; /* replaced by sidebar on desktop */
+  }
+
+  /* Main content fills remaining space */
+  .app-main {
+    flex: 1;
+    padding-bottom: 0; /* no bottom nav to avoid */
+    overflow-y: auto;
+    height: 100vh;
+  }
+
+  /* Toasts sit at bottom-right on desktop, away from sidebar */
+  .toast-container {
+    bottom: var(--space-6);
+    left: auto;
+    right: var(--space-6);
+    transform: none;
+    align-items: flex-end;
+  }
+
+  /* Content column can be wider on desktop */
+  .content-column {
+    padding: 0 var(--space-8);
+  }
+
+}
+
+/* Very wide screens - add more breathing room */
+@media (min-width: 1280px) {
+  :root {
+    --sidebar-width: 260px;
+  }
+}
