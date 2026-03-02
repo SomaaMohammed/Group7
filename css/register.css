@@ -1,0 +1,86 @@
+.register-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6) var(--space-4);
+}
+
+.register-card {
+  width: 100%;
+  max-width: 460px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.register-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.register-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.register-header h1 {
+  font-size: var(--font-size-2xl);
+  line-height: var(--line-height-tight);
+}
+
+.register-header p {
+  color: var(--color-text-secondary);
+}
+
+#register-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+[data-theme="light"] .register-card .input:not(.error) {
+  background: linear-gradient(
+    180deg,
+    var(--elevation-1) 0%,
+    var(--elevation-2) 100%
+  );
+  border-color: var(--color-border);
+}
+
+[data-theme="light"] .register-card .input:not(.error):focus {
+  background: linear-gradient(
+    180deg,
+    var(--elevation-3) 0%,
+    var(--elevation-2) 100%
+  );
+}
+
+.register-login-link {
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.register-login-link a {
+  color: var(--color-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.register-login-link a:hover {
+  color: var(--color-primary-hover);
+}
+
+@media (max-width: 480px) {
+  .register-page {
+    align-items: flex-start;
+    padding-top: var(--space-8);
+  }
+
+  .register-card {
+    border-radius: var(--radius-lg);
+  }
+}

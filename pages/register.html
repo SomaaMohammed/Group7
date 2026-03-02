@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register | Socially</title>
+
+    <link rel="stylesheet" href="../global.css" />
+    <link rel="stylesheet" href="../css/register.css" />
+  </head>
+  <body>
+    <main class="register-page">
+      <section class="register-card card" aria-labelledby="register-title">
+        <header class="register-header">
+          <div class="register-header-top">
+            <h1 id="register-title">Create account</h1>
+            <button
+              id="theme-toggle"
+              class="btn btn-ghost btn-sm"
+              type="button"
+              aria-label="Toggle theme"
+            ></button>
+          </div>
+          <p>Join Socially and start posting.</p>
+        </header>
+
+        <form id="register-form" novalidate>
+          <div class="input-group">
+            <label class="input-label" for="username">Username</label>
+            <input
+              class="input"
+              type="text"
+              id="username"
+              name="username"
+              autocomplete="username"
+              required
+            />
+            <p class="input-hint" id="username-hint"></p>
+          </div>
+
+          <div class="input-group">
+            <label class="input-label" for="email">Email</label>
+            <input
+              class="input"
+              type="email"
+              id="email"
+              name="email"
+              autocomplete="email"
+              required
+            />
+            <p class="input-hint" id="email-hint"></p>
+          </div>
+
+          <div class="input-group">
+            <label class="input-label" for="password">Password</label>
+            <input
+              class="input"
+              type="password"
+              id="password"
+              name="password"
+              autocomplete="new-password"
+              required
+            />
+            <p class="input-hint" id="password-hint"></p>
+          </div>
+
+          <button class="btn btn-primary btn-block" type="submit">
+            Create account
+          </button>
+        </form>
+
+        <p class="register-login-link">
+          Already have an account?
+          <a href="login.html">Sign in</a>
+        </p>
+      </section>
+    </main>
+
+    <script type="module" src="../js/register.js"></script>
+  </body>
+</html>
