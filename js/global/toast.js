@@ -8,11 +8,11 @@
 //   showToast('Something went wrong.', 'danger')
 //   showToast('Did you know…', 'info')
 
-export function showToast(message, type = 'info') {
-  const container = document.querySelector('.toast-container');
+export function showToast(message, type = "info") {
+  const container = document.querySelector(".toast-container");
   if (!container) return;
 
-  const toast = document.createElement('div');
+  const toast = document.createElement("div");
   toast.className = `toast toast-${type}`;
   toast.textContent = message;
 
@@ -20,7 +20,9 @@ export function showToast(message, type = 'info') {
 
   // After 2700 ms trigger the exit animation, then remove the element.
   setTimeout(() => {
-    toast.style.animation = 'toast-out 300ms ease forwards';
-    toast.addEventListener('animationend', () => toast.remove(), { once: true });
+    toast.style.animation = "toast-out 300ms ease forwards";
+    toast.addEventListener("animationend", () => toast.remove(), {
+      once: true,
+    });
   }, 2700);
 }

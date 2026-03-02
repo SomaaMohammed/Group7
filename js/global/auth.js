@@ -1,12 +1,12 @@
 // js/global/auth.js
 // Session management. Session key: 'currentUserId' in localStorage.
 
-import db from './db.js';
-import { goToLogin } from './router.js';
+import db from "./db.js";
+import { goToLogin } from "./router.js";
 
 // Returns the full user object for the logged-in user, or null.
 export async function getCurrentUser() {
-  const userId = localStorage.getItem('currentUserId');
+  const userId = localStorage.getItem("currentUserId");
   if (!userId) return null;
   return db.users.findUnique({ where: { id: userId } });
 }
@@ -21,11 +21,11 @@ export async function requireAuth() {
 
 // Write session on successful login.
 export function login(userId) {
-  localStorage.setItem('currentUserId', userId);
+  localStorage.setItem("currentUserId", userId);
 }
 
 // Clear session and redirect to login.
 export function logout() {
-  localStorage.removeItem('currentUserId');
+  localStorage.removeItem("currentUserId");
   goToLogin();
 }

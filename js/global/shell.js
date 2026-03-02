@@ -9,8 +9,8 @@
 //     <div class="toast-container"></div>
 //   </body>
 
-import { getCurrentUser } from './auth.js';
-import { goToHome, goToUser, goToSettings } from './router.js';
+import { getCurrentUser } from "./auth.js";
+import { goToHome } from "./router.js";
 
 // SVG icons (24×24, stroke-based, no external library)
 const icons = {
@@ -51,17 +51,17 @@ export async function injectShell() {
   const user = await getCurrentUser();
   if (!user) return;
 
-  const avatarSrc = user.profilePicture || '../assets/default-avatar.png';
+  const avatarSrc = user.profilePicture || "../assets/default-avatar.png";
 
   // Active page detection
-  const path = window.location.pathname;
-  const isHome     = path.includes('home.html');
-  const isProfile  = path.includes('user.html');
-  const isSettings = path.includes('settings.html');
+  const path = globalThis.location.pathname;
+  const isHome = path.includes("home.html");
+  const isProfile = path.includes("user.html");
+  const isSettings = path.includes("settings.html");
 
-  const activeClass = (flag) => flag ? ' active' : '';
+  const activeClass = (flag) => (flag ? " active" : "");
 
-  const shell = document.getElementById('shell-root');
+  const shell = document.getElementById("shell-root");
   if (!shell) return;
 
   shell.innerHTML = `
@@ -124,9 +124,9 @@ export async function injectShell() {
 
   // Default behaviour for New Post controls: navigate to home.
   // home.js overrides these with its own handlers to open the modal instead.
-  const newPostBtn = document.getElementById('shell-new-post-btn');
-  const fabBtn     = document.getElementById('shell-fab-btn');
+  const newPostBtn = document.getElementById("shell-new-post-btn");
+  const fabBtn = document.getElementById("shell-fab-btn");
 
-  if (newPostBtn) newPostBtn.addEventListener('click', goToHome);
-  if (fabBtn)     fabBtn.addEventListener('click', goToHome);
+  if (newPostBtn) newPostBtn.addEventListener("click", goToHome);
+  if (fabBtn) fabBtn.addEventListener("click", goToHome);
 }

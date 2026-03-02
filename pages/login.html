@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login | Socially</title>
+
+    <link rel="stylesheet" href="../global.css" />
+    <link rel="stylesheet" href="../css/login.css" />
+  </head>
+  <body>
+    <main class="login-page">
+      <section class="login-card card" aria-labelledby="login-title">
+        <header class="login-header">
+          <div class="login-header-top">
+            <h1 id="login-title">Welcome back</h1>
+            <button
+              id="theme-toggle"
+              class="btn btn-ghost btn-sm"
+              type="button"
+              aria-label="Toggle theme"
+            ></button>
+          </div>
+          <p>Sign in to continue to Socially.</p>
+        </header>
+
+        <form id="login-form" novalidate>
+          <div class="input-group">
+            <label class="input-label" for="email">Email</label>
+            <input
+              class="input"
+              type="email"
+              id="email"
+              name="email"
+              autocomplete="email"
+              required
+            />
+            <p class="input-hint" id="email-hint"></p>
+          </div>
+
+          <div class="input-group">
+            <label class="input-label" for="password">Password</label>
+            <input
+              class="input"
+              type="password"
+              id="password"
+              name="password"
+              autocomplete="current-password"
+              required
+            />
+            <p class="input-hint" id="password-hint"></p>
+          </div>
+
+          <button class="btn btn-primary btn-block" type="submit">
+            Sign in
+          </button>
+        </form>
+
+        <p class="login-register-link">
+          Don’t have an account?
+          <a href="register.html">Create one</a>
+        </p>
+      </section>
+    </main>
+
+    <script type="module" src="../js/login.js"></script>
+  </body>
+</html>

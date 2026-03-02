@@ -32,15 +32,14 @@ function matchesWhere(record, where = {}) {
 
 function createTableOps(tableName, idPrefix) {
   return {
-
     async findMany({ where } = {}) {
       const records = readTable(tableName);
-      return where ? records.filter(r => matchesWhere(r, where)) : records;
+      return where ? records.filter((r) => matchesWhere(r, where)) : records;
     },
 
     async findUnique({ where }) {
       const records = readTable(tableName);
-      return records.find(r => matchesWhere(r, where)) || null;
+      return records.find((r) => matchesWhere(r, where)) || null;
     },
 
     async create({ data }) {
@@ -57,7 +56,7 @@ function createTableOps(tableName, idPrefix) {
 
     async update({ where, data }) {
       const records = readTable(tableName);
-      const index = records.findIndex(r => matchesWhere(r, where));
+      const index = records.findIndex((r) => matchesWhere(r, where));
       if (index === -1) return null;
       records[index] = { ...records[index], ...data };
       writeTable(tableName, records);
@@ -66,7 +65,7 @@ function createTableOps(tableName, idPrefix) {
 
     async delete({ where }) {
       const records = readTable(tableName);
-      const index = records.findIndex(r => matchesWhere(r, where));
+      const index = records.findIndex((r) => matchesWhere(r, where));
       if (index === -1) return null;
       const [deleted] = records.splice(index, 1);
       writeTable(tableName, records);
@@ -75,7 +74,9 @@ function createTableOps(tableName, idPrefix) {
 
     async deleteMany({ where } = {}) {
       const records = readTable(tableName);
-      const remaining = where ? records.filter(r => !matchesWhere(r, where)) : [];
+      const remaining = where
+        ? records.filter((r) => !matchesWhere(r, where))
+        : [];
       writeTable(tableName, remaining);
     },
   };
@@ -84,11 +85,11 @@ function createTableOps(tableName, idPrefix) {
 // --- The db object ---
 
 const db = {
-  users:    createTableOps("users",    "usr"),
-  posts:    createTableOps("posts",    "pst"),
+  users: createTableOps("users", "usr"),
+  posts: createTableOps("posts", "pst"),
   comments: createTableOps("comments", "cmt"),
-  likes:    createTableOps("likes",    "lke"),
-  follows:  createTableOps("follows",  "flw"),
+  likes: createTableOps("likes", "lke"),
+  follows: createTableOps("follows", "flw"),
 };
 
 export default db;
