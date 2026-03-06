@@ -3,6 +3,18 @@
   --right-panel-width: 280px;
 }
 
+.home-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.home-composer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
 @media (min-width: 1024px) {
   .desktop-layout {
     display: grid;

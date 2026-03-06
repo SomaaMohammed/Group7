@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home | Socially</title>
+
+    <link rel="stylesheet" href="../global.css" />
+    <link rel="stylesheet" href="../css/home.css" />
+  </head>
+  <body class="app-shell">
+    <div id="shell-root"></div>
+
+    <main class="app-main">
+      <div class="content-column page-enter home-content">
+        <h1 class="page-title">Home</h1>
+
+        <section class="card home-composer" aria-label="Create post">
+          <p class="text-secondary">What&apos;s on your mind today?</p>
+          <button class="btn btn-primary btn-block" type="button">
+            New Post
+          </button>
+        </section>
+
+        <section class="card" aria-label="Feed">
+          <div class="empty-state">
+            <p class="empty-state-title">Your feed is ready</p>
+            <p class="empty-state-description">
+              Home page scaffold is live. Next step is wiring real posts from
+              local storage.
+            </p>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <div class="toast-container"></div>
+
+    <script type="module" src="../js/home.js"></script>
+  </body>
+</html>
