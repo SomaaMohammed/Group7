@@ -21,10 +21,6 @@ if (form) {
   form.addEventListener("submit", handleRegisterSubmit);
 }
 
-if (themeToggleButton) {
-  themeToggleButton.addEventListener("click", handleThemeToggle);
-}
-
 async function handleRegisterSubmit(event) {
   event.preventDefault();
   clearErrors();
