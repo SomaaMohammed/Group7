@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User Profile | Socially</title>
+
+    <link rel="stylesheet" href="../global.css" />
+    <link rel="stylesheet" href="../css/user.css" />
+  </head>
+  <body class="app-shell">
+    <div id="shell-root"></div>
+
+    <main class="app-main" id="user-page-main">
+      <div class="content-column page-enter">
+        <section class="card" aria-labelledby="profile-name">
+          <header>
+            <div>
+              <img
+                id="profile-avatar"
+                class="avatar avatar-2xl"
+                src="../assets/default-avatar.png"
+                alt="User avatar"
+              />
+            </div>
+
+            <div>
+              <h1 id="profile-name">Username</h1>
+              <p id="profile-handle" class="text-secondary">@username</p>
+            </div>
+
+            <div>
+              <button
+                id="profile-action-btn"
+                class="btn btn-follow"
+                type="button"
+              >
+                Follow
+              </button>
+            </div>
+          </header>
+
+          <p id="profile-bio" class="text-secondary">
+            This is the user bio section. It will be populated from local
+            storage.
+          </p>
+
+          <div>
+            <span><strong id="profile-posts-count">0</strong> Posts</span>
+            <span
+              ><strong id="profile-followers-count">0</strong> Followers</span
+            >
+            <span
+              ><strong id="profile-following-count">0</strong> Following</span
+            >
+          </div>
+        </section>
+
+        <section aria-labelledby="posts-title">
+          <h2 id="posts-title" class="page-title">Posts</h2>
+
+          <div id="user-posts-list" class="flex-col gap-4">
+            <article class="card">
+              <p class="text-secondary">
+                No posts yet. User posts will render here.
+              </p>
+            </article>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <div class="toast-container"></div>
+
+    <script type="module" src="../js/user.js"></script>
+  </body>
+</html>
