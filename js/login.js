@@ -20,8 +20,10 @@ if (form) {
   form.addEventListener("submit", handleLoginSubmit);
 }
 
-globalThis.addEventListener("pageshow", () => {
-  resetLoginForm();
+globalThis.addEventListener("pageshow", (event) => {
+  if (event.persisted) {
+    resetLoginForm();
+  }
 });
 
 async function handleLoginSubmit(event) {

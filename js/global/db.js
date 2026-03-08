@@ -13,7 +13,15 @@
 // --- Internal helpers ---
 
 function readTable(table) {
-  return JSON.parse(localStorage.getItem(table) || "[]");
+  const raw = localStorage.getItem(table);
+  if (!raw) return [];
+
+  try {
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
 }
 
 function writeTable(table, data) {
@@ -21,7 +29,10 @@ function writeTable(table, data) {
 }
 
 function generateId(prefix) {
-  return `${prefix}_${Math.random().toString(36).slice(2, 9)}`;
+  const randomPart =
+    globalThis.crypto?.randomUUID?.() ??
+    Math.random().toString(36).slice(2, 11);
+  return `${prefix}_${randomPart}`;
 }
 
 function matchesWhere(record, where = {}) {

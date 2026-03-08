@@ -8,14 +8,23 @@ import { goToLogin } from "./router.js";
 export async function getCurrentUser() {
   const userId = localStorage.getItem("currentUserId");
   if (!userId) return null;
-  return db.users.findUnique({ where: { id: userId } });
+
+  const user = await db.users.findUnique({ where: { id: userId } });
+  if (!user) {
+    // Session references a deleted user; clean it up to avoid loops.
+    localStorage.removeItem("currentUserId");
+  }
+  return user;
 }
 
 // Call at the top of every protected page script.
 // Redirects to login if no session; returns the user if session is valid.
 export async function requireAuth() {
   const user = await getCurrentUser();
-  if (!user) goToLogin();
+  if (!user) {
+    goToLogin();
+    return null;
+  }
   return user;
 }
 
