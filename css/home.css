@@ -16,6 +16,16 @@
 }
 
 @media (min-width: 1024px) {
+  .home-content {
+    gap: var(--space-5);
+  }
+
+  .home-content .card {
+    padding: var(--space-5);
+  }
+}
+
+@media (min-width: 1024px) {
   .desktop-layout {
     display: grid;
     grid-template-columns: 1fr var(--right-panel-width);

@@ -16,7 +16,7 @@
             <h1 id="login-title">Welcome back</h1>
             <button
               id="theme-toggle"
-              class="btn btn-ghost btn-sm"
+              class="btn btn-ghost btn-sm theme-toggle-btn"
               type="button"
               aria-label="Toggle theme"
             ></button>
@@ -48,6 +48,10 @@
               autocomplete="current-password"
               required
             />
+            <label class="password-toggle" for="show-password">
+              <input type="checkbox" id="show-password" name="show-password" />
+              <span>Show password</span>
+            </label>
             <p class="input-hint" id="password-hint"></p>
           </div>
 

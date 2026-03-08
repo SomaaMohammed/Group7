@@ -18,12 +18,6 @@ html {
   scroll-behavior: smooth;
 }
 
-body {
-  min-height: 100vh;
-  /* Prevent horizontal scroll on mobile */
-  overflow-x: hidden;
-}
-
 /* Media defaults */
 img,
 video,
@@ -106,6 +100,63 @@ hr {
 
   --color-success: #4caf82; /* Confirmation feedback */
   --color-warning: #f5a623; /* Non-critical warnings */
+
+  --font-family-base: "DM Sans", system-ui, -apple-system, sans-serif;
+  --font-family-mono: "JetBrains Mono", "Fira Code", monospace;
+
+  --font-size-xs: 0.6875rem; /* 11px */
+  --font-size-sm: 0.8125rem; /* 13px */
+  --font-size-base: 0.9375rem; /* 15px */
+  --font-size-md: 1rem; /* 16px */
+  --font-size-lg: 1.125rem; /* 18px */
+  --font-size-xl: 1.25rem; /* 20px */
+  --font-size-2xl: 1.5rem; /* 24px */
+  --font-size-3xl: 1.875rem; /* 30px */
+
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --line-height-tight: 1.25;
+  --line-height-base: 1.5;
+  --line-height-loose: 1.75;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 28px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-full: 9999px; /* Perfect circle / pill */
+
+  --transition-fast: 120ms ease;
+  --transition-normal: 220ms ease;
+  --transition-slow: 350ms ease;
+  --transition-bounce: 350ms cubic-bezier(0.34, 1.56, 0.64, 1); /* springy feel */
+
+  --z-base: 1;
+  --z-sticky: 50; /* Sticky header */
+  --z-dropdown: 100; /* Menus, tooltips */
+  --z-overlay: 200; /* Modal backdrop */
+  --z-modal: 300; /* Modal content */
+  --z-toast: 400; /* Toast on top of everything */
+
+  --header-height: 56px;
+  --bottom-nav-height: 64px;
+  --sidebar-width: 240px;
+  --feed-max-width: 680px;
 }
 
 [data-theme="dark"] {
@@ -174,67 +225,6 @@ hr {
 }
 
 /* ── 2d. Typography Scale ─────────────────────────────────── */
-:root {
-  --font-family-base: "DM Sans", system-ui, -apple-system, sans-serif;
-  --font-family-mono: "JetBrains Mono", "Fira Code", monospace;
-
-  --font-size-xs: 0.6875rem; /* 11px */
-  --font-size-sm: 0.8125rem; /* 13px */
-  --font-size-base: 0.9375rem; /* 15px */
-  --font-size-md: 1rem; /* 16px */
-  --font-size-lg: 1.125rem; /* 18px */
-  --font-size-xl: 1.25rem; /* 20px */
-  --font-size-2xl: 1.5rem; /* 24px */
-  --font-size-3xl: 1.875rem; /* 30px */
-
-  --font-weight-normal: 400;
-  --font-weight-medium: 500;
-  --font-weight-semibold: 600;
-  --font-weight-bold: 700;
-
-  --line-height-tight: 1.25;
-  --line-height-base: 1.5;
-  --line-height-loose: 1.75;
-}
-
-:root {
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-5: 20px;
-  --space-6: 24px;
-  --space-7: 28px;
-  --space-8: 32px;
-  --space-10: 40px;
-  --space-12: 48px;
-  --space-16: 64px;
-}
-
-:root {
-  --radius-xs: 4px;
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 20px;
-  --radius-full: 9999px; /* Perfect circle / pill */
-}
-
-:root {
-  --transition-fast: 120ms ease;
-  --transition-normal: 220ms ease;
-  --transition-slow: 350ms ease;
-  --transition-bounce: 350ms cubic-bezier(0.34, 1.56, 0.64, 1); /* springy feel */
-}
-
-:root {
-  --z-base: 1;
-  --z-sticky: 50; /* Sticky header */
-  --z-dropdown: 100; /* Menus, tooltips */
-  --z-overlay: 200; /* Modal backdrop */
-  --z-modal: 300; /* Modal content */
-  --z-toast: 400; /* Toast on top of everything */
-}
 
 /* ── 2i. Breakpoints (reference - cannot be used in @media) ─ */
 /*
@@ -249,6 +239,9 @@ hr {
 ============================================================ */
 
 body {
+  min-height: 100vh;
+  /* Prevent horizontal scroll on mobile */
+  overflow-x: hidden;
   font-family: var(--font-family-base);
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-normal);
@@ -478,6 +471,7 @@ pre {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   overflow: hidden;
 }
 
@@ -485,6 +479,7 @@ pre {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
   overflow: hidden;
 }
 
@@ -700,6 +695,67 @@ pre {
 .btn-sm {
   padding: var(--space-1) var(--space-3);
   font-size: var(--font-size-xs);
+}
+
+.theme-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+}
+
+.theme-toggle-icon {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+[data-theme="dark"] .theme-toggle-btn[data-target-theme="light"] {
+  border-color: rgba(247, 201, 72, 0.62);
+  background-color: rgba(247, 201, 72, 0.08);
+}
+
+[data-theme="dark"] .theme-toggle-btn[data-target-theme="light"]:hover {
+  background-color: rgba(247, 201, 72, 0.14);
+}
+
+[data-theme="dark"]
+  .theme-toggle-btn[data-target-theme="light"]
+  .theme-toggle-icon {
+  border: 1px solid rgba(247, 201, 72, 0.78);
+  border-radius: 999px;
+  background-color: rgba(247, 201, 72, 0.16);
+  box-sizing: border-box;
+  padding: 1px;
+}
+
+[data-theme="light"] .theme-toggle-btn[data-target-theme="dark"] {
+  border-color: rgba(95, 104, 128, 0.42);
+  background-color: rgba(95, 104, 128, 0.06);
+}
+
+[data-theme="light"] .theme-toggle-btn[data-target-theme="dark"]:hover {
+  background-color: rgba(95, 104, 128, 0.11);
+}
+
+[data-theme="light"]
+  .theme-toggle-btn[data-target-theme="dark"]
+  .theme-toggle-icon {
+  border: 1px solid rgba(95, 104, 128, 0.62);
+  border-radius: 999px;
+  background-color: rgba(95, 104, 128, 0.12);
+  box-sizing: border-box;
+  padding: 1px;
+}
+
+.theme-toggle-label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  line-height: 1;
+}
+
+.theme-toggle-btn.icon-btn .theme-toggle-label {
+  display: none;
 }
 
 .btn-lg {
@@ -1159,13 +1215,6 @@ pre {
    9. APP SHELL
 ============================================================ */
 
-:root {
-  --header-height: 56px;
-  --bottom-nav-height: 64px;
-  --sidebar-width: 240px;
-  --feed-max-width: 600px;
-}
-
 /* The outer shell wrapping everything */
 .app-shell {
   min-height: 100vh;
@@ -1196,6 +1245,12 @@ pre {
   display: flex;
   align-items: center;
   gap: var(--space-3);
+}
+
+.app-header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
 }
 
 .app-header-username {
@@ -1307,6 +1362,17 @@ pre {
   letter-spacing: -0.5px;
 }
 
+.sidebar-brand-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-right: var(--space-3);
+}
+
+.sidebar-brand-row .sidebar-brand {
+  padding-right: var(--space-2);
+}
+
 .sidebar-nav {
   flex: 1;
   display: flex;
@@ -1383,15 +1449,15 @@ pre {
   padding-bottom: var(
     --bottom-nav-height
   ); /* avoid content behind bottom nav */
-  padding-top: var(--space-2);
+  padding-top: var(--space-3);
 }
 
 /* Centered content column (feed, post detail, etc.) */
 .content-column {
-  width: 100%;
-  max-width: var(--feed-max-width);
+  width: min(100%, var(--feed-max-width));
+  max-width: 100%;
   margin: 0 auto;
-  padding: 0 var(--space-4);
+  padding: 0 clamp(var(--space-4), 4vw, var(--space-8));
 }
 
 /* Page section heading */
@@ -1460,6 +1526,10 @@ pre {
 ============================================================ */
 
 @media (min-width: 1024px) {
+  :root {
+    --feed-max-width: 760px;
+  }
+
   /* ── Restructure the app shell for desktop ── */
 
   .app-shell {
@@ -1508,7 +1578,7 @@ pre {
 
   /* Content column can be wider on desktop */
   .content-column {
-    padding: 0 var(--space-8);
+    padding: 0 clamp(var(--space-6), 3vw, var(--space-10));
   }
 }
 
@@ -1516,5 +1586,6 @@ pre {
 @media (min-width: 1280px) {
   :root {
     --sidebar-width: 260px;
+    --feed-max-width: 840px;
   }
 }

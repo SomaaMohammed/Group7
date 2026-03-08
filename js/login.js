@@ -7,17 +7,22 @@ const form = document.getElementById("login-form");
 const themeToggleButton = document.getElementById("theme-toggle");
 const emailInput = document.getElementById("email");
 const passwordInput = document.getElementById("password");
+const showPasswordInput = document.getElementById("show-password");
+const hiddenPasswordType = passwordInput?.getAttribute("type") || "text";
 
 const emailHint = document.getElementById("email-hint");
 const passwordHint = document.getElementById("password-hint");
 
 setupThemeToggle({
   button: themeToggleButton,
-  onThemeChanged: updateThemeToggleLabel,
 });
 
 if (form) {
   form.addEventListener("submit", handleLoginSubmit);
+}
+
+if (showPasswordInput && passwordInput) {
+  showPasswordInput.addEventListener("change", handleTogglePasswordVisibility);
 }
 
 globalThis.addEventListener("pageshow", (event) => {
@@ -126,19 +131,17 @@ function shakeForm() {
   form.classList.add("shake");
 }
 
-function updateThemeToggleLabel(activeTheme) {
-  if (!themeToggleButton) return;
-
-  const targetTheme = activeTheme === "dark" ? "Light" : "Dark";
-  themeToggleButton.textContent = `Switch to ${targetTheme}`;
-  themeToggleButton.setAttribute(
-    "aria-label",
-    `Switch to ${targetTheme} theme`,
-  );
-}
-
 function resetLoginForm() {
   if (!form) return;
   form.reset();
+  if (passwordInput) {
+    passwordInput.type = hiddenPasswordType;
+  }
   clearErrors();
+}
+
+function handleTogglePasswordVisibility(event) {
+  if (!passwordInput) return;
+  const showPassword = Boolean(event.target?.checked);
+  passwordInput.type = showPassword ? "text" : hiddenPasswordType;
 }

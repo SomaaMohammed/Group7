@@ -42,6 +42,23 @@
   gap: var(--space-4);
 }
 
+.password-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  user-select: none;
+}
+
+.password-toggle input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--color-primary);
+}
+
 [data-theme="light"] .register-card .input:not(.error) {
   background: linear-gradient(
     180deg,
@@ -72,6 +89,18 @@
 
 .register-login-link a:hover {
   color: var(--color-primary-hover);
+}
+
+@media (min-width: 1024px) {
+  .register-page {
+    align-items: flex-start;
+    padding-top: 10vh;
+  }
+
+  .register-card {
+    max-width: 560px;
+    padding: var(--space-6);
+  }
 }
 
 @media (max-width: 480px) {

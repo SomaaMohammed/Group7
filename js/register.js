@@ -7,6 +7,7 @@ const themeToggleButton = document.getElementById("theme-toggle");
 const usernameInput = document.getElementById("username");
 const emailInput = document.getElementById("email");
 const passwordInput = document.getElementById("password");
+const showPasswordInput = document.getElementById("show-password");
 
 const usernameHint = document.getElementById("username-hint");
 const emailHint = document.getElementById("email-hint");
@@ -14,11 +15,14 @@ const passwordHint = document.getElementById("password-hint");
 
 setupThemeToggle({
   button: themeToggleButton,
-  onThemeChanged: updateThemeToggleLabel,
 });
 
 if (form) {
   form.addEventListener("submit", handleRegisterSubmit);
+}
+
+if (showPasswordInput && passwordInput) {
+  showPasswordInput.addEventListener("change", handleTogglePasswordVisibility);
 }
 
 async function handleRegisterSubmit(event) {
@@ -90,13 +94,20 @@ function getString(formData, key) {
 
 function validatePayload(payload) {
   const errors = [];
+  const minUsernameLength = 4;
+  const maxUsernameLength = 24;
 
   if (!payload.username) {
     errors.push({ field: "username", message: "Username is required." });
-  } else if (payload.username.length < 3) {
+  } else if (payload.username.length < minUsernameLength) {
     errors.push({
       field: "username",
-      message: "Username must be at least 3 characters.",
+      message: `Username must be at least ${minUsernameLength} characters.`,
+    });
+  } else if (payload.username.length > maxUsernameLength) {
+    errors.push({
+      field: "username",
+      message: `Username must be at most ${maxUsernameLength} characters.`,
     });
   }
 
@@ -166,13 +177,8 @@ function clearFieldError(inputElement, hintElement) {
   hintElement.textContent = "";
 }
 
-function updateThemeToggleLabel(activeTheme) {
-  if (!themeToggleButton) return;
-
-  const targetTheme = activeTheme === "dark" ? "Light" : "Dark";
-  themeToggleButton.textContent = `Switch to ${targetTheme}`;
-  themeToggleButton.setAttribute(
-    "aria-label",
-    `Switch to ${targetTheme} theme`,
-  );
+function handleTogglePasswordVisibility(event) {
+  if (!passwordInput) return;
+  const showPassword = Boolean(event.target?.checked);
+  passwordInput.type = showPassword ? "text" : "password";
 }

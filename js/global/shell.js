@@ -11,6 +11,7 @@
 
 import { getCurrentUser } from "./auth.js";
 import { goToHome } from "./router.js";
+import { setupThemeToggle } from "./theme.js";
 
 // SVG icons (24×24, stroke-based, no external library)
 const icons = {
@@ -51,7 +52,7 @@ export async function injectShell() {
   const user = await getCurrentUser();
   if (!user) return;
 
-  const avatarSrc = user.profilePicture || "../assets/default-avatar.png";
+  const avatarSrc = user.profilePicture || "../assets/default-avatar.svg";
 
   // Active page detection
   const path = globalThis.location.pathname;
@@ -71,14 +72,30 @@ export async function injectShell() {
         <img class="avatar avatar-sm" src="${avatarSrc}" alt="${user.username}'s avatar">
         <span class="app-header-username">${user.username}</span>
       </div>
-      <a class="app-header-settings" href="settings.html" aria-label="Settings">
-        ${icons.settings}
-      </a>
+      <div class="app-header-actions">
+        <button
+          class="icon-btn theme-toggle-btn"
+          type="button"
+          data-theme-toggle
+          aria-label="Toggle theme"
+        ></button>
+        <a class="icon-btn app-header-settings" href="settings.html" aria-label="Settings">
+          ${icons.settings}
+        </a>
+      </div>
     </header>
 
     <!-- Desktop sidebar (left column) -->
     <aside class="app-sidebar">
-      <div class="sidebar-brand">Socially</div>
+      <div class="sidebar-brand-row">
+        <div class="sidebar-brand">Socially</div>
+        <button
+          class="icon-btn theme-toggle-btn"
+          type="button"
+          data-theme-toggle
+          aria-label="Toggle theme"
+        ></button>
+      </div>
 
       <nav class="sidebar-nav">
         <a class="sidebar-nav-item${activeClass(isHome)}" href="home.html">
@@ -129,4 +146,9 @@ export async function injectShell() {
 
   if (newPostBtn) newPostBtn.addEventListener("click", goToHome);
   if (fabBtn) fabBtn.addEventListener("click", goToHome);
+
+  const themeToggleButtons = Array.from(
+    document.querySelectorAll("[data-theme-toggle]"),
+  );
+  setupThemeToggle({ buttons: themeToggleButtons });
 }
