@@ -1,4 +1,5 @@
 import db from "./global/db.js";
+import { getString, isValidEmail } from "./global/form.js";
 import { goToLogin } from "./global/router.js";
 import { setupThemeToggle } from "./global/theme.js";
 
@@ -8,6 +9,7 @@ const usernameInput = document.getElementById("username");
 const emailInput = document.getElementById("email");
 const passwordInput = document.getElementById("password");
 const showPasswordInput = document.getElementById("show-password");
+const hiddenPasswordType = passwordInput?.getAttribute("type") || "password";
 
 const usernameHint = document.getElementById("username-hint");
 const emailHint = document.getElementById("email-hint");
@@ -87,11 +89,6 @@ async function handleRegisterSubmit(event) {
   goToLogin();
 }
 
-function getString(formData, key) {
-  const value = formData.get(key);
-  return typeof value === "string" ? value : "";
-}
-
 function validatePayload(payload) {
   const errors = [];
   const minUsernameLength = 4;
@@ -130,10 +127,6 @@ function validatePayload(payload) {
   }
 
   return errors;
-}
-
-function isValidEmail(email) {
-  return /^\S+@\S+\.\S+$/.test(email);
 }
 
 function isStrongPassword(password) {
@@ -180,5 +173,5 @@ function clearFieldError(inputElement, hintElement) {
 function handleTogglePasswordVisibility(event) {
   if (!passwordInput) return;
   const showPassword = Boolean(event.target?.checked);
-  passwordInput.type = showPassword ? "text" : "password";
+  passwordInput.type = showPassword ? "text" : hiddenPasswordType;
 }

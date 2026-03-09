@@ -2,10 +2,16 @@
 // Navigation helpers. All paths are relative to pages/ (where every
 // page script that imports this module lives).
 
-export const goToHome = () => (globalThis.location.href = "home.html");
-export const goToLogin = () => (globalThis.location.href = "login.html");
-export const goToPost = (id) =>
-  (globalThis.location.href = `post.html?id=${id}`);
-export const goToUser = (id) =>
-  (globalThis.location.href = `user.html?id=${id}`);
-export const goToSettings = () => (globalThis.location.href = "settings.html");
+function navigate(path) {
+  globalThis.location.href = path;
+}
+
+function encodeParam(value) {
+  return encodeURIComponent(String(value ?? ""));
+}
+
+export const goToHome = () => navigate("home.html");
+export const goToLogin = () => navigate("login.html");
+export const goToPost = (id) => navigate(`post.html?id=${encodeParam(id)}`);
+export const goToUser = (id) => navigate(`user.html?id=${encodeParam(id)}`);
+export const goToSettings = () => navigate("settings.html");

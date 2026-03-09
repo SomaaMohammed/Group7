@@ -2,6 +2,7 @@ import { requireAuth } from "./global/auth.js";
 import db from "./global/db.js";
 import { injectShell } from "./global/shell.js";
 import { goToSettings } from "./global/router.js";
+import { escapeHtml, toSafeImageSrc } from "./global/sanitize.js";
 import { applyTheme, getInitialTheme } from "./global/theme.js";
 import { showToast } from "./global/toast.js";
 
@@ -34,7 +35,8 @@ async function initUserPage() {
   await injectShell();
 
   const params = new URLSearchParams(globalThis.location.search);
-  const profileUserId = params.get("id") || currentUser.id;
+  const requestedProfileId = params.get("id");
+  const profileUserId = requestedProfileId?.trim() || currentUser.id;
 
   viewedUser = await db.users.findUnique({ where: { id: profileUserId } });
   if (!viewedUser) {
@@ -58,8 +60,10 @@ function renderProfileHeader() {
   const handle = viewedUser.username || "unknown";
 
   if (profileAvatar) {
-    profileAvatar.src =
-      viewedUser.profilePicture || "../assets/default-avatar.svg";
+    profileAvatar.src = toSafeImageSrc(
+      viewedUser.profilePicture,
+      "../assets/default-avatar.svg",
+    );
     profileAvatar.alt = `${username}'s avatar`;
   }
 
@@ -178,13 +182,4 @@ function formatTime(isoDate) {
   const date = new Date(isoDate);
   if (Number.isNaN(date.getTime())) return "Unknown date";
   return date.toLocaleString();
-}
-
-function escapeHtml(text) {
-  return text
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
 }

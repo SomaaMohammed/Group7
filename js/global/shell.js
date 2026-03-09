@@ -11,6 +11,7 @@
 
 import { getCurrentUser } from "./auth.js";
 import { goToHome } from "./router.js";
+import { escapeHtml, toSafeImageSrc } from "./sanitize.js";
 import { setupThemeToggle } from "./theme.js";
 
 // SVG icons (24×24, stroke-based, no external library)
@@ -52,7 +53,13 @@ export async function injectShell() {
   const user = await getCurrentUser();
   if (!user) return;
 
-  const avatarSrc = user.profilePicture || "../assets/default-avatar.svg";
+  const avatarSrc = toSafeImageSrc(
+    user.profilePicture,
+    "../assets/default-avatar.svg",
+  );
+  const safeAvatarSrc = escapeHtml(avatarSrc);
+  const safeUsername = escapeHtml(user.username || "user");
+  const safeUserId = encodeURIComponent(String(user.id || ""));
 
   // Active page detection
   const path = globalThis.location.pathname;
@@ -69,8 +76,8 @@ export async function injectShell() {
     <!-- Mobile header (sticky top) -->
     <header class="app-header">
       <div class="app-header-identity">
-        <img class="avatar avatar-sm" src="${avatarSrc}" alt="${user.username}'s avatar">
-        <span class="app-header-username">${user.username}</span>
+        <img class="avatar avatar-sm" src="${safeAvatarSrc}" alt="${safeUsername}'s avatar">
+        <span class="app-header-username">${safeUsername}</span>
       </div>
       <div class="app-header-actions">
         <button
@@ -102,7 +109,7 @@ export async function injectShell() {
           ${icons.home}
           <span>Home</span>
         </a>
-        <a class="sidebar-nav-item${activeClass(isProfile)}" href="user.html?id=${user.id}">
+        <a class="sidebar-nav-item${activeClass(isProfile)}" href="user.html?id=${safeUserId}">
           ${icons.person}
           <span>Profile</span>
         </a>
@@ -116,11 +123,11 @@ export async function injectShell() {
         <button class="btn btn-primary" id="shell-new-post-btn">New Post</button>
       </div>
 
-      <a class="sidebar-user" href="user.html?id=${user.id}">
-        <img class="avatar avatar-sm" src="${avatarSrc}" alt="${user.username}'s avatar">
+      <a class="sidebar-user" href="user.html?id=${safeUserId}">
+        <img class="avatar avatar-sm" src="${safeAvatarSrc}" alt="${safeUsername}'s avatar">
         <div class="sidebar-user-info">
-          <span class="sidebar-user-name">${user.username}</span>
-          <span class="sidebar-user-handle">@${user.username}</span>
+          <span class="sidebar-user-name">${safeUsername}</span>
+          <span class="sidebar-user-handle">@${safeUsername}</span>
         </div>
       </a>
     </aside>
@@ -133,7 +140,7 @@ export async function injectShell() {
       <button class="bottom-nav-fab" id="shell-fab-btn" aria-label="New post">
         ${icons.plus}
       </button>
-      <a class="bottom-nav-item${activeClass(isProfile)}" href="user.html?id=${user.id}" aria-label="Profile">
+      <a class="bottom-nav-item${activeClass(isProfile)}" href="user.html?id=${safeUserId}" aria-label="Profile">
         ${icons.person}
       </a>
     </nav>

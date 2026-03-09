@@ -1,5 +1,6 @@
 import { login as createSession } from "./global/auth.js";
 import db from "./global/db.js";
+import { getString, isValidEmail } from "./global/form.js";
 import { goToHome } from "./global/router.js";
 import { setupThemeToggle } from "./global/theme.js";
 
@@ -8,7 +9,7 @@ const themeToggleButton = document.getElementById("theme-toggle");
 const emailInput = document.getElementById("email");
 const passwordInput = document.getElementById("password");
 const showPasswordInput = document.getElementById("show-password");
-const hiddenPasswordType = passwordInput?.getAttribute("type") || "text";
+const hiddenPasswordType = passwordInput?.getAttribute("type") || "password";
 
 const emailHint = document.getElementById("email-hint");
 const passwordHint = document.getElementById("password-hint");
@@ -66,11 +67,6 @@ async function handleLoginSubmit(event) {
   goToHome();
 }
 
-function getString(formData, key) {
-  const value = formData.get(key);
-  return typeof value === "string" ? value : "";
-}
-
 function validatePayload(payload) {
   const errors = [];
 
@@ -88,10 +84,6 @@ function validatePayload(payload) {
   }
 
   return errors;
-}
-
-function isValidEmail(email) {
-  return /^\S+@\S+\.\S+$/.test(email);
 }
 
 function applyValidationErrors(errors) {

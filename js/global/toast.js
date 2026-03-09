@@ -12,9 +12,13 @@ export function showToast(message, type = "info") {
   const container = document.querySelector(".toast-container");
   if (!container) return;
 
+  const allowedTypes = new Set(["success", "danger", "info"]);
+  const safeType = allowedTypes.has(type) ? type : "info";
+  const safeMessage = String(message ?? "");
+
   const toast = document.createElement("div");
-  toast.className = `toast toast-${type}`;
-  toast.textContent = message;
+  toast.className = `toast toast-${safeType}`;
+  toast.textContent = safeMessage;
 
   container.appendChild(toast);
 
