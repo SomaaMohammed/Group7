@@ -832,6 +832,57 @@ pre {
   color: var(--color-success);
 }
 
+/* ── Shared auth-page styles ── */
+
+.password-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  user-select: none;
+}
+
+.password-toggle input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--color-primary);
+}
+
+[data-theme="light"] .auth-card .input:not(.error) {
+  background: linear-gradient(
+    180deg,
+    var(--elevation-1) 0%,
+    var(--elevation-2) 100%
+  );
+  border-color: var(--color-border);
+}
+
+[data-theme="light"] .auth-card .input:not(.error):focus {
+  background: linear-gradient(
+    180deg,
+    var(--elevation-3) 0%,
+    var(--elevation-2) 100%
+  );
+}
+
+.auth-footer-link {
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.auth-footer-link a {
+  color: var(--color-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.auth-footer-link a:hover {
+  color: var(--color-primary-hover);
+}
+
 /* Character counter - sits below a textarea */
 .char-counter {
   font-size: var(--font-size-xs);

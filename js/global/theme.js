@@ -12,7 +12,10 @@ export function getInitialTheme() {
 }
 
 export function applyTheme(theme) {
-  document.body.dataset.theme = theme;
+  document.documentElement.dataset.theme = theme;
+  if (document.body) {
+    document.body.dataset.theme = theme;
+  }
 }
 
 export function toggleTheme(currentTheme) {

@@ -63,9 +63,9 @@ export async function injectShell() {
 
   // Active page detection
   const path = globalThis.location.pathname;
-  const isHome = path.includes("home.html");
-  const isProfile = path.includes("user.html");
-  const isSettings = path.includes("settings.html");
+  const isHome = path.endsWith("home.html");
+  const isProfile = path.endsWith("user.html");
+  const isSettings = path.endsWith("settings.html");
 
   const activeClass = (flag) => (flag ? " active" : "");
 

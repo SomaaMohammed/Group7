@@ -1,6 +1,12 @@
 import { login as createSession } from "./global/auth.js";
 import db from "./global/db.js";
-import { getString, isValidEmail } from "./global/form.js";
+import {
+  clearFieldError,
+  getString,
+  isValidEmail,
+  setError,
+  shakeForm,
+} from "./global/form.js";
 import { goToHome } from "./global/router.js";
 import { setupThemeToggle } from "./global/theme.js";
 
@@ -45,7 +51,7 @@ async function handleLoginSubmit(event) {
   const validationErrors = validatePayload(payload);
   if (validationErrors.length > 0) {
     applyValidationErrors(validationErrors);
-    shakeForm();
+    shakeForm(form);
     return;
   }
 
@@ -59,7 +65,7 @@ async function handleLoginSubmit(event) {
   if (!matchedUser) {
     setError(emailInput, emailHint, "Invalid email or password.");
     setError(passwordInput, passwordHint, "Invalid email or password.");
-    shakeForm();
+    shakeForm(form);
     return;
   }
 
@@ -97,30 +103,9 @@ function applyValidationErrors(errors) {
   });
 }
 
-function setError(inputElement, hintElement, message) {
-  if (!inputElement || !hintElement) return;
-  inputElement.classList.add("error");
-  hintElement.classList.add("error");
-  hintElement.textContent = message;
-}
-
 function clearErrors() {
   clearFieldError(emailInput, emailHint);
   clearFieldError(passwordInput, passwordHint);
-}
-
-function clearFieldError(inputElement, hintElement) {
-  if (!inputElement || !hintElement) return;
-  inputElement.classList.remove("error");
-  hintElement.classList.remove("error");
-  hintElement.textContent = "";
-}
-
-function shakeForm() {
-  if (!form) return;
-  form.classList.remove("shake");
-  form.getBoundingClientRect();
-  form.classList.add("shake");
 }
 
 function resetLoginForm() {

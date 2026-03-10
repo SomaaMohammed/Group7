@@ -1,5 +1,11 @@
 import db from "./global/db.js";
-import { getString, isValidEmail } from "./global/form.js";
+import {
+  clearFieldError,
+  getString,
+  isValidEmail,
+  setError,
+  shakeForm,
+} from "./global/form.js";
 import { goToLogin } from "./global/router.js";
 import { setupThemeToggle } from "./global/theme.js";
 
@@ -27,6 +33,12 @@ if (showPasswordInput && passwordInput) {
   showPasswordInput.addEventListener("change", handleTogglePasswordVisibility);
 }
 
+globalThis.addEventListener("pageshow", (event) => {
+  if (event.persisted) {
+    resetRegisterForm();
+  }
+});
+
 async function handleRegisterSubmit(event) {
   event.preventDefault();
   clearErrors();
@@ -42,9 +54,7 @@ async function handleRegisterSubmit(event) {
   const validationErrors = validatePayload(payload);
   if (validationErrors.length > 0) {
     applyValidationErrors(validationErrors);
-    form.classList.remove("shake");
-    form.getBoundingClientRect();
-    form.classList.add("shake");
+    shakeForm(form);
     return;
   }
 
@@ -70,9 +80,7 @@ async function handleRegisterSubmit(event) {
         "An account with this email already exists.",
       );
     }
-    form.classList.remove("shake");
-    form.getBoundingClientRect();
-    form.classList.add("shake");
+    shakeForm(form);
     return;
   }
 
@@ -150,28 +158,23 @@ function applyValidationErrors(errors) {
   });
 }
 
-function setError(inputElement, hintElement, message) {
-  if (!inputElement || !hintElement) return;
-  inputElement.classList.add("error");
-  hintElement.classList.add("error");
-  hintElement.textContent = message;
-}
-
 function clearErrors() {
   clearFieldError(usernameInput, usernameHint);
   clearFieldError(emailInput, emailHint);
   clearFieldError(passwordInput, passwordHint);
 }
 
-function clearFieldError(inputElement, hintElement) {
-  if (!inputElement || !hintElement) return;
-  inputElement.classList.remove("error");
-  hintElement.classList.remove("error");
-  hintElement.textContent = "";
-}
-
 function handleTogglePasswordVisibility(event) {
   if (!passwordInput) return;
   const showPassword = Boolean(event.target?.checked);
   passwordInput.type = showPassword ? "text" : hiddenPasswordType;
+}
+
+function resetRegisterForm() {
+  if (!form) return;
+  form.reset();
+  if (passwordInput) {
+    passwordInput.type = hiddenPasswordType;
+  }
+  clearErrors();
 }

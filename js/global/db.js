@@ -56,9 +56,9 @@ function createTableOps(tableName, idPrefix) {
     async create({ data }) {
       const records = readTable(tableName);
       const newRecord = {
+        ...data,
         id: generateId(idPrefix),
         createdAt: new Date().toISOString(),
-        ...data,
       };
       records.push(newRecord);
       writeTable(tableName, records);
@@ -69,7 +69,8 @@ function createTableOps(tableName, idPrefix) {
       const records = readTable(tableName);
       const index = records.findIndex((r) => matchesWhere(r, where));
       if (index === -1) return null;
-      records[index] = { ...records[index], ...data };
+      const originalId = records[index].id;
+      records[index] = { ...records[index], ...data, id: originalId };
       writeTable(tableName, records);
       return records[index];
     },
