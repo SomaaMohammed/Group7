@@ -29,7 +29,7 @@
   line-height: var(--line-height-loose);
 }
 
-#user-page-main section[aria-labelledby="profile-name"] > div:last-child {
+.profile-stats {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-4);
@@ -37,16 +37,14 @@
   border-top: 1px solid var(--color-border);
 }
 
-#user-page-main section[aria-labelledby="profile-name"] > div:last-child span {
+.profile-stat {
   color: var(--color-text-secondary);
   font-size: var(--font-size-sm);
 }
 
-#user-page-main
-  section[aria-labelledby="profile-name"]
-  > div:last-child
-  strong {
+.profile-stat-value {
   color: var(--color-text-primary);
+  font-weight: var(--font-weight-semibold);
 }
 
 #user-posts-list {
@@ -77,7 +75,7 @@
     font-size: var(--font-size-2xl);
   }
 
-  #user-page-main section[aria-labelledby="profile-name"] > div:last-child {
+  .profile-stats {
     gap: var(--space-5);
   }
 }

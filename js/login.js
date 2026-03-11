@@ -14,7 +14,7 @@ const form = document.getElementById("login-form");
 const themeToggleButton = document.getElementById("theme-toggle");
 const emailInput = document.getElementById("email");
 const passwordInput = document.getElementById("password");
-const showPasswordInput = document.getElementById("show-password");
+const showPasswordButton = document.getElementById("show-password");
 const hiddenPasswordType = passwordInput?.getAttribute("type") || "password";
 
 const emailHint = document.getElementById("email-hint");
@@ -28,8 +28,8 @@ if (form) {
   form.addEventListener("submit", handleLoginSubmit);
 }
 
-if (showPasswordInput && passwordInput) {
-  showPasswordInput.addEventListener("change", handleTogglePasswordVisibility);
+if (showPasswordButton && passwordInput) {
+  showPasswordButton.addEventListener("click", handleTogglePasswordVisibility);
 }
 
 globalThis.addEventListener("pageshow", (event) => {
@@ -114,11 +114,28 @@ function resetLoginForm() {
   if (passwordInput) {
     passwordInput.type = hiddenPasswordType;
   }
+  updatePasswordVisibilityButton(false);
   clearErrors();
 }
 
-function handleTogglePasswordVisibility(event) {
+function handleTogglePasswordVisibility() {
   if (!passwordInput) return;
-  const showPassword = Boolean(event.target?.checked);
+  const showPassword = passwordInput.type === hiddenPasswordType;
   passwordInput.type = showPassword ? "text" : hiddenPasswordType;
+  updatePasswordVisibilityButton(showPassword);
+}
+
+function updatePasswordVisibilityButton(showPassword) {
+  if (!showPasswordButton) return;
+
+  showPasswordButton.setAttribute("aria-pressed", String(showPassword));
+  showPasswordButton.setAttribute(
+    "aria-label",
+    showPassword ? "Hide password" : "Show password",
+  );
+
+  const label = showPasswordButton.querySelector(".password-toggle-label");
+  if (label) {
+    label.textContent = showPassword ? "Hide" : "Show";
+  }
 }

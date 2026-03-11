@@ -189,6 +189,14 @@ hr {
   /* Scrollbar */
   --color-scrollbar-thumb: #2e2e38;
   --color-scrollbar-track: #111113;
+
+  /* Theme toggle (target: light) */
+  --theme-toggle-light-border: #f0bf42;
+  --theme-toggle-light-bg: #1c1c1f;
+  --theme-toggle-light-fg: #f0bf42;
+  --theme-toggle-light-hover-bg: #f2f2f7;
+  --theme-toggle-light-hover-fg: #111113;
+  --theme-toggle-light-shadow: inset 0 1px 4px rgba(240, 191, 66, 1);
 }
 
 /* ── 2c. Light Theme ───────────────────────────────────────── */
@@ -222,6 +230,14 @@ hr {
   /* Scrollbar */
   --color-scrollbar-thumb: #d0d0e0;
   --color-scrollbar-track: #f2f2f7;
+
+  /* Theme toggle (target: dark) */
+  --theme-toggle-dark-border: #463dc2;
+  --theme-toggle-dark-bg: #ffffff;
+  --theme-toggle-dark-fg: #463dc2;
+  --theme-toggle-dark-hover-bg: #1c1c1f;
+  --theme-toggle-dark-hover-fg: #f0eff5;
+  --theme-toggle-dark-shadow: inset 0 1px 4px rgba(70, 61, 194, 0.24);
 }
 
 /* ── 2d. Typography Scale ─────────────────────────────────── */
@@ -702,56 +718,53 @@ pre {
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
+  border: 1.5px solid transparent;
+  background-color: transparent;
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    transform var(--transition-fast);
 }
 
 .theme-toggle-icon {
   width: 18px;
   height: 18px;
   display: block;
+  flex-shrink: 0;
+  color: inherit;
 }
 
 [data-theme="dark"] .theme-toggle-btn[data-target-theme="light"] {
-  border-color: rgba(247, 201, 72, 0.62);
-  background-color: rgba(247, 201, 72, 0.08);
+  border-color: var(--theme-toggle-light-border);
+  background-color: var(--theme-toggle-light-bg);
+  color: var(--theme-toggle-light-fg);
+  box-shadow: var(--theme-toggle-light-shadow);
 }
 
 [data-theme="dark"] .theme-toggle-btn[data-target-theme="light"]:hover {
-  background-color: rgba(247, 201, 72, 0.14);
-}
-
-[data-theme="dark"]
-  .theme-toggle-btn[data-target-theme="light"]
-  .theme-toggle-icon {
-  border: 1px solid rgba(247, 201, 72, 0.78);
-  border-radius: 999px;
-  background-color: rgba(247, 201, 72, 0.16);
-  box-sizing: border-box;
-  padding: 1px;
+  background-color: var(--theme-toggle-light-hover-bg);
+  color: var(--theme-toggle-light-hover-fg);
 }
 
 [data-theme="light"] .theme-toggle-btn[data-target-theme="dark"] {
-  border-color: rgba(95, 104, 128, 0.42);
-  background-color: rgba(95, 104, 128, 0.06);
+  border-color: var(--theme-toggle-dark-border);
+  background-color: var(--theme-toggle-dark-bg);
+  color: var(--theme-toggle-dark-fg);
+  box-shadow: var(--theme-toggle-dark-shadow);
 }
 
 [data-theme="light"] .theme-toggle-btn[data-target-theme="dark"]:hover {
-  background-color: rgba(95, 104, 128, 0.11);
-}
-
-[data-theme="light"]
-  .theme-toggle-btn[data-target-theme="dark"]
-  .theme-toggle-icon {
-  border: 1px solid rgba(95, 104, 128, 0.62);
-  border-radius: 999px;
-  background-color: rgba(95, 104, 128, 0.12);
-  box-sizing: border-box;
-  padding: 1px;
+  background-color: var(--theme-toggle-dark-hover-bg);
+  color: var(--theme-toggle-dark-hover-fg);
 }
 
 .theme-toggle-label {
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-medium);
   line-height: 1;
+  color: inherit;
 }
 
 .theme-toggle-btn.icon-btn .theme-toggle-label {
@@ -834,21 +847,57 @@ pre {
 
 /* ── Shared auth-page styles ── */
 
+.password-field {
+  position: relative;
+}
+
+.password-field .input {
+  padding-right: 92px;
+}
+
 .password-toggle {
+  position: absolute;
+  top: 50%;
+  right: var(--space-2);
+  transform: translateY(-50%);
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  margin-top: var(--space-2);
-  font-size: var(--font-size-sm);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-full);
   color: var(--color-text-secondary);
-  cursor: pointer;
+  background-color: transparent;
+  transition:
+    color var(--transition-fast),
+    background-color var(--transition-fast),
+    transform var(--transition-fast);
   user-select: none;
 }
 
-.password-toggle input {
+.password-toggle:hover {
+  background-color: var(--elevation-3);
+  color: var(--color-text-primary);
+}
+
+.password-toggle:active {
+  transform: translateY(-50%) scale(0.96);
+}
+
+.password-toggle[aria-pressed="true"] {
+  background-color: var(--color-primary-subtle);
+  color: var(--color-primary);
+}
+
+.password-toggle-icon {
   width: 16px;
   height: 16px;
-  accent-color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.password-toggle-label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1;
 }
 
 [data-theme="light"] .auth-card .input:not(.error) {
@@ -1262,6 +1311,56 @@ pre {
   background-color: var(--color-primary-subtle);
 }
 
+/* Mask-based icon system: color is inherited via current text color. */
+.icon {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  background-color: currentColor;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+}
+
+.icon-home {
+  -webkit-mask-image: url("assets/icon-home.svg");
+  mask-image: url("assets/icon-home.svg");
+}
+
+.icon-person {
+  -webkit-mask-image: url("assets/icon-person.svg");
+  mask-image: url("assets/icon-person.svg");
+}
+
+.icon-settings {
+  -webkit-mask-image: url("assets/icon-settings.svg");
+  mask-image: url("assets/icon-settings.svg");
+}
+
+.icon-plus {
+  -webkit-mask-image: url("assets/icon-plus.svg");
+  mask-image: url("assets/icon-plus.svg");
+}
+
+.icon-sun {
+  -webkit-mask-image: url("assets/icon-sun.svg");
+  mask-image: url("assets/icon-sun.svg");
+}
+
+.icon-moon {
+  -webkit-mask-image: url("assets/icon-moon.svg");
+  mask-image: url("assets/icon-moon.svg");
+}
+
+.icon-eye {
+  -webkit-mask-image: url("assets/icon-eye.svg");
+  mask-image: url("assets/icon-eye.svg");
+}
+
 /* ============================================================
    9. APP SHELL
 ============================================================ */
@@ -1363,11 +1462,11 @@ pre {
   color: var(--color-primary);
 }
 
-.bottom-nav-item svg {
+.bottom-nav-item .icon {
   transition: transform var(--transition-bounce);
 }
 
-.bottom-nav-item:active svg {
+.bottom-nav-item:active .icon {
   transform: scale(0.85);
 }
 

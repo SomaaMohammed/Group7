@@ -26,11 +26,6 @@ export function setStoredTheme(theme) {
   localStorage.setItem("theme", theme);
 }
 
-function getToggleIconUrl(targetTheme) {
-  const iconName = targetTheme === "light" ? "icon-sun.svg" : "icon-moon.svg";
-  return new URL(`../assets/${iconName}`, globalThis.location.href).href;
-}
-
 function normalizeButtons({ button, buttons } = {}) {
   if (Array.isArray(buttons)) {
     return buttons.filter(Boolean);
@@ -41,19 +36,12 @@ function normalizeButtons({ button, buttons } = {}) {
 
 export function updateThemeToggleButtons(buttons, activeTheme) {
   const targetTheme = activeTheme === "dark" ? "light" : "dark";
-  const iconUrl = getToggleIconUrl(targetTheme);
+  const iconName = targetTheme === "light" ? "icon-sun" : "icon-moon";
   const targetThemeLabel = targetTheme === "light" ? "Light" : "Dark";
 
   buttons.forEach((button) => {
     button.innerHTML = `
-      <img
-        class="theme-toggle-icon"
-        src="${iconUrl}"
-        alt=""
-        width="18"
-        height="18"
-        aria-hidden="true"
-      />
+      <span class="icon ${iconName} theme-toggle-icon" aria-hidden="true"></span>
       <span class="theme-toggle-label">${targetThemeLabel}</span>
     `;
     button.setAttribute("aria-label", `Switch to ${targetThemeLabel} theme`);

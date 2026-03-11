@@ -42,18 +42,27 @@
 
           <div class="input-group">
             <label class="input-label" for="password">Password</label>
-            <input
-              class="input"
-              type="password"
-              id="password"
-              name="password"
-              autocomplete="current-password"
-              required
-            />
-            <label class="password-toggle" for="show-password">
-              <input type="checkbox" id="show-password" name="show-password" />
-              <span>Show password</span>
-            </label>
+            <div class="password-field">
+              <input
+                class="input"
+                type="password"
+                id="password"
+                name="password"
+                autocomplete="current-password"
+                required
+              />
+              <button
+                class="password-toggle"
+                id="show-password"
+                type="button"
+                aria-controls="password"
+                aria-label="Show password"
+                aria-pressed="false"
+              >
+                <span class="icon icon-eye password-toggle-icon" aria-hidden="true"></span>
+                <span class="password-toggle-label">Show</span>
+              </button>
+            </div>
             <p class="input-hint" id="password-hint"></p>
           </div>
 
