@@ -17,9 +17,12 @@ const passwordInput = document.getElementById("password");
 const showPasswordButton = document.getElementById("show-password");
 const hiddenPasswordType = passwordInput?.getAttribute("type") || "password";
 
+const confirmPasswordInput = document.getElementById("confirm-password");
+
 const usernameHint = document.getElementById("username-hint");
 const emailHint = document.getElementById("email-hint");
 const passwordHint = document.getElementById("password-hint");
+const confirmPasswordHint = document.getElementById("confirm-password-hint");
 
 setupThemeToggle({
   button: themeToggleButton,
@@ -49,6 +52,7 @@ async function handleRegisterSubmit(event) {
     username: getString(formData, "username").trim(),
     email: getString(formData, "email").trim().toLowerCase(),
     password: getString(formData, "password"),
+    confirmPassword: getString(formData, "confirmPassword"),
   };
 
   const validationErrors = validatePayload(payload);
@@ -134,6 +138,18 @@ function validatePayload(payload) {
     });
   }
 
+  if (!payload.confirmPassword) {
+    errors.push({
+      field: "confirmPassword",
+      message: "Please confirm your password.",
+    });
+  } else if (payload.password && payload.confirmPassword !== payload.password) {
+    errors.push({
+      field: "confirmPassword",
+      message: "Passwords do not match.",
+    });
+  }
+
   return errors;
 }
 
@@ -155,6 +171,9 @@ function applyValidationErrors(errors) {
     if (error.field === "password") {
       setError(passwordInput, passwordHint, error.message);
     }
+    if (error.field === "confirmPassword") {
+      setError(confirmPasswordInput, confirmPasswordHint, error.message);
+    }
   });
 }
 
@@ -162,6 +181,7 @@ function clearErrors() {
   clearFieldError(usernameInput, usernameHint);
   clearFieldError(emailInput, emailHint);
   clearFieldError(passwordInput, passwordHint);
+  clearFieldError(confirmPasswordInput, confirmPasswordHint);
 }
 
 function handleTogglePasswordVisibility() {
