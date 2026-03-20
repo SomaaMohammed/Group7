@@ -18,44 +18,62 @@
         <section class="card" aria-label="Post detail">
           <h1 class="page-title">Post</h1>
 
-          <article aria-label="Post content">
-            <header>
+          <article class="flex-col gap-4" aria-label="Post content">
+            <header class="flex items-center gap-3">
               <img
                 id="post-author-avatar"
+                class="avatar avatar-md"
                 src="../assets/default-avatar.svg"
                 alt="Post author avatar"
               />
               <div>
                 <h2 id="post-author-name">Author Name</h2>
-                <p id="post-timestamp">Just now</p>
+                <p id="post-timestamp" class="text-secondary text-sm">Just now</p>
               </div>
 
-              <button id="delete-btn" type="button">Delete</button>
+              <button
+                id="delete-btn"
+                class="btn btn-danger btn-sm hidden"
+                type="button"
+              >
+                Delete
+              </button>
             </header>
 
             <p id="post-content">Post content will appear here.</p>
 
-            <div>
-              <button id="like-btn" type="button">Like</button>
-              <p><span id="post-like-count">0</span> likes</p>
+            <div class="flex items-center gap-3 flex-wrap">
+              <button id="like-btn" class="btn btn-outline btn-sm" type="button">
+                Like
+              </button>
+              <p class="text-secondary text-sm">
+                <span id="post-like-count">0</span> likes
+              </p>
             </div>
           </article>
         </section>
 
-        <section aria-label="Comments">
+        <section class="card" aria-label="Comments">
           <h2>Comments</h2>
 
-          <div id="comments-list"></div>
+          <div id="comments-list" class="flex-col"></div>
 
-          <form id="comment-form">
-            <label for="comment-input">Add a comment</label>
+          <form id="comment-form" class="flex-col gap-3">
+            <label class="input-label" for="comment-input">Add a comment</label>
             <textarea
               id="comment-input"
+              class="textarea"
               rows="3"
               maxlength="280"
               placeholder="Write a comment..."
             ></textarea>
-            <button id="comment-submit-btn" type="submit">Comment</button>
+            <button
+              id="comment-submit-btn"
+              class="btn btn-primary btn-block"
+              type="submit"
+            >
+              Comment
+            </button>
           </form>
         </section>
       </div>
