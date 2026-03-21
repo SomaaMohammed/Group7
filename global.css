@@ -1372,6 +1372,11 @@ pre {
   flex-direction: column;
 }
 
+/* Reserve shell space before JS injects header/nav to avoid layout jump */
+#shell-root {
+  min-height: var(--header-height);
+}
+
 .app-header {
   position: sticky;
   top: 0;
@@ -1684,6 +1689,12 @@ pre {
 
   .app-shell {
     flex-direction: row;
+  }
+
+  #shell-root {
+    width: var(--sidebar-width);
+    min-height: 100vh;
+    flex-shrink: 0;
   }
 
   /* Show sidebar, hide mobile elements */
