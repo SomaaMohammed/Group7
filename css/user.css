@@ -51,6 +51,29 @@
   margin-top: var(--space-2);
 }
 
+.profile-main-change {
+  margin-bottom: var(--space-4);
+
+  font-size: var(--font-size-xl);
+
+  font-weight: var(--font-weight-semibold);
+
+}
+ 
+.change-actions {
+  gap: var(--space-4);
+  padding-top: var(--space-2);
+
+  display: flex;
+  justify-content: flex-end;
+
+  border-top-width: 1px;
+  border-top-style: solid;
+
+  border-top-color: var(--color-border);
+  margin-top: var(--space-3);
+}
+
 @media (min-width: 640px) {
   #user-page-main section[aria-labelledby="profile-name"] > header {
     grid-template-columns: auto 1fr auto;
