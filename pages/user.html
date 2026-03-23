@@ -71,6 +71,47 @@
           </div>
         </section>
 
+        <section id="edit-profile-form" class="card hidden" aria-label="Profile Editing">
+          <h2 class="profile-main-change">Edit Profile</h2>
+ 
+          <div class="flex-col gap-4">
+            <div class="input-group">
+
+              <label class="input-label" for="edit-username">Username</label>
+              <input id="edit-username" class="input" type="text" placeholder="Your username" maxlength="24" minlength="4"
+
+                autocomplete="username"
+              />
+              <span id="edit-username-hint" class="input-hint"></span>
+
+            </div>
+ 
+            <div class="input-group">
+              <label class="input-label" for="edit-bio">Bio</label>
+              <textarea id="edit-bio" class="textarea" placeholder="What do you want to share about yourself" maxlength="200"></textarea>
+            </div>
+ 
+            <div class="input-group">
+
+              <label class="input-label" for="edit-avatar-url">URL of Profile Picture</label>
+
+              <input id="edit-avatar-url" class="input" type="url" placeholder="https://example.com/avatar.jpg"
+                autocomplete="off"
+              />
+
+              <span id="avatar-hint" class="input-hint">Default avatar used when left blank</span>
+            </div>
+ 
+            <div class="edit-profile-actions">
+
+              <button id="edit-cancel-btn" class="btn btn-ghost" type="button">Cancel</button>
+
+              <button id="edit-save-btn" class="btn btn-primary" type="button">Save changes</button>
+            </div>
+            
+          </div>
+        </section>
+
         <section aria-labelledby="posts-title">
           <h2 id="posts-title" class="page-title">Posts</h2>
 
