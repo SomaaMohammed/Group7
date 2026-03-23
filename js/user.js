@@ -1,10 +1,10 @@
 import { requireAuth } from "./global/auth.js";
 import db from "./global/db.js";
 import { injectShell } from "./global/shell.js";
-import { goToSettings } from "./global/router.js";
 import { escapeHtml, toSafeImageSrc } from "./global/sanitize.js";
 import { applyTheme, getInitialTheme } from "./global/theme.js";
 import { showToast } from "./global/toast.js";
+import { setError, clearFieldError } from "./global/form.js";
 
 const profileAvatar = document.getElementById("profile-avatar");
 const profileName = document.getElementById("profile-name");
@@ -13,13 +13,18 @@ const profileBio = document.getElementById("profile-bio");
 const profileActionBtn = document.getElementById("profile-action-btn");
 
 const profilePostsCount = document.getElementById("profile-posts-count");
-const profileFollowersCount = document.getElementById(
-  "profile-followers-count",
-);
-const profileFollowingCount = document.getElementById(
-  "profile-following-count",
-);
+const profileFollowersCount = document.getElementById("profile-followers-count");
+const profileFollowingCount = document.getElementById("profile-following-count");
 const userPostsList = document.getElementById("user-posts-list");
+
+
+const profileFormEdit = document.getElementById("edit-profile-form");
+const changeUsernameInput = document.getElementById("edit-username");
+const changeUsernameHint = document.getElementById("edit-username-hint");
+const bioInputNew = document.getElementById("edit-bio");
+const avatarInputNew = document.getElementById("edit-avatar-url");
+const changeSaveButton = document.getElementById("edit-save-btn");
+const changeCancelButton = document.getElementById("edit-cancel-btn");
 
 let currentUser = null;
 let viewedUser = null;
@@ -45,6 +50,7 @@ async function initUserPage() {
   }
 
   await renderPage();
+  setupEditForm();
 }
 
 async function renderPage() {
@@ -80,11 +86,11 @@ function renderProfileHeader() {
   if (isOwnProfile) {
     profileActionBtn.className = "btn btn-outline";
     profileActionBtn.textContent = "Edit Profile";
-    profileActionBtn.onclick = () => {
-      goToSettings();
-    };
+    profileActionBtn.onclick = () => openEditForm();
     return;
   }
+
+  if (profileFormEdit) profileFormEdit.classList.add("hidden");
 
   profileActionBtn.className = "btn btn-follow";
   profileActionBtn.onclick = async () => {
@@ -159,27 +165,202 @@ async function renderUserPosts() {
 
   if (posts.length === 0) {
     userPostsList.innerHTML = `
-			<article class="card">
-				<p class="text-secondary">No posts yet.</p>
-			</article>
-		`;
+      <article class="card">
+        <p class="text-secondary">No posts yet.</p>
+      </article>
+    `;
     return;
   }
 
   userPostsList.innerHTML = posts
     .map(
       (post) => `
-			<article class="card">
-				<p>${escapeHtml(post.content || "")}</p>
-				<small class="text-secondary">${formatTime(post.createdAt)}</small>
-			</article>
-		`,
-    )
-    .join("");
+      <article class="card">
+
+        <p>${escapeHtml(post.content || "")}</p>
+
+        <small class="text-secondary">${formatTime(post.createdAt)}</small>
+
+      </article>
+    `,
+    ).join("");
 }
 
 function formatTime(isoDate) {
   const date = new Date(isoDate);
   if (Number.isNaN(date.getTime())) return "Unknown date";
   return date.toLocaleString();
+}
+
+
+function setupEditForm() {
+  if (changeCancelButton) {
+
+    changeCancelButton.addEventListener("click", closeEditForm); }
+
+  if (changeSaveButton) {
+    changeSaveButton.addEventListener("click", handleSave); }
+    
+}
+
+function openEditForm() {
+
+  if (changeUsernameInput !== null) {
+    if (currentUser.username) {
+      changeUsernameInput.value = currentUser.username;
+    } else {
+      changeUsernameInput.value = "";
+    }
+  }
+
+  if (profileFormEdit === null || currentUser === null) {
+    return;
+  }
+
+
+  if (avatarInputNew !== null) {
+    if (currentUser.profilePicture) {
+      avatarInputNew.value = currentUser.profilePicture;
+    } else {
+      avatarInputNew.value = "";
+    }
+  }
+
+  if (bioInputNew !== null) {
+    if (currentUser.bio) {
+      bioInputNew.value = currentUser.bio;
+    } else {
+      bioInputNew.value = "";
+    }
+  }  
+
+  clearFieldError(changeUsernameInput, changeUsernameHint);
+
+  profileFormEdit.classList.remove("hidden");
+
+  if (changeUsernameInput !== null) {
+
+    changeUsernameInput.focus();
+
+  }
+
+}
+
+function closeEditForm() {
+
+  if (profileFormEdit === null) {
+    return;
+  }
+
+  profileFormEdit.classList.add("hidden");
+
+  if (bioInputNew !== null) {
+    if (currentUser && currentUser.bio) {
+      bioInputNew.value = currentUser.bio;
+    } else {
+      bioInputNew.value = "";
+    }
+  }
+
+
+  if (avatarInputNew !== null) {
+    if (currentUser && currentUser.profilePicture) {
+      avatarInputNew.value = currentUser.profilePicture;
+    } else {
+      avatarInputNew.value = "";
+    }
+  }
+  if (changeUsernameInput !== null) {
+    if (currentUser && currentUser.username) {
+      changeUsernameInput.value = currentUser.username;
+    } else {
+      changeUsernameInput.value = "";
+    }
+  }  
+
+  clearFieldError(changeUsernameInput, changeUsernameHint);
+}
+
+async function handleSave() {
+
+  if (currentUser === null) {
+    return;
+  }
+
+  var changedUsername = "" ;
+  var changedBIO = "" ;
+  var changedAvatar = "" ;
+
+  if (avatarInputNew !== null) {
+    changedAvatar = avatarInputNew.value.trim();
+  }
+
+  if (bioInputNew !== null) {
+    changedBIO = bioInputNew.value.trim();
+  }  
+
+  if (changeUsernameInput !== null) {
+    changedUsername = changeUsernameInput.value.trim();
+  }
+
+
+
+  clearFieldError(changeUsernameInput, changeUsernameHint);
+
+  if (changedUsername === "") {
+    setError(changeUsernameInput, changeUsernameHint, "Cannot have an empty username");
+
+    if (changeUsernameInput !== null) {
+      changeUsernameInput.focus();
+
+    }
+
+    return;
+  }
+
+  if (changedUsername.length < 4 || changedUsername.length > 24) {
+    setError(changeUsernameInput, changeUsernameHint,
+      "The username has to be between 4 and 24 characters"
+    );
+
+    if (changeUsernameInput !== null) {
+      changeUsernameInput.focus();
+    }
+
+    return;
+  }
+
+  if (changedUsername !== currentUser.username) {
+    var existing = await db.users.findUnique({ where: { username: changedUsername } });
+
+    if (existing !== null) {
+      setError(changeUsernameInput, changeUsernameHint, "This username is taken already." );
+
+      if (changeUsernameInput !== null) {
+        changeUsernameInput.focus();
+      }
+
+      return;
+    }
+  }
+
+  var updated = await db.users.update({
+    where: { id: currentUser.id },
+    data: { username: changedUsername, bio: changedBIO, profilePicture: changedAvatar === "" ? null : changedAvatar}, 
+  });
+
+  if (updated === null) {
+    showToast("Could not save Changes.", "danger");
+    return;
+  }
+
+  currentUser = updated;
+  viewedUser = updated;
+
+  renderProfileHeader();
+  await renderProfileStats();
+
+  closeEditForm();
+
+  showToast("Updated Profile Successfully!", "success");
 }
