@@ -1,3 +1,88 @@
 #settings-page-main {
   padding-top: var(--space-2);
 }
+
+#settings-page-main .content-column {
+  gap: var(--space-5);
+
+  display: flex;
+  flex-direction: column;
+
+}
+
+@media (min-width: 1024px) {
+
+  #settings-page-main .card {
+
+    padding: var(--space-6);
+  }
+}
+
+.settings-main-section-title {
+  margin-bottom: var(--space-4);
+
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+
+  font-size: var(--font-size-xs);
+
+}
+
+.main-settings-row + .divider {
+  margin-top: 0;  margin-bottom: 0;  margin-left: 0; margin-right: 0;
+}
+
+.main-settings-row {
+  display: flex;
+  align-items: center;
+
+  justify-content: space-between;
+
+  padding-top: var(--space-2);
+  padding-bottom: var(--space-2);
+
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.main-settings-row + .main-settings-row {
+  border-top-width: 2px;
+  border-top-style: solid;
+
+  border-top-color: var(--color-border);
+}
+
+.main-settings-row-label--danger {
+  
+  color: var(--color-danger);
+}
+
+
+.settings-badge {
+  font-size: var(--font-size-xs);
+
+  color: var(--color-text-disabled);
+
+  font-weight: var(--font-weight-normal);
+}
+
+.divider + .main-settings-row {
+
+  padding-top: var(--space-3);
+
+}
+
+.main-settings-row-label {
+
+  font-size: var(--font-size-base);
+
+  gap: var(--space-3);
+
+  display: flex;
+  flex-direction: column;
+
+  font-size: var(--font-size-base);
+
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
