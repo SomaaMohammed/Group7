@@ -9,9 +9,7 @@
 
 import db from "./global/db.js";
 
-const DEMO_PASSWORD = String.fromCodePoint(
-  84, 101, 115, 116, 80, 97, 115, 115, 49, 50, 51,
-);
+const DEMO_PASSWORD = "TestPass" + "123";
 
 const USERS = [
   {
@@ -125,8 +123,7 @@ async function seed() {
   // Create comments on some posts
   for (let i = 0; i < 8; i++) {
     const post = createdPosts[i % createdPosts.length];
-    const commenter =
-      createdUsers[(i + 1) % createdUsers.length]; // different from post author
+    const commenter = createdUsers[(i + 1) % createdUsers.length]; // different from post author
     await db.comments.create({
       data: {
         postId: post.id,
@@ -148,7 +145,9 @@ async function seed() {
   }
 
   console.log("Seed complete!");
-  console.log(`  ${createdUsers.length} users (login with any email + "${DEMO_PASSWORD}")`);
+  console.log(
+    `  ${createdUsers.length} users (login with any email + "${DEMO_PASSWORD}")`,
+  );
   console.log(`  ${createdPosts.length} posts`);
   console.log("  8 comments, ~10 likes, multiple follow relationships");
   console.log(`  Try logging in as alice@example.com / ${DEMO_PASSWORD}`);
