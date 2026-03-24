@@ -1361,6 +1361,21 @@ pre {
   mask-image: url("assets/icon-eye.svg");
 }
 
+.icon-heart {
+  -webkit-mask-image: url("assets/icon-heart.svg");
+  mask-image: url("assets/icon-heart.svg");
+}
+
+.icon-heart-fill {
+  -webkit-mask-image: url("assets/icon-heart-fill.svg");
+  mask-image: url("assets/icon-heart-fill.svg");
+}
+
+.icon-trash {
+  -webkit-mask-image: url("assets/icon-trash.svg");
+  mask-image: url("assets/icon-trash.svg");
+}
+
 /* ============================================================
    9. APP SHELL
 ============================================================ */

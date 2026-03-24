@@ -35,16 +35,26 @@
                 id="delete-btn"
                 class="btn btn-danger btn-sm hidden"
                 type="button"
+                aria-label="Delete post"
+                title="Delete post"
               >
-                Delete
+                <span class="icon icon-trash" aria-hidden="true"></span>
               </button>
             </header>
 
             <p id="post-content">Post content will appear here.</p>
 
             <div class="flex items-center gap-3 flex-wrap">
-              <button id="like-btn" class="btn btn-outline btn-sm" type="button">
-                Like
+              <button
+                id="like-btn"
+                class="btn btn-outline btn-sm"
+                type="button"
+                aria-label="Like post"
+                title="Like post"
+              >
+                <span class="like-pop-circle" aria-hidden="true"></span>
+                <span class="icon icon-heart" aria-hidden="true"></span>
+                <span class="icon icon-heart-fill" aria-hidden="true"></span>
               </button>
               <p class="text-secondary text-sm">
                 <span id="post-like-count">0</span> likes

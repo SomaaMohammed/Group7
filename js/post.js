@@ -17,6 +17,7 @@ const commentsList = document.getElementById('comments-list');
 const commentForm = document.getElementById('comment-form');
 const commentInput = document.getElementById('comment-input');
 const commentSubmitBtn = document.getElementById('comment-submit-btn');
+const LIKE_PARTICLE_COUNT = 10;
 
 let currentUser = null;
 let currentPostData = null;
@@ -109,7 +110,10 @@ async function renderPostPage(pageData) {
 
   if (likeBtn) {
     likeBtn.disabled = post.authorId === currentUser.id;
-    likeBtn.textContent = pageData.likedByCurrentUser ? 'Unlike' : 'Like';
+    likeBtn.classList.toggle('is-liked', pageData.likedByCurrentUser);
+    const likeAction = pageData.likedByCurrentUser ? 'Unlike' : 'Like';
+    likeBtn.setAttribute('aria-label', `${likeAction} post`);
+    likeBtn.setAttribute('title', `${likeAction} post`);
   }
 
   if (deleteBtn) {
@@ -174,7 +178,44 @@ async function toggleLike() {
   if (postLikeCount) {
     postLikeCount.textContent = String(currentPostData.likes.length);
   }
-  likeBtn.textContent = currentPostData.likedByCurrentUser ? 'Unlike' : 'Like';
+  if (likeBtn) {
+    likeBtn.classList.toggle('is-liked', currentPostData.likedByCurrentUser);
+    const likeAction = currentPostData.likedByCurrentUser ? 'Unlike' : 'Like';
+    likeBtn.setAttribute('aria-label', `${likeAction} post`);
+    likeBtn.setAttribute('title', `${likeAction} post`);
+    if (currentPostData.likedByCurrentUser) {
+      triggerLikeAnimation();
+    }
+  }
+}
+
+function triggerLikeAnimation() {
+  if (!likeBtn || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    return;
+  }
+
+  likeBtn.classList.remove('like-pop');
+  void likeBtn.offsetWidth;
+  likeBtn.classList.add('like-pop');
+
+  const particles = [];
+  for (let i = 0; i < LIKE_PARTICLE_COUNT; i += 1) {
+    const particle = document.createElement('span');
+    particle.className = 'like-particle';
+    const angle = (Math.PI * 2 * i) / LIKE_PARTICLE_COUNT;
+    const distance = 18 + Math.random() * 14;
+    const tx = `${Math.cos(angle) * distance}px`;
+    const ty = `${Math.sin(angle) * distance}px`;
+    particle.style.setProperty('--tx', tx);
+    particle.style.setProperty('--ty', ty);
+    likeBtn.appendChild(particle);
+    particles.push(particle);
+  }
+
+  setTimeout(() => {
+    likeBtn.classList.remove('like-pop');
+    particles.forEach((particle) => particle.remove());
+  }, 560);
 }
 
 async function deletePost() {

@@ -2,8 +2,27 @@
   padding-top: var(--space-2);
 }
 
+#post-page-main section[aria-label='Post detail'] {
+  box-shadow: none;
+  border: 1px solid var(--color-border);
+  border-bottom: none;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
 #post-page-main section[aria-label='Comments'] {
-  margin-top: var(--space-4);
+  box-shadow: none;
+  border: 1px solid var(--color-border);
+  margin-top: 0;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+#post-page-main section[aria-label='Comments'] > h2 {
+  margin: 0;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
 }
 
 /* Post detail card */
@@ -25,6 +44,15 @@
 
 #delete-btn {
   margin-left: auto;
+  padding: var(--space-1);
+  min-width: auto;
+  border-radius: 0;
+  border: none;
+  background-color: transparent;
+}
+
+#delete-btn:hover:not(:disabled) {
+  background-color: transparent;
 }
 
 #post-content {
@@ -35,7 +63,8 @@
 }
 
 #post-page-main section[aria-label="Post detail"] article > div {
-  padding-top: var(--space-1);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border);
 }
 
 #post-page-main section[aria-label="Post detail"] article > div p {
@@ -47,10 +76,11 @@
   display: flex;
   flex-direction: column;
   margin-top: var(--space-3);
+  border-top: 1px solid var(--color-border);
 }
 
 #comments-list > * {
-  padding: var(--space-3) 0;
+  padding: var(--space-4) 0;
 }
 
 #comments-list > * + * {
@@ -59,12 +89,148 @@
 
 /* Add comment form */
 #comment-form {
-  margin-top: var(--space-4);
+  margin-top: var(--space-2);
+  padding-top: var(--space-3);
 }
 
 #comment-input {
+  min-height: 56px;
+  max-height: 140px;
+  padding: var(--space-3);
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-base);
   resize: vertical;
-  min-height: 96px;
+}
+
+#comment-input::placeholder {
+  font-size: var(--font-size-sm);
+}
+
+#comment-submit-btn {
+  min-width: 110px;
+  border-radius: var(--radius-full);
+}
+
+#like-btn {
+  position: relative;
+  overflow: visible;
+  padding: var(--space-1);
+  min-width: auto;
+  border-radius: 0;
+  border: none;
+  color: var(--color-text-secondary);
+}
+
+#like-btn:hover:not(:disabled) {
+  background-color: transparent;
+  color: var(--color-text-primary);
+}
+
+#like-btn.is-liked {
+  color: var(--color-like-active);
+}
+
+#like-btn.is-liked:hover:not(:disabled) {
+  color: var(--color-like-active);
+}
+
+#like-btn .icon-heart-fill {
+  display: none;
+}
+
+#like-btn.is-liked .icon-heart {
+  display: none;
+}
+
+#like-btn.is-liked .icon-heart-fill {
+  display: inline-block;
+}
+
+#like-btn .icon {
+  position: relative;
+  z-index: 2;
+}
+
+#like-btn .like-pop-circle {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--color-like-active);
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0);
+}
+
+.like-particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--color-like-active);
+  pointer-events: none;
+  opacity: 1;
+}
+
+@keyframes like-pop-circle {
+  0% {
+    opacity: 0.7;
+    transform: scale(0);
+  }
+  60% {
+    opacity: 0.25;
+    transform: scale(1.8);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2.3);
+  }
+}
+
+@keyframes like-heart-bounce {
+  0% {
+    transform: scale(0.7);
+  }
+  45% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes like-particle-burst {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--tx), var(--ty)) scale(0.2);
+  }
+}
+
+#like-btn.like-pop .like-pop-circle {
+  animation: like-pop-circle 420ms ease-out forwards;
+}
+
+#like-btn.like-pop .icon-heart-fill {
+  animation: like-heart-bounce 340ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+#like-btn.like-pop .like-particle {
+  animation: like-particle-burst 520ms ease-out forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #like-btn.like-pop .like-pop-circle,
+  #like-btn.like-pop .icon-heart-fill,
+  #like-btn.like-pop .like-particle {
+    animation: none;
+  }
 }
 
 /* Mobile-first: enhance layout on larger screens */
