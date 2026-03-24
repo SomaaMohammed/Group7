@@ -4,7 +4,7 @@ import { injectShell } from "./global/shell.js";
 import { goToPost, goToUser } from "./global/router.js";
 import { escapeHtml, toSafeImageSrc } from "./global/sanitize.js";
 import { applyTheme, getInitialTheme } from "./global/theme.js";
-import { showToast } from "./global/toast.js";
+import { flushQueuedToast, showToast } from "./global/toast.js";
 
 const MAX_CHARS = 280;
 
@@ -29,6 +29,7 @@ async function initPage() {
   if (!currentUser) return;
 
   await injectShell();
+  flushQueuedToast();
 
   // Override shell New Post buttons to open modal instead of navigating
   overrideShellButton("shell-new-post-btn");

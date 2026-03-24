@@ -4,7 +4,7 @@ import { injectShell } from "./global/shell.js";
 import { escapeHtml, toSafeImageSrc } from "./global/sanitize.js";
 import { goToPost } from "./global/router.js";
 import { applyTheme, getInitialTheme } from "./global/theme.js";
-import { showToast } from "./global/toast.js";
+import { flushQueuedToast, showToast } from "./global/toast.js";
 import { setError, clearFieldError } from "./global/form.js";
 
 const profileAvatar = document.getElementById("profile-avatar");
@@ -39,6 +39,7 @@ async function initUserPage() {
   if (!currentUser) return;
 
   await injectShell();
+  flushQueuedToast();
 
   const params = new URLSearchParams(globalThis.location.search);
   const requestedProfileId = params.get("id");

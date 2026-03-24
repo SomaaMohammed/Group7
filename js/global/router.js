@@ -2,6 +2,8 @@
 // Navigation helpers. All paths are relative to pages/ (where every
 // page script that imports this module lives).
 
+import { queueToast } from "./toast.js";
+
 function navigate(path) {
   globalThis.location.href = path;
 }
@@ -16,3 +18,7 @@ export const goToLogin = () => navigate("login.html");
 export const goToPost = (id) => navigate(`post.html?id=${encodeParam(id)}`);
 export const goToUser = (id) => navigate(`user.html?id=${encodeParam(id)}`);
 export const goToSettings = () => navigate("settings.html");
+export function navigateWithToast(path, message, type = "info") {
+  queueToast(message, type);
+  navigate(path);
+}

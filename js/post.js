@@ -1,10 +1,10 @@
 import { requireAuth } from './global/auth.js';
 import db from './global/db.js';
-import { goToHome, goToUser } from './global/router.js';
+import { goToUser, navigateWithToast } from './global/router.js';
 import { injectShell } from './global/shell.js';
 import { escapeHtml, toSafeImageSrc } from './global/sanitize.js';
 import { applyTheme, getInitialTheme } from './global/theme.js';
-import { showToast } from './global/toast.js';
+import { flushQueuedToast, showToast } from './global/toast.js';
 
 const postAuthorAvatar = document.getElementById('post-author-avatar');
 const postAuthorName = document.getElementById('post-author-name');
@@ -31,6 +31,7 @@ async function initPostPage() {
   if (!currentUser) return;
 
   await injectShell();
+  flushQueuedToast();
 
   const postId = parsePostIdFromUrl();
   const pageData = await loadPostPageData(postId);
@@ -48,15 +49,13 @@ function parsePostIdFromUrl() {
 
 async function loadPostPageData(postId) {
   if (!postId) {
-    showToast('Post not found.', 'danger');
-    goToHome();
+    navigateWithToast('home.html', 'Post not found.', 'danger');
     return null;
   }
 
   const post = await db.posts.findUnique({ where: { id: postId } });
   if (!post) {
-    showToast('Post not found.', 'danger');
-    goToHome();
+    navigateWithToast('home.html', 'Post not found.', 'danger');
     return null;
   }
 
@@ -228,8 +227,7 @@ async function deletePost() {
   await db.likes.deleteMany({ where: { postId: currentPostData.postId } });
   await db.posts.delete({ where: { id: currentPostData.postId } });
 
-  showToast('Post deleted', 'success');
-  goToHome();
+  navigateWithToast('home.html', 'Post deleted', 'success');
 }
 
 function renderComments(comments, userMap) {

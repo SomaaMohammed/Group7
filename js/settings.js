@@ -1,11 +1,13 @@
 import { requireAuth, logout } from "./global/auth.js";
 import { injectShell } from "./global/shell.js";
 import { applyTheme, getInitialTheme, setupThemeToggle } from "./global/theme.js";
+import { flushQueuedToast } from "./global/toast.js";
 
 applyTheme(getInitialTheme());
 
 await requireAuth();
 await injectShell();
+flushQueuedToast();
 
 const logoutBtn = document.getElementById("logout-btn");
 
@@ -27,4 +29,3 @@ if (ToggleButton && TextLabel) {
     }
   } });
 }
-
