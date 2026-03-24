@@ -5,8 +5,8 @@ import { goToPost, goToUser } from "./global/router.js";
 import { escapeHtml, toSafeImageSrc } from "./global/sanitize.js";
 import { applyTheme, getInitialTheme } from "./global/theme.js";
 import { showToast } from "./global/toast.js";
-
-const MAX_CHARS = 280;
+import { POST_MAX_LENGTH } from "./global/constants.js";
+import { formatTime } from "./global/time.js";
 
 const feedList = document.getElementById("feed-list");
 const composerOpenBtn = document.getElementById("composer-open-btn");
@@ -19,6 +19,7 @@ const closeBtn = document.getElementById("new-post-close-btn");
 const cancelBtn = document.getElementById("new-post-cancel-btn");
 
 let currentUser = null;
+let isRenderingFeed = false;
 
 applyTheme(getInitialTheme());
 
@@ -57,8 +58,8 @@ async function initPage() {
   if (textarea) {
     textarea.addEventListener("input", () => {
       const len = textarea.value.length;
-      if (charCount) charCount.textContent = `${len} / ${MAX_CHARS}`;
-      if (submitBtn) submitBtn.disabled = len === 0 || len > MAX_CHARS;
+      if (charCount) charCount.textContent = `${len} / ${POST_MAX_LENGTH}`;
+      if (submitBtn) submitBtn.disabled = len === 0 || len > POST_MAX_LENGTH;
     });
   }
 
@@ -85,7 +86,7 @@ async function initPage() {
   await renderFeed();
 
   // Auto-open new post modal if redirected from New Post button
-  const params = new URLSearchParams(window.location.search);
+  const params = new URLSearchParams(globalThis.location.search);
   if (params.get("newpost") === "1") {
     history.replaceState(null, "", "home.html");
     openModal();
@@ -107,7 +108,7 @@ function openModal() {
     textarea.value = "";
     textarea.focus();
   }
-  if (charCount) charCount.textContent = `0 / ${MAX_CHARS}`;
+  if (charCount) charCount.textContent = `0 / ${POST_MAX_LENGTH}`;
   if (submitBtn) submitBtn.disabled = true;
 }
 
@@ -115,79 +116,93 @@ function closeModal() {
   if (!backdrop) return;
   backdrop.classList.add("hidden");
   if (textarea) textarea.value = "";
-  if (charCount) charCount.textContent = `0 / ${MAX_CHARS}`;
+  if (charCount) charCount.textContent = `0 / ${POST_MAX_LENGTH}`;
   if (submitBtn) submitBtn.disabled = true;
 }
 
 async function submitPost() {
-  if (!textarea || !currentUser) return;
+  if (!textarea || !currentUser || !submitBtn) return;
 
   const content = textarea.value.trim();
-  if (!content || content.length > MAX_CHARS) return;
+  if (!content || content.length > POST_MAX_LENGTH) return;
+  if (submitBtn.disabled) return;
 
   submitBtn.disabled = true;
 
-  await db.posts.create({
-    data: { authorId: currentUser.id, content },
-  });
+  try {
+    await db.posts.create({
+      data: { authorId: currentUser.id, content },
+    });
 
-  closeModal();
-  showToast("Post created!", "success");
-  await renderFeed();
+    closeModal();
+    showToast("Post created!", "success");
+    await renderFeed();
+  } finally {
+    if (!backdrop?.classList.contains("hidden")) {
+      submitBtn.disabled = false;
+    }
+  }
 }
 
 async function renderFeed() {
-  if (!feedList) return;
+  if (!feedList || isRenderingFeed) return;
 
-  const follows = await db.follows.findMany({
-    where: { followerId: currentUser.id },
-  });
-  const followedIds = follows.map((f) => f.followingId);
+  isRenderingFeed = true;
 
-  if (followedIds.length === 0) {
-    feedList.innerHTML = `
-      <div class="empty-state">
-        <p class="empty-state-title">You're not following anyone yet.</p>
-        <p class="empty-state-description">
-          Follow some users to see their posts here.
-        </p>
-      </div>`;
-    return;
+  try {
+
+    const follows = await db.follows.findMany({
+      where: { followerId: currentUser.id },
+    });
+    const followedIds = follows.map((f) => f.followingId);
+
+    if (followedIds.length === 0) {
+      feedList.innerHTML = `
+        <div class="empty-state">
+          <p class="empty-state-title">You're not following anyone yet.</p>
+          <p class="empty-state-description">
+            Follow some users to see their posts here.
+          </p>
+        </div>`;
+      return;
+    }
+
+    const allPosts = await db.posts.findMany();
+    const feedPosts = allPosts.filter((p) => followedIds.includes(p.authorId));
+    feedPosts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    if (feedPosts.length === 0) {
+      feedList.innerHTML = `
+        <div class="empty-state">
+          <p class="empty-state-title">No posts yet.</p>
+          <p class="empty-state-description">
+            The people you follow haven't posted anything yet.
+          </p>
+        </div>`;
+      return;
+    }
+
+    const [allUsers, allLikes, allComments] = await Promise.all([
+      db.users.findMany(),
+      db.likes.findMany(),
+      db.comments.findMany(),
+    ]);
+
+    const userMap = Object.fromEntries(allUsers.map((u) => [u.id, u]));
+
+    feedList.innerHTML = feedPosts
+      .map((post) => {
+        const author = userMap[post.authorId];
+        const likeCount = allLikes.filter((l) => l.postId === post.id).length;
+        const commentCount = allComments.filter(
+          (c) => c.postId === post.id,
+        ).length;
+        return renderPostCard(post, author, likeCount, commentCount);
+      })
+      .join("");
+  } finally {
+    isRenderingFeed = false;
   }
-
-  const allPosts = await db.posts.findMany();
-  const feedPosts = allPosts.filter((p) => followedIds.includes(p.authorId));
-  feedPosts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-  if (feedPosts.length === 0) {
-    feedList.innerHTML = `
-      <div class="empty-state">
-        <p class="empty-state-title">No posts yet.</p>
-        <p class="empty-state-description">
-          The people you follow haven't posted anything yet.
-        </p>
-      </div>`;
-    return;
-  }
-
-  const [allUsers, allLikes, allComments] = await Promise.all([
-    db.users.findMany(),
-    db.likes.findMany(),
-    db.comments.findMany(),
-  ]);
-
-  const userMap = Object.fromEntries(allUsers.map((u) => [u.id, u]));
-
-  feedList.innerHTML = feedPosts
-    .map((post) => {
-      const author = userMap[post.authorId];
-      const likeCount = allLikes.filter((l) => l.postId === post.id).length;
-      const commentCount = allComments.filter(
-        (c) => c.postId === post.id,
-      ).length;
-      return renderPostCard(post, author, likeCount, commentCount);
-    })
-    .join("");
 }
 
 function renderPostCard(post, author, likeCount, commentCount) {
@@ -212,14 +227,9 @@ function renderPostCard(post, author, likeCount, commentCount) {
       </div>
       <p class="post-card-content">${content}</p>
       <div class="flex gap-4 text-secondary text-sm post-card-stats">
-        <span>${likeCount} like${likeCount !== 1 ? "s" : ""}</span>
-        <span>${commentCount} comment${commentCount !== 1 ? "s" : ""}</span>
+        <span>${likeCount} like${likeCount === 1 ? "" : "s"}</span>
+        <span>${commentCount} comment${commentCount === 1 ? "" : "s"}</span>
       </div>
     </article>`;
 }
 
-function formatTime(isoDate) {
-  const date = new Date(isoDate);
-  if (Number.isNaN(date.getTime())) return "Unknown date";
-  return date.toLocaleString();
-}

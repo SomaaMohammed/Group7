@@ -6,6 +6,11 @@ import { goToPost } from "./global/router.js";
 import { applyTheme, getInitialTheme } from "./global/theme.js";
 import { showToast } from "./global/toast.js";
 import { setError, clearFieldError } from "./global/form.js";
+import {
+  USERNAME_MIN_LENGTH,
+  USERNAME_MAX_LENGTH,
+} from "./global/constants.js";
+import { formatTime } from "./global/time.js";
 
 const profileAvatar = document.getElementById("profile-avatar");
 const profileName = document.getElementById("profile-name");
@@ -29,6 +34,7 @@ const changeCancelButton = document.getElementById("edit-cancel-btn");
 
 let currentUser = null;
 let viewedUser = null;
+let postsClickBound = false;
 
 applyTheme(getInitialTheme());
 
@@ -186,176 +192,108 @@ async function renderUserPosts() {
     `,
     ).join("");
 
-  userPostsList.addEventListener("click", (e) => {
-    const card = e.target.closest("[data-post-id]");
-    if (card) {
-      goToPost(card.dataset.postId);
-    }
-  });
-}
-
-function formatTime(isoDate) {
-  const date = new Date(isoDate);
-  if (Number.isNaN(date.getTime())) return "Unknown date";
-  return date.toLocaleString();
+  if (!postsClickBound) {
+    userPostsList.addEventListener("click", (e) => {
+      const card = e.target.closest("[data-post-id]");
+      if (card) {
+        goToPost(card.dataset.postId);
+      }
+    });
+    postsClickBound = true;
+  }
 }
 
 
 function setupEditForm() {
   if (changeCancelButton) {
-
-    changeCancelButton.addEventListener("click", closeEditForm); }
+    changeCancelButton.addEventListener("click", closeEditForm);
+  }
 
   if (changeSaveButton) {
-    changeSaveButton.addEventListener("click", handleSave); }
-    
+    changeSaveButton.addEventListener("click", handleSave);
+  }
 }
 
 function openEditForm() {
-
-  if (changeUsernameInput !== null) {
-    if (currentUser.username) {
-      changeUsernameInput.value = currentUser.username;
-    } else {
-      changeUsernameInput.value = "";
-    }
-  }
-
   if (profileFormEdit === null || currentUser === null) {
     return;
   }
 
-
-  if (avatarInputNew !== null) {
-    if (currentUser.profilePicture) {
-      avatarInputNew.value = currentUser.profilePicture;
-    } else {
-      avatarInputNew.value = "";
-    }
-  }
-
-  if (bioInputNew !== null) {
-    if (currentUser.bio) {
-      bioInputNew.value = currentUser.bio;
-    } else {
-      bioInputNew.value = "";
-    }
-  }  
+  setInputValue(changeUsernameInput, currentUser.username);
+  setInputValue(avatarInputNew, currentUser.profilePicture);
+  setInputValue(bioInputNew, currentUser.bio);
 
   clearFieldError(changeUsernameInput, changeUsernameHint);
 
   profileFormEdit.classList.remove("hidden");
-
-  if (changeUsernameInput !== null) {
-
-    changeUsernameInput.focus();
-
-  }
-
+  focusInput(changeUsernameInput);
 }
 
 function closeEditForm() {
-
   if (profileFormEdit === null) {
     return;
   }
 
   profileFormEdit.classList.add("hidden");
 
-  if (bioInputNew !== null) {
-    if (currentUser && currentUser.bio) {
-      bioInputNew.value = currentUser.bio;
-    } else {
-      bioInputNew.value = "";
-    }
-  }
-
-
-  if (avatarInputNew !== null) {
-    if (currentUser && currentUser.profilePicture) {
-      avatarInputNew.value = currentUser.profilePicture;
-    } else {
-      avatarInputNew.value = "";
-    }
-  }
-  if (changeUsernameInput !== null) {
-    if (currentUser && currentUser.username) {
-      changeUsernameInput.value = currentUser.username;
-    } else {
-      changeUsernameInput.value = "";
-    }
-  }  
+  setInputValue(bioInputNew, currentUser?.bio);
+  setInputValue(avatarInputNew, currentUser?.profilePicture);
+  setInputValue(changeUsernameInput, currentUser?.username);
 
   clearFieldError(changeUsernameInput, changeUsernameHint);
 }
 
 async function handleSave() {
-
   if (currentUser === null) {
     return;
   }
 
-  var changedUsername = "" ;
-  var changedBIO = "" ;
-  var changedAvatar = "" ;
-
-  if (avatarInputNew !== null) {
-    changedAvatar = avatarInputNew.value.trim();
-  }
-
-  if (bioInputNew !== null) {
-    changedBIO = bioInputNew.value.trim();
-  }  
-
-  if (changeUsernameInput !== null) {
-    changedUsername = changeUsernameInput.value.trim();
-  }
-
-
+  const changedUsername = getTrimmedInputValue(changeUsernameInput);
+  const changedBio = getTrimmedInputValue(bioInputNew);
+  const changedAvatar = getTrimmedInputValue(avatarInputNew);
 
   clearFieldError(changeUsernameInput, changeUsernameHint);
 
-  if (changedUsername === "") {
+  if (!changedUsername) {
     setError(changeUsernameInput, changeUsernameHint, "Cannot have an empty username");
-
-    if (changeUsernameInput !== null) {
-      changeUsernameInput.focus();
-
-    }
-
+    focusInput(changeUsernameInput);
     return;
   }
 
-  if (changedUsername.length < 4 || changedUsername.length > 24) {
+  if (!isValidUsernameLength(changedUsername)) {
     setError(changeUsernameInput, changeUsernameHint,
-      "The username has to be between 4 and 24 characters"
+      `The username has to be between ${USERNAME_MIN_LENGTH} and ${USERNAME_MAX_LENGTH} characters`
     );
-
-    if (changeUsernameInput !== null) {
-      changeUsernameInput.focus();
-    }
-
+    focusInput(changeUsernameInput);
     return;
   }
 
-  if (changedUsername !== currentUser.username) {
-    var existing = await db.users.findUnique({ where: { username: changedUsername } });
-
-    if (existing !== null) {
-      setError(changeUsernameInput, changeUsernameHint, "This username is taken already." );
-
-      if (changeUsernameInput !== null) {
-        changeUsernameInput.focus();
-      }
-
-      return;
-    }
+  if (changedAvatar !== "" && !isValidAvatarUrl(changedAvatar)) {
+    showToast("Please enter a valid avatar URL (http or https).", "info");
+    focusInput(avatarInputNew);
+    return;
   }
 
-  var updated = await db.users.update({
-    where: { id: currentUser.id },
-    data: { username: changedUsername, bio: changedBIO, profilePicture: changedAvatar === "" ? null : changedAvatar}, 
-  });
+  if (changedUsername !== currentUser.username && await isUsernameTaken(changedUsername)) {
+    setError(changeUsernameInput, changeUsernameHint, "This username is taken already.");
+    focusInput(changeUsernameInput);
+    return;
+  }
+
+  let updated = null;
+  try {
+    updated = await db.users.update({
+      where: { id: currentUser.id },
+      data: {
+        username: changedUsername,
+        bio: changedBio,
+        profilePicture: changedAvatar === "" ? null : changedAvatar,
+      },
+    });
+  } catch {
+    showToast("Could not save changes. Please try again.", "danger");
+    return;
+  }
 
   if (updated === null) {
     showToast("Could not save Changes.", "danger");
@@ -371,4 +309,41 @@ async function handleSave() {
   closeEditForm();
 
   showToast("Updated Profile Successfully!", "success");
+}
+
+function isValidAvatarUrl(value) {
+  try {
+    const parsed = new URL(value, globalThis.location?.href || "http://localhost/");
+    return parsed.protocol === "http:" || parsed.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+function setInputValue(input, value) {
+  if (input) {
+    input.value = value || "";
+  }
+}
+
+function getTrimmedInputValue(input) {
+  return input ? input.value.trim() : "";
+}
+
+function focusInput(input) {
+  if (input) {
+    input.focus();
+  }
+}
+
+function isValidUsernameLength(username) {
+  return (
+    username.length >= USERNAME_MIN_LENGTH &&
+    username.length <= USERNAME_MAX_LENGTH
+  );
+}
+
+async function isUsernameTaken(username) {
+  const existing = await db.users.findUnique({ where: { username } });
+  return existing !== null;
 }

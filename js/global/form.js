@@ -4,7 +4,11 @@ export function getString(formData, key) {
 }
 
 export function isValidEmail(email) {
-  return /^\S+@\S+\.\S+$/.test(email);
+  if (typeof email !== "string") return false;
+  const trimmed = email.trim();
+  if (!trimmed || trimmed.length > 254) return false;
+  if (trimmed.startsWith(".") || trimmed.endsWith(".")) return false;
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed);
 }
 
 export function setError(inputEl, hintEl, message) {

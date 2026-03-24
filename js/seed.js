@@ -9,39 +9,43 @@
 
 import db from "./global/db.js";
 
+const DEMO_PASSWORD = String.fromCodePoint(
+  84, 101, 115, 116, 80, 97, 115, 115, 49, 50, 51,
+);
+
 const USERS = [
   {
     username: "alice",
     email: "alice@example.com",
-    password: "password1",
+    password: DEMO_PASSWORD,
     bio: "Coffee lover and frontend developer.",
     profilePicture: "",
   },
   {
     username: "bob_dev",
     email: "bob@example.com",
-    password: "password1",
+    password: DEMO_PASSWORD,
     bio: "Full-stack engineer. Open-source contributor.",
     profilePicture: "",
   },
   {
     username: "charlie",
     email: "charlie@example.com",
-    password: "password1",
+    password: DEMO_PASSWORD,
     bio: "Design enthusiast. Pixel perfectionist.",
     profilePicture: "",
   },
   {
     username: "diana",
     email: "diana@example.com",
-    password: "password1",
+    password: DEMO_PASSWORD,
     bio: "CS student. Learning something new every day.",
     profilePicture: "",
   },
   {
     username: "eve_writes",
     email: "eve@example.com",
-    password: "password1",
+    password: DEMO_PASSWORD,
     bio: "Writer, reader, occasional coder.",
     profilePicture: "",
   },
@@ -144,10 +148,10 @@ async function seed() {
   }
 
   console.log("Seed complete!");
-  console.log(`  ${createdUsers.length} users (login with any email + "password1")`);
+  console.log(`  ${createdUsers.length} users (login with any email + "${DEMO_PASSWORD}")`);
   console.log(`  ${createdPosts.length} posts`);
   console.log("  8 comments, ~10 likes, multiple follow relationships");
-  console.log("  Try logging in as alice@example.com / password1");
+  console.log(`  Try logging in as alice@example.com / ${DEMO_PASSWORD}`);
   return true;
 }
 

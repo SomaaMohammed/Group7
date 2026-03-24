@@ -5,6 +5,8 @@ import { injectShell } from './global/shell.js';
 import { escapeHtml, toSafeImageSrc } from './global/sanitize.js';
 import { applyTheme, getInitialTheme } from './global/theme.js';
 import { showToast } from './global/toast.js';
+import { COMMENT_MAX_LENGTH } from './global/constants.js';
+import { formatTime } from './global/time.js';
 
 const postAuthorAvatar = document.getElementById('post-author-avatar');
 const postAuthorName = document.getElementById('post-author-name');
@@ -66,7 +68,8 @@ async function loadPostPageData(postId) {
   ]);
   const userMap = Object.fromEntries(users.map((user) => [user.id, user]));
   const author = userMap[post.authorId] || null;
-  const sortedComments = comments.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+  const sortedComments = [...comments];
+  sortedComments.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
   const likedByCurrentUser = likes.some((l) => l.userId === currentUser.id);
 
   return {
@@ -145,6 +148,13 @@ function bindDeleteHandler() {
 function bindCommentHandler() {
   if (commentForm) {
     commentForm.addEventListener('submit', submitComment);
+  }
+  if (commentInput && commentSubmitBtn) {
+    commentInput.addEventListener('input', () => {
+      const contentLength = commentInput.value.trim().length;
+      commentSubmitBtn.disabled =
+        contentLength === 0 || contentLength > COMMENT_MAX_LENGTH;
+    });
   }
   if (commentsList) {
     commentsList.addEventListener('click', handleCommentAuthorClick);
@@ -240,25 +250,36 @@ async function submitComment(event) {
     showToast('Comment cannot be empty.', 'info');
     return;
   }
+  if (content.length > COMMENT_MAX_LENGTH) {
+    showToast(`Comment must be at most ${COMMENT_MAX_LENGTH} characters.`, 'info');
+    return;
+  }
+  if (commentSubmitBtn.disabled) return;
 
   commentSubmitBtn.disabled = true;
-  await db.comments.create({
-    data: {
-      postId: currentPostData.postId,
-      authorId: currentUser.id,
-      content,
-    },
-  });
+  try {
+    await db.comments.create({
+      data: {
+        postId: currentPostData.postId,
+        authorId: currentUser.id,
+        content,
+      },
+    });
 
-  const refreshedData = await loadPostPageData(currentPostData.postId);
-  if (refreshedData) {
-    currentPostData = refreshedData;
-    renderComments(currentPostData.comments, currentPostData.userMap);
+    const refreshedData = await loadPostPageData(currentPostData.postId);
+    if (refreshedData) {
+      currentPostData = refreshedData;
+      renderComments(currentPostData.comments, currentPostData.userMap);
+    }
+
+    commentInput.value = '';
+    commentSubmitBtn.disabled = true;
+    showToast('Comment added', 'success');
+  } finally {
+    const contentLength = commentInput.value.trim().length;
+    commentSubmitBtn.disabled =
+      contentLength === 0 || contentLength > COMMENT_MAX_LENGTH;
   }
-
-  commentInput.value = '';
-  commentSubmitBtn.disabled = false;
-  showToast('Comment added', 'success');
 }
 
 function handleCommentAuthorClick(event) {
@@ -268,8 +289,3 @@ function handleCommentAuthorClick(event) {
   goToUser(userId);
 }
 
-function formatTime(isoDate) {
-  const date = new Date(isoDate);
-  if (Number.isNaN(date.getTime())) return 'Unknown date';
-  return date.toLocaleString();
-}

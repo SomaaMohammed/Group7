@@ -8,6 +8,11 @@ import {
 } from "./global/form.js";
 import { goToLogin } from "./global/router.js";
 import { setupThemeToggle } from "./global/theme.js";
+import {
+  PASSWORD_MIN_LENGTH,
+  USERNAME_MAX_LENGTH,
+  USERNAME_MIN_LENGTH,
+} from "./global/constants.js";
 
 const form = document.getElementById("register-form");
 const themeToggleButton = document.getElementById("theme-toggle");
@@ -103,8 +108,8 @@ async function handleRegisterSubmit(event) {
 
 function validatePayload(payload) {
   const errors = [];
-  const minUsernameLength = 4;
-  const maxUsernameLength = 24;
+  const minUsernameLength = USERNAME_MIN_LENGTH;
+  const maxUsernameLength = USERNAME_MAX_LENGTH;
 
   if (!payload.username) {
     errors.push({ field: "username", message: "Username is required." });
@@ -154,7 +159,7 @@ function validatePayload(payload) {
 }
 
 function isStrongPassword(password) {
-  const hasMinLength = password.length >= 8;
+  const hasMinLength = password.length >= PASSWORD_MIN_LENGTH;
   const hasLetter = /[A-Za-z]/.test(password);
   const hasNumber = /\d/.test(password);
   return hasMinLength && hasLetter && hasNumber;
