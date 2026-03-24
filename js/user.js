@@ -2,6 +2,7 @@ import { requireAuth } from "./global/auth.js";
 import db from "./global/db.js";
 import { injectShell } from "./global/shell.js";
 import { escapeHtml, toSafeImageSrc } from "./global/sanitize.js";
+import { goToPost } from "./global/router.js";
 import { applyTheme, getInitialTheme } from "./global/theme.js";
 import { showToast } from "./global/toast.js";
 import { setError, clearFieldError } from "./global/form.js";
@@ -175,7 +176,7 @@ async function renderUserPosts() {
   userPostsList.innerHTML = posts
     .map(
       (post) => `
-      <article class="card">
+      <article class="card card-interactive" data-post-id="${escapeHtml(post.id)}">
 
         <p>${escapeHtml(post.content || "")}</p>
 
@@ -184,6 +185,13 @@ async function renderUserPosts() {
       </article>
     `,
     ).join("");
+
+  userPostsList.addEventListener("click", (e) => {
+    const card = e.target.closest("[data-post-id]");
+    if (card) {
+      goToPost(card.dataset.postId);
+    }
+  });
 }
 
 function formatTime(isoDate) {

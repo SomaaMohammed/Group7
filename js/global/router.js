@@ -11,6 +11,7 @@ function encodeParam(value) {
 }
 
 export const goToHome = () => navigate("home.html");
+export const goToHomeNewPost = () => navigate("home.html?newpost=1");
 export const goToLogin = () => navigate("login.html");
 export const goToPost = (id) => navigate(`post.html?id=${encodeParam(id)}`);
 export const goToUser = (id) => navigate(`user.html?id=${encodeParam(id)}`);

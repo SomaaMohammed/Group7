@@ -10,7 +10,7 @@
 //   </body>
 
 import { getCurrentUser } from "./auth.js";
-import { goToHome } from "./router.js";
+import { goToHome, goToHomeNewPost } from "./router.js";
 import { escapeHtml, toSafeImageSrc } from "./sanitize.js";
 import { setupThemeToggle } from "./theme.js";
 
@@ -116,8 +116,8 @@ export async function injectShell() {
   const newPostBtn = document.getElementById("shell-new-post-btn");
   const fabBtn = document.getElementById("shell-fab-btn");
 
-  if (newPostBtn) newPostBtn.addEventListener("click", goToHome);
-  if (fabBtn) fabBtn.addEventListener("click", goToHome);
+  if (newPostBtn) newPostBtn.addEventListener("click", goToHomeNewPost);
+  if (fabBtn) fabBtn.addEventListener("click", goToHomeNewPost);
 
   const themeToggleButtons = Array.from(
     document.querySelectorAll("[data-theme-toggle]"),

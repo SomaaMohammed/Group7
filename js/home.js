@@ -83,6 +83,13 @@ async function initPage() {
   }
 
   await renderFeed();
+
+  // Auto-open new post modal if redirected from New Post button
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("newpost") === "1") {
+    history.replaceState(null, "", "home.html");
+    openModal();
+  }
 }
 
 function overrideShellButton(id) {
