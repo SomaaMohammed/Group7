@@ -3,7 +3,8 @@
 // with demo data for development and testing.
 //
 // Usage: open the app in a browser and run in the console:
-//   import("./js/seed.js")
+//   from seed.html (project root): import("./js/seed.js")
+//   from pages/login.html: import("../js/seed.js")
 //
 // Or visit seed.html for a one-click option.
 
