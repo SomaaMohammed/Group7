@@ -33,6 +33,17 @@
 }
 
 /* Post card internals */
+.post-card {
+  position: relative;
+}
+
+.post-card-stretched-link {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+}
+
 .post-card-header {
   margin-bottom: var(--space-3);
 }
@@ -50,17 +61,13 @@
 
 .post-card-username,
 .post-card-user-link {
+  position: relative;
+  z-index: 2;
   cursor: pointer;
 }
 
 .post-card-username:hover {
   text-decoration: underline;
-}
-
-.post-card-open-link {
-  display: block;
-  color: inherit;
-  text-decoration: none;
 }
 
 @media (min-width: 1024px) {
