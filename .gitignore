@@ -2,3 +2,5 @@
 /md
 .venv
 .github/
+*.docx
+*.xlsx
