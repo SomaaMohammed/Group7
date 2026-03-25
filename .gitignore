@@ -6,5 +6,5 @@
 *.xlsx
 *.zip
 *.xml
-*_*
+_*
 team*.md
