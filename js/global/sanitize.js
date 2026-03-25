@@ -13,7 +13,15 @@ export function toSafeImageSrc(value, fallback) {
   const trimmed = String(value).trim();
   if (!trimmed) return fallback;
 
-  if (trimmed.toLowerCase().startsWith("javascript:")) {
+  try {
+    const parsed = new URL(
+      trimmed,
+      globalThis.location?.href || "http://localhost/",
+    );
+    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+      return fallback;
+    }
+  } catch {
     return fallback;
   }
 
