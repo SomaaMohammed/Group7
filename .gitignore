@@ -4,3 +4,7 @@
 .github/
 *.docx
 *.xlsx
+*.zip
+*.xml
+*_*
+team*.md
