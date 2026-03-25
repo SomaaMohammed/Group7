@@ -31,9 +31,29 @@
 }
 
 #post-author-name {
+  display: inline-block;
   margin: 0;
+  color: inherit;
+  text-decoration: none;
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-semibold);
+}
+
+#post-author-name:hover {
+  text-decoration: underline;
+}
+
+#post-author-link {
+  display: inline-block;
+}
+
+.comment-author-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.comment-author-link:hover strong {
+  text-decoration: underline;
 }
 
 #post-timestamp {

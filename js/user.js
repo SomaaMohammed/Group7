@@ -2,13 +2,13 @@ import { requireAuth } from "./global/auth.js";
 import db from "./global/db.js";
 import { injectShell } from "./global/shell.js";
 import { escapeHtml, toSafeImageSrc } from "./global/sanitize.js";
-import { goToPost } from "./global/router.js";
 import { applyTheme, getInitialTheme } from "./global/theme.js";
 import { flushQueuedToast, showToast } from "./global/toast.js";
 import { setError, clearFieldError } from "./global/form.js";
 
 const profileAvatar = document.getElementById("profile-avatar");
 const profileName = document.getElementById("profile-name");
+const profileIdentityLink = document.getElementById("profile-identity-link");
 const profileHandle = document.getElementById("profile-handle");
 const profileBio = document.getElementById("profile-bio");
 const profileActionBtn = document.getElementById("profile-action-btn");
@@ -80,6 +80,18 @@ function renderProfileHeader() {
   if (profileBio) {
     profileBio.textContent =
       viewedUser.bio || "This user has not added a bio yet.";
+  }
+
+  if (viewedUser?.id) {
+    const profileHref = `user.html?id=${encodeURIComponent(viewedUser.id)}`;
+    if (profileIdentityLink) {
+      profileIdentityLink.setAttribute("href", profileHref);
+      profileIdentityLink.setAttribute("aria-label", `View @${handle}'s profile`);
+    }
+    if (profileName) {
+      profileName.setAttribute("href", profileHref);
+      profileName.setAttribute("aria-label", `View @${handle}'s profile`);
+    }
   }
 
   if (!profileActionBtn || !currentUser) return;
@@ -177,22 +189,14 @@ async function renderUserPosts() {
   userPostsList.innerHTML = posts
     .map(
       (post) => `
-      <article class="card card-interactive" data-post-id="${escapeHtml(post.id)}">
-
-        <p>${escapeHtml(post.content || "")}</p>
-
-        <small class="text-secondary">${formatTime(post.createdAt)}</small>
-
+      <article class="card card-interactive" aria-label="View post">
+        <a class="user-post-link" href="post.html?id=${encodeURIComponent(post.id)}">
+          <p>${escapeHtml(post.content || "")}</p>
+          <small class="text-secondary">${formatTime(post.createdAt)}</small>
+        </a>
       </article>
     `,
     ).join("");
-
-  userPostsList.addEventListener("click", (e) => {
-    const card = e.target.closest("[data-post-id]");
-    if (card) {
-      goToPost(card.dataset.postId);
-    }
-  });
 }
 
 function formatTime(isoDate) {

@@ -1,11 +1,12 @@
 import { requireAuth } from './global/auth.js';
 import db from './global/db.js';
-import { goToUser, navigateWithToast } from './global/router.js';
+import { navigateWithToast } from './global/router.js';
 import { injectShell } from './global/shell.js';
 import { escapeHtml, toSafeImageSrc } from './global/sanitize.js';
 import { applyTheme, getInitialTheme } from './global/theme.js';
 import { flushQueuedToast, showToast } from './global/toast.js';
 
+const postAuthorLink = document.getElementById('post-author-link');
 const postAuthorAvatar = document.getElementById('post-author-avatar');
 const postAuthorName = document.getElementById('post-author-name');
 const postTimestamp = document.getElementById('post-timestamp');
@@ -121,14 +122,14 @@ async function renderPostPage(pageData) {
   }
 
   if (author?.id) {
-    if (postAuthorAvatar) {
-      postAuthorAvatar.style.cursor = 'pointer';
-      postAuthorAvatar.addEventListener('click', () => goToUser(author.id));
+    const profileHref = `user.html?id=${encodeURIComponent(author.id)}`;
+    if (postAuthorLink) {
+      postAuthorLink.setAttribute('href', profileHref);
+      postAuthorLink.setAttribute('aria-label', `View ${author.username}'s profile`);
     }
-
     if (postAuthorName) {
-      postAuthorName.style.cursor = 'pointer';
-      postAuthorName.addEventListener('click', () => goToUser(author.id));
+      postAuthorName.setAttribute('href', profileHref);
+      postAuthorName.setAttribute('aria-label', `View ${author.username}'s profile`);
     }
   }
 
@@ -148,9 +149,6 @@ function bindDeleteHandler() {
 function bindCommentHandler() {
   if (commentForm) {
     commentForm.addEventListener('submit', submitComment);
-  }
-  if (commentsList) {
-    commentsList.addEventListener('click', handleCommentAuthorClick);
   }
 }
 
@@ -250,16 +248,16 @@ function renderComments(comments, userMap) {
 
       return `
         <article class="flex gap-3">
-          <img
-            class="avatar avatar-sm"
-            src="${avatarSrc}"
-            alt="${username}'s avatar"
-            data-user-id="${escapeHtml(author?.id || '')}"
-            style="cursor: pointer"
-          />
+          <a class="comment-author-link" href="user.html?id=${encodeURIComponent(author?.id || '')}" aria-label="View ${username}'s profile">
+            <img
+              class="avatar avatar-sm"
+              src="${avatarSrc}"
+              alt="${username}'s avatar"
+            />
+          </a>
           <div class="flex-1">
             <div class="flex items-center gap-2 flex-wrap">
-              <strong class="text-sm" data-user-id="${escapeHtml(author?.id || '')}" style="cursor: pointer">${username}</strong>
+              <a class="comment-author-link text-sm" href="user.html?id=${encodeURIComponent(author?.id || '')}" aria-label="View ${username}'s profile"><strong class="text-sm">${username}</strong></a>
               <span class="text-secondary text-xs">${timestamp}</span>
             </div>
             <p class="text-sm">${content}</p>
@@ -298,13 +296,6 @@ async function submitComment(event) {
   commentInput.value = '';
   commentSubmitBtn.disabled = false;
   showToast('Comment added', 'success');
-}
-
-function handleCommentAuthorClick(event) {
-  const userElement = event.target.closest('[data-user-id]');
-  const userId = userElement?.dataset.userId?.trim();
-  if (!userId) return;
-  goToUser(userId);
 }
 
 function formatTime(isoDate) {

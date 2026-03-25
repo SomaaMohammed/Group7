@@ -15,19 +15,23 @@
 
     <main class="app-main" id="user-page-main">
       <div class="content-column page-enter">
-        <section class="card" aria-labelledby="profile-name">
+        <section class="card" aria-labelledby="profile-heading">
           <header>
             <div>
-              <img
-                id="profile-avatar"
-                class="avatar avatar-2xl"
-                src="../assets/default-avatar.svg"
-                alt="User avatar"
-              />
+              <a id="profile-identity-link" href="#">
+                <img
+                  id="profile-avatar"
+                  class="avatar avatar-2xl"
+                  src="../assets/default-avatar.svg"
+                  alt="User avatar"
+                />
+              </a>
             </div>
 
             <div>
-              <h1 id="profile-name">Username</h1>
+              <h1 id="profile-heading">
+                <a id="profile-name" href="#">Username</a>
+              </h1>
               <p id="profile-handle" class="text-secondary">@username</p>
             </div>
 

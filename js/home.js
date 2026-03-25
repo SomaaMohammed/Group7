@@ -1,7 +1,6 @@
 import { requireAuth } from "./global/auth.js";
 import db from "./global/db.js";
 import { injectShell } from "./global/shell.js";
-import { goToPost, goToUser } from "./global/router.js";
 import { escapeHtml, toSafeImageSrc } from "./global/sanitize.js";
 import { applyTheme, getInitialTheme } from "./global/theme.js";
 import { flushQueuedToast, showToast } from "./global/toast.js";
@@ -65,23 +64,6 @@ async function initPage() {
 
   // Submit post
   if (submitBtn) submitBtn.addEventListener("click", submitPost);
-
-  // Event delegation for feed clicks
-  if (feedList) {
-    feedList.addEventListener("click", (e) => {
-      const userLink = e.target.closest("[data-user-id]");
-      if (userLink) {
-        e.stopPropagation();
-        goToUser(userLink.dataset.userId);
-        return;
-      }
-
-      const card = e.target.closest("[data-post-id]");
-      if (card) {
-        goToPost(card.dataset.postId);
-      }
-    });
-  }
 
   await renderFeed();
 
@@ -198,24 +180,28 @@ function renderPostCard(post, author, likeCount, commentCount) {
   );
   const content = escapeHtml(post.content || "");
   const time = formatTime(post.createdAt);
-  const authorId = escapeHtml(author?.id || "");
   const postId = escapeHtml(post.id);
+  const userHref = `user.html?id=${encodeURIComponent(author?.id || "")}`;
+  const postHref = `post.html?id=${encodeURIComponent(post.id)}`;
 
   return `
-    <article class="card card-interactive" data-post-id="${postId}">
+    <article class="card card-interactive" data-post-id="${postId}" aria-label="Post by ${username}">
       <div class="flex items-center gap-3 post-card-header">
-        <img class="avatar avatar-sm" src="${avatarSrc}" alt="${username}'s avatar"
-             data-user-id="${authorId}">
+        <a class="post-card-user-link" href="${userHref}" aria-label="View ${username}'s profile">
+          <img class="avatar avatar-sm" src="${avatarSrc}" alt="${username}'s avatar">
+        </a>
         <div>
-          <span class="font-semibold post-card-username" data-user-id="${authorId}">${username}</span>
+          <a class="font-semibold post-card-username post-card-user-link" href="${userHref}">${username}</a>
           <span class="text-secondary text-xs">${time}</span>
         </div>
       </div>
-      <p class="post-card-content">${content}</p>
-      <div class="flex gap-4 text-secondary text-sm post-card-stats">
-        <span>${likeCount} like${likeCount !== 1 ? "s" : ""}</span>
-        <span>${commentCount} comment${commentCount !== 1 ? "s" : ""}</span>
-      </div>
+      <a class="post-card-open-link" href="${postHref}" aria-label="View post details">
+        <p class="post-card-content">${content}</p>
+        <div class="flex gap-4 text-secondary text-sm post-card-stats">
+          <span>${likeCount} like${likeCount !== 1 ? "s" : ""}</span>
+          <span>${commentCount} comment${commentCount !== 1 ? "s" : ""}</span>
+        </div>
+      </a>
     </article>`;
 }
 
