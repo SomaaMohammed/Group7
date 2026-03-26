@@ -6,7 +6,15 @@
     <title>UNI HUB</title>
     <script>
       var userId = localStorage.getItem("currentUserId");
-      location.replace(userId ? "pages/home.html" : "pages/login.html");
+      if (!userId) {
+        location.replace("pages/login.html");
+      } else {
+        var follows = JSON.parse(localStorage.getItem("follows") || "[]");
+        var hasFollows = follows.some(function (f) {
+          return f.followerId === userId;
+        });
+        location.replace(hasFollows ? "pages/home.html" : "pages/global.html");
+      }
     </script>
   </head>
   <body></body>

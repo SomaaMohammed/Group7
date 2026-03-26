@@ -25,51 +25,6 @@
   }
 }
 
-/* Feed list spacing */
-#feed-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-}
-
-/* Post card internals */
-.post-card {
-  position: relative;
-}
-
-.post-card-stretched-link {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  border-radius: inherit;
-}
-
-.post-card-header {
-  margin-bottom: var(--space-3);
-}
-
-.post-card-content {
-  margin-bottom: var(--space-3);
-  white-space: pre-wrap;
-  word-break: break-word;
-}
-
-.post-card-stats {
-  padding-top: var(--space-2);
-  border-top: 1px solid var(--color-border);
-}
-
-.post-card-username,
-.post-card-user-link {
-  position: relative;
-  z-index: 2;
-  cursor: pointer;
-}
-
-.post-card-username:hover {
-  text-decoration: underline;
-}
-
 @media (min-width: 1024px) {
   .desktop-layout {
     display: grid;

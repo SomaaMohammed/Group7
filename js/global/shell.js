@@ -28,7 +28,9 @@ export async function injectShell() {
 
   // Active page detection
   const path = globalThis.location.pathname;
+  const isGlobal = path.endsWith("global.html");
   const isHome = path.endsWith("home.html");
+  const isSearch = path.endsWith("search.html");
   const isProfile = path.endsWith("user.html");
   const isSettings = path.endsWith("settings.html");
 
@@ -74,9 +76,17 @@ export async function injectShell() {
       </div>
 
       <nav class="sidebar-nav">
+        <a class="sidebar-nav-item${activeClass(isGlobal)}" href="global.html">
+          <span class="icon icon-world" aria-hidden="true"></span>
+          <span>Global Feed</span>
+        </a>
         <a class="sidebar-nav-item${activeClass(isHome)}" href="home.html">
           <span class="icon icon-home" aria-hidden="true"></span>
-          <span>Home</span>
+          <span>Your Feed</span>
+        </a>
+        <a class="sidebar-nav-item${activeClass(isSearch)}" href="search.html">
+          <span class="icon icon-search" aria-hidden="true"></span>
+          <span>Search</span>
         </a>
         <a class="sidebar-nav-item${activeClass(isProfile)}" href="user.html?id=${safeUserId}">
           <span class="icon icon-person" aria-hidden="true"></span>
@@ -103,12 +113,18 @@ export async function injectShell() {
 
     <!-- Mobile bottom navigation (fixed bottom) -->
     <nav class="bottom-nav">
-      <a class="bottom-nav-item${activeClass(isHome)}" href="home.html" aria-label="Home">
+      <a class="bottom-nav-item${activeClass(isGlobal)}" href="global.html" aria-label="Global Feed">
+        <span class="icon icon-world" aria-hidden="true"></span>
+      </a>
+      <a class="bottom-nav-item${activeClass(isHome)}" href="home.html" aria-label="Your Feed">
         <span class="icon icon-home" aria-hidden="true"></span>
       </a>
       <button class="bottom-nav-fab" id="shell-fab-btn" aria-label="New post">
         <span class="icon icon-plus" aria-hidden="true"></span>
       </button>
+      <a class="bottom-nav-item${activeClass(isSearch)}" href="search.html" aria-label="Search">
+        <span class="icon icon-search" aria-hidden="true"></span>
+      </a>
       <a class="bottom-nav-item${activeClass(isProfile)}" href="user.html?id=${safeUserId}" aria-label="Profile">
         <span class="icon icon-person" aria-hidden="true"></span>
       </a>
