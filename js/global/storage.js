@@ -6,7 +6,7 @@
 // Record schema:
 //   { mediaId, blob, mimeType, fileName, createdAt }
 
-const DB_NAME = "socially_media";
+const DB_NAME = "UNI_HUB_Media";
 const DB_VERSION = 1;
 const STORE_NAME = "blobs";
 
