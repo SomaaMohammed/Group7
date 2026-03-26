@@ -60,7 +60,11 @@ export async function injectShell() {
     <!-- Desktop sidebar (left column) -->
     <aside class="app-sidebar">
       <div class="sidebar-brand-row">
-        <div class="sidebar-brand">Socially</div>
+        <img src="/assets/logo.svg" alt="Company Logo"/>
+        <div class="sidebar-brand">
+          <p>UNI HUB</p>
+        </div>
+
         <button
           class="icon-btn theme-toggle-btn"
           type="button"
