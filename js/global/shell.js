@@ -42,8 +42,10 @@ export async function injectShell() {
     <!-- Mobile header (sticky top) -->
     <header class="app-header">
       <div class="app-header-identity">
-        <img class="avatar avatar-sm" src="${safeAvatarSrc}" alt="${safeUsername}'s avatar">
-        <span class="app-header-username">${safeUsername}</span>
+        <a class="app-header-brand" href="home.html" aria-label="UNI HUB home">
+          <img src="/assets/logo.svg" alt="UNI HUB logo">
+          <span>UNI HUB</span>
+        </a>
       </div>
       <div class="app-header-actions">
         <button
@@ -61,10 +63,12 @@ export async function injectShell() {
     <!-- Desktop sidebar (left column) -->
     <aside class="app-sidebar">
       <div class="sidebar-brand-row">
-        <img src="/assets/logo.svg" alt="Company Logo"/>
-        <div class="sidebar-brand">
-          <p>UNI HUB</p>
-        </div>
+        <a class="sidebar-brand-link" href="home.html" aria-label="UNI HUB home">
+          <img src="/assets/logo.svg" alt="UNI HUB logo"/>
+          <div class="sidebar-brand">
+            <p>UNI HUB</p>
+          </div>
+        </a>
 
         <button
           class="icon-btn theme-toggle-btn"
