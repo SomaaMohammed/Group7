@@ -1,4 +1,4 @@
-/* Right panel layout — desktop only */
+
 :root {
   --right-panel-width: 280px;
 }
@@ -47,7 +47,7 @@
   }
 }
 
-/* ── Attachment Picker ─────────────────────────────── */
+
 
 .attachment-drop-zone {
   border: 2px dashed var(--color-border);

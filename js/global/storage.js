@@ -13,12 +13,10 @@ const STORE_NAME = "blobs";
 /** @type {Promise<IDBDatabase>|null} */
 let dbPromise = null;
 
-/** @type {Map<string, string>} mediaId → objectURL */
+/** @type {Map<string, string>} */
 const urlCache = new Map();
 
-// ---------------------------------------------------------------------------
-// Internal helpers
-// ---------------------------------------------------------------------------
+
 
 function openDb() {
   if (dbPromise) return dbPromise;
@@ -47,14 +45,11 @@ function generateMediaId() {
   return `med_${randomPart}`;
 }
 
-// ---------------------------------------------------------------------------
-// Public API
-// ---------------------------------------------------------------------------
+
 
 /**
- * Store a File/Blob in IndexedDB.
  * @param {File} file
- * @returns {Promise<string>} mediaId
+ * @returns {Promise<string>} 
  */
 async function upload(file) {
   const db = await openDb();
@@ -110,8 +105,7 @@ async function getUrl(mediaId) {
   });
 }
 
-/**
- * Get the MIME type of a stored media item.
+/**.
  * @param {string} mediaId
  * @returns {Promise<string|null>}
  */
@@ -129,7 +123,6 @@ async function getMimeType(mediaId) {
 }
 
 /**
- * Delete a single media item from IndexedDB and revoke its cached URL.
  * @param {string} mediaId
  */
 async function remove(mediaId) {
@@ -166,9 +159,7 @@ function getCachedUrl(mediaId) {
   return urlCache.get(mediaId) ?? null;
 }
 
-/**
- * Wipe the entire blob store and revoke all cached URLs.
- */
+
 async function clearAll() {
   const db = await openDb();
 

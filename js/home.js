@@ -49,11 +49,11 @@ async function initPage() {
   await injectShell();
   flushQueuedToast();
 
-  // Override shell New Post buttons to open modal instead of navigating
+
   overrideShellButton("shell-new-post-btn");
   overrideShellButton("shell-fab-btn");
 
-  // Composer card button
+
   if (composerOpenBtn) {
     composerOpenBtn.addEventListener("click", openModal);
   }
@@ -81,10 +81,10 @@ async function initPage() {
     });
   }
 
-  // Submit post
+
   if (submitBtn) submitBtn.addEventListener("click", submitPost);
 
-  // Attachment controls
+
   if (attachBtn && fileInput) {
     attachBtn.addEventListener("click", () => fileInput.click());
     fileInput.addEventListener("change", () => {
@@ -93,7 +93,7 @@ async function initPage() {
     });
   }
 
-  // Drag-and-drop
+
   if (dropZone) {
     dropZone.addEventListener("dragover", (e) => {
       e.preventDefault();
@@ -109,7 +109,7 @@ async function initPage() {
     });
   }
 
-  // Lightbox click delegation on feed
+
   if (feedList) {
     feedList.addEventListener("click", (e) => {
       const gridItem = e.target.closest(".media-grid-item");
@@ -130,7 +130,7 @@ async function initPage() {
 
   await renderFeed();
 
-  // Auto-open new post modal if redirected from New Post button
+
   const params = new URLSearchParams(globalThis.location.search);
   if (params.get("newpost") === "1") {
     history.replaceState(null, "", "home.html");
@@ -146,9 +146,7 @@ function overrideShellButton(id) {
   clone.addEventListener("click", openModal);
 }
 
-// ---------------------------------------------------------------------------
-// Modal helpers
-// ---------------------------------------------------------------------------
+
 
 function openModal() {
   if (!backdrop) return;
@@ -181,9 +179,7 @@ function updateSubmitState() {
   submitBtn.disabled = (!hasText && !hasMedia) || textTooLong;
 }
 
-// ---------------------------------------------------------------------------
-// Attachment handling
-// ---------------------------------------------------------------------------
+
 
 function handleFilesSelected(fileList) {
   clearAttachError();
@@ -217,7 +213,7 @@ function handleFilesSelected(fileList) {
 function renderPreviews() {
   if (!previewsContainer) return;
 
-  // Revoke old preview URLs
+
   for (const url of previewUrls) {
     URL.revokeObjectURL(url);
   }
@@ -283,9 +279,7 @@ function clearAttachError() {
   attachError.classList.add("hidden");
 }
 
-// ---------------------------------------------------------------------------
-// Submit post
-// ---------------------------------------------------------------------------
+
 
 async function submitPost() {
   if (!currentUser || !submitBtn) return;
@@ -298,7 +292,7 @@ async function submitPost() {
   submitBtn.disabled = true;
 
   try {
-    // Upload all pending files to IndexedDB
+
     const mediaIds = await Promise.all(
       pendingFiles.map((file) => storage.upload(file)),
     );
@@ -319,9 +313,7 @@ async function submitPost() {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Feed rendering
-// ---------------------------------------------------------------------------
+
 
 async function renderFeed() {
   if (!feedList || isRenderingFeed) return;
@@ -360,7 +352,7 @@ async function renderFeed() {
 
     await resolveAvatarUrls(allUsers);
 
-    // Batch-resolve media for all feed posts
+
     const mediaMap = new Map();
     await Promise.all(
       feedPosts.map(async (post) => {

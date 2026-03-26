@@ -13,7 +13,7 @@ const currentUser = await requireAuth();
 await injectShell();
 flushQueuedToast();
 
-// --- Theme & Logout (existing) ---
+
 
 const logoutBtn = document.getElementById("logout-btn");
 const toggleButton = document.getElementById("settings-theme-toggle");
@@ -34,7 +34,7 @@ if (toggleButton && textLabel) {
   });
 }
 
-// --- Change Password ---
+// Change Password 
 
 const changePasswordToggleBtn = document.getElementById("change-password-toggle-btn");
 const changePasswordForm = document.getElementById("change-password-form");
@@ -112,7 +112,7 @@ function clearPasswordErrors() {
   clearFieldError(confirmNewPasswordInput, confirmNewPasswordHint);
 }
 
-// Same check as register.js — intentionally duplicated (see register.js:161)
+// Same check as register.js 
 function isStrongPassword(password) {
   const hasMinLength = password.length >= PASSWORD_MIN_LENGTH;
   const hasLetter = /[A-Za-z]/.test(password);
@@ -120,7 +120,7 @@ function isStrongPassword(password) {
   return hasMinLength && hasLetter && hasNumber;
 }
 
-// --- Delete Account ---
+// Delete Account 
 
 const deleteAccountToggleBtn = document.getElementById("delete-account-toggle-btn");
 const deleteAccountConfirm = document.getElementById("delete-account-confirm");
@@ -162,7 +162,7 @@ async function handleDeleteAccount() {
 
   const userId = freshUser.id;
 
-  // 1. Delete media, comments, and likes for each of the user's posts
+
   const userPosts = await db.posts.findMany({ where: { authorId: userId } });
   for (const post of userPosts) {
     if (post.mediaIds?.length) {
@@ -172,27 +172,24 @@ async function handleDeleteAccount() {
     await db.likes.deleteMany({ where: { postId: post.id } });
   }
 
-  // 2. Delete all user's posts
+
   await db.posts.deleteMany({ where: { authorId: userId } });
 
-  // 3. Delete user's comments on other users' posts
+
   await db.comments.deleteMany({ where: { authorId: userId } });
 
-  // 4. Delete user's likes on other posts
   await db.likes.deleteMany({ where: { userId: userId } });
 
-  // 5. Delete all follows (both directions)
+
   await db.follows.deleteMany({ where: { followerId: userId } });
   await db.follows.deleteMany({ where: { followingId: userId } });
 
-  // 6. Delete profile picture blob
+
   if (freshUser.profilePicture) {
     await storage.delete(freshUser.profilePicture).catch(() => {});
   }
 
-  // 7. Delete the user record
   await db.users.delete({ where: { id: userId } });
 
-  // 8. Clear session and redirect
   logout();
 }

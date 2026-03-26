@@ -74,7 +74,7 @@ async function initUserPage() {
 
   if (userPostsList) {
     userPostsList.addEventListener("click", (e) => {
-      // If clicking on a media grid item, open lightbox instead of navigating
+
       const gridItem = e.target.closest(".media-grid-item");
       if (gridItem) {
         e.preventDefault();
@@ -230,7 +230,7 @@ async function renderUserPosts() {
     return;
   }
 
-  // Batch-fetch media, likes, and comments for all user posts
+
   const [allLikes, allComments] = await Promise.all([
     db.likes.findMany(),
     db.comments.findMany(),
@@ -435,7 +435,7 @@ async function handleSave() {
     return;
   }
 
-  // Clean up old avatar blob if it was replaced or removed
+
   if (oldMediaId && (pendingAvatarFile || removeAvatar)) {
     await storage.delete(oldMediaId).catch(() => {});
   }

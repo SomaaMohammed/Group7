@@ -5,9 +5,6 @@
 import { storage } from "./storage.js";
 
 /**
- * Resolve an array of mediaIds into renderable objects.
- * Items that fail to resolve (deleted / corrupt) are silently filtered out.
- *
  * @param {string[]} mediaIds
  * @returns {Promise<Array<{mediaId: string, url: string, mimeType: string}>>}
  */
@@ -35,15 +32,8 @@ export function isVideo(mimeType) {
 
 /**
  * Build an HTML string for a Twitter-style media grid.
- *
- * Layout:
- *   1 item  → .media-grid-1  (full width)
- *   2 items → .media-grid-2  (side by side)
- *   3 items → .media-grid-3  (1 tall left + 2 stacked right)
- *   4 items → .media-grid-4  (2×2)
- *
  * @param {Array<{mediaId: string, url: string, mimeType: string}>} items
- * @returns {string} HTML string (empty string if no items)
+ * @returns {string} 
  */
 export function renderMediaGrid(items) {
   if (!items || items.length === 0) return "";

@@ -48,6 +48,5 @@ export function flushQueuedToast() {
     const parsed = JSON.parse(raw);
     renderToast(normalizeToast(parsed?.message, parsed?.type));
   } catch {
-    // Ignore malformed queued toast payloads.
   }
 }

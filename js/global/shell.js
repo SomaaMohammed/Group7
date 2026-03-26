@@ -134,8 +134,6 @@ export async function injectShell() {
     </nav>
   `;
 
-  // Default behaviour for New Post controls: navigate to home.
-  // home.js overrides these with its own handlers to open the modal instead.
   const newPostBtn = document.getElementById("shell-new-post-btn");
   const fabBtn = document.getElementById("shell-fab-btn");
 

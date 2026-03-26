@@ -86,14 +86,13 @@ async function seed() {
     return false;
   }
 
-  // Create users
+
   const createdUsers = [];
   for (const userData of USERS) {
     const user = await db.users.create({ data: userData });
     createdUsers.push(user);
   }
 
-  // Create follow relationships (everyone follows alice, alice follows everyone)
   const alice = createdUsers[0];
   for (let i = 1; i < createdUsers.length; i++) {
     await db.follows.create({
@@ -103,7 +102,7 @@ async function seed() {
       data: { followerId: alice.id, followingId: createdUsers[i].id },
     });
   }
-  // Bob follows Charlie and Diana
+
   await db.follows.create({
     data: { followerId: createdUsers[1].id, followingId: createdUsers[2].id },
   });
@@ -111,7 +110,7 @@ async function seed() {
     data: { followerId: createdUsers[1].id, followingId: createdUsers[3].id },
   });
 
-  // Create posts (spread across users)
+
   const createdPosts = [];
   for (let i = 0; i < POST_CONTENTS.length; i++) {
     const author = createdUsers[i % createdUsers.length];
@@ -124,7 +123,7 @@ async function seed() {
   // Create comments on some posts
   for (let i = 0; i < 8; i++) {
     const post = createdPosts[i % createdPosts.length];
-    const commenter = createdUsers[(i + 1) % createdUsers.length]; // different from post author
+    const commenter = createdUsers[(i + 1) % createdUsers.length]; 
     await db.comments.create({
       data: {
         postId: post.id,
@@ -134,11 +133,11 @@ async function seed() {
     });
   }
 
-  // Create some likes
+
   for (let i = 0; i < 10; i++) {
     const post = createdPosts[i % createdPosts.length];
     const liker = createdUsers[(i + 2) % createdUsers.length];
-    // Skip if liker is the post author
+
     if (liker.id === post.authorId) continue;
     await db.likes.create({
       data: { postId: post.id, userId: liker.id },

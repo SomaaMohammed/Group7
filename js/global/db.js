@@ -10,7 +10,7 @@
 //   likes:    id, postId, userId, createdAt
 //   follows:  id, followerId, followingId, createdAt
 
-// --- Internal helpers ---
+
 
 function readTable(table) {
   const raw = localStorage.getItem(table);
@@ -39,7 +39,7 @@ function matchesWhere(record, where = {}) {
   return Object.entries(where).every(([key, val]) => record[key] === val);
 }
 
-// --- Generic table operations factory ---
+
 
 function createTableOps(tableName, idPrefix) {
   return {
@@ -94,7 +94,7 @@ function createTableOps(tableName, idPrefix) {
   };
 }
 
-// --- The db object ---
+
 
 const db = {
   users: createTableOps("users", "usr"),

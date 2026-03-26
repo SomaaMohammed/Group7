@@ -21,7 +21,6 @@ async function initPage() {
   await injectShell();
   flushQueuedToast();
 
-  // Lightbox click delegation on feed
   if (feedList) {
     feedList.addEventListener("click", (e) => {
       const gridItem = e.target.closest(".media-grid-item");
@@ -70,7 +69,7 @@ async function renderFeed() {
 
   await resolveAvatarUrls(allUsers);
 
-  // Batch-resolve media for all posts
+
   const mediaMap = new Map();
   await Promise.all(
     allPosts.map(async (post) => {

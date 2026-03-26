@@ -18,7 +18,7 @@ export function openLightbox(items, startIndex = 0) {
 
   let currentIndex = startIndex;
 
-  // --- Build DOM ---
+
   const backdrop = document.createElement("div");
   backdrop.className = "lightbox-backdrop";
   backdrop.setAttribute("role", "dialog");
@@ -49,7 +49,7 @@ export function openLightbox(items, startIndex = 0) {
   backdrop.append(closeBtn, prevBtn, content, nextBtn, counter);
   document.body.appendChild(backdrop);
 
-  // --- Render current item ---
+
   function showItem(index) {
     currentIndex = index;
     const item = items[index];
@@ -82,7 +82,7 @@ export function openLightbox(items, startIndex = 0) {
     }
   }
 
-  // --- Event handlers ---
+
   function onKeydown(e) {
     if (e.key === "Escape") {
       closeLightbox();
@@ -107,7 +107,7 @@ export function openLightbox(items, startIndex = 0) {
   backdrop.addEventListener("click", onBackdropClick);
   document.addEventListener("keydown", onKeydown);
 
-  // --- Cleanup reference ---
+
   activeLightbox = {
     backdrop,
     onKeydown,
@@ -122,7 +122,7 @@ function closeLightbox() {
 
   const { backdrop, onKeydown } = activeLightbox;
 
-  // Pause any playing video
+
   const video = backdrop.querySelector("video");
   if (video) video.pause();
 

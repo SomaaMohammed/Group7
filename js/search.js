@@ -24,7 +24,7 @@ async function initPage() {
   await injectShell();
   flushQueuedToast();
 
-  // Cache which users the current user follows
+
   const follows = await db.follows.findMany({
     where: { followerId: currentUser.id },
   });
@@ -38,7 +38,7 @@ async function initPage() {
     searchInput.focus();
   }
 
-  // Persistent delegation for follow buttons (survives innerHTML replacements)
+
   if (searchResults) {
     searchResults.addEventListener("click", handleFollowClick);
   }

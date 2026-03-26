@@ -1,6 +1,3 @@
-/* ============================================================
-   1. CSS RESET
-============================================================ */
 
 *,
 *::before,
@@ -11,14 +8,14 @@
 }
 
 html {
-  /* Prevent font size inflation on mobile orientation change */
+
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
-  /* Smooth anchor scrolling */
+
   scroll-behavior: smooth;
 }
 
-/* Media defaults */
+
 img,
 video,
 svg {
@@ -26,33 +23,32 @@ svg {
   display: block;
 }
 
-/* Remove list styling */
+
 ul,
 ol {
   list-style: none;
 }
 
-/* Normalize links */
+
 a {
   text-decoration: none;
   color: inherit;
 }
 
-/* Buttons: remove browser defaults and inherit font */
 button {
   cursor: pointer;
   border: none;
   background: none;
-  font: inherit; /* browsers do NOT inherit font on buttons by default */
+  font: inherit; 
   color: inherit;
-  -webkit-tap-highlight-color: transparent; /* remove tap flash on mobile */
+  -webkit-tap-highlight-color: transparent; 
 }
 
 button:disabled {
   cursor: not-allowed;
 }
 
-/* Inputs & textareas inherit font */
+
 input,
 textarea,
 select {
@@ -68,21 +64,18 @@ textarea {
   resize: vertical;
 }
 
-/* Tables */
+
 table {
   border-collapse: collapse;
   border-spacing: 0;
 }
 
-/* HR */
+
 hr {
   border: none;
   border-top: 1px solid var(--color-border);
 }
 
-/* ============================================================
-   2. DESIGN TOKENS - CSS CUSTOM PROPERTIES
-============================================================ */
 
 :root {
   --color-primary: #7c6ff7;
@@ -92,14 +85,14 @@ hr {
     111,
     247,
     0.15
-  ); /* Tinted bg for active nav items */
+  ); 
 
-  --color-danger: #e05252; /* Destructive actions: delete, errors */
+  --color-danger: #e05252; 
   --color-danger-hover: #c94444;
   --color-danger-subtle: rgba(224, 82, 82, 0.12);
 
-  --color-success: #4caf82; /* Confirmation feedback */
-  --color-warning: #f5a623; /* Non-critical warnings */
+  --color-success: #4caf82; 
+  --color-warning: #f5a623; 
 
   --font-family-base: "DM Sans", system-ui, -apple-system, sans-serif;
   --font-family-mono: "JetBrains Mono", "Fira Code", monospace;
@@ -144,7 +137,7 @@ hr {
   --transition-fast: 120ms ease;
   --transition-normal: 220ms ease;
   --transition-slow: 350ms ease;
-  --transition-bounce: 350ms cubic-bezier(0.34, 1.56, 0.64, 1); /* springy feel */
+  --transition-bounce: 350ms cubic-bezier(0.34, 1.56, 0.64, 1); 
 
   --z-base: 1;
   --z-sticky: 50; /* Sticky header */
@@ -160,37 +153,36 @@ hr {
 }
 
 [data-theme="dark"] {
-  /* Elevation stack - each step is visibly lighter */
+
   --elevation-0: #111113; /* Page background */
   --elevation-1: #1c1c1f; /* Cards, nav bar, header */
   --elevation-2: #232328; /* Inputs inside cards, dropdowns */
   --elevation-3: #2a2a30; /* Modals, dialogs */
   --elevation-4: #313138; /* UI sitting inside modals (e.g. input in modal) */
 
-  /* Shadows: dark mode uses minimal shadow - elevation handles depth */
+
   --shadow-card: none;
   --shadow-modal: 0 24px 48px rgba(0, 0, 0, 0.6);
-  --shadow-raised: 0 4px 16px rgba(0, 0, 0, 0.4); /* for FAB, raised elements */
+  --shadow-raised: 0 4px 16px rgba(0, 0, 0, 0.4); 
 
-  /* Text */
-  --color-text-primary: #f0eff5; /* Main content, usernames */
-  --color-text-secondary: #8b8a9a; /* Timestamps, counts, placeholder, bio */
+
+  --color-text-primary: #f0eff5; 
+  --color-text-secondary: #8b8a9a; 
   --color-text-disabled: #4a4a5a;
 
-  /* Borders & dividers */
+
   --color-border: #2e2e38;
 
-  /* Like button active state */
+
   --color-like-active: #e05252;
 
-  /* Overlay backdrop */
+
   --color-backdrop: rgba(0, 0, 0, 0.7);
 
-  /* Scrollbar */
+
   --color-scrollbar-thumb: #2e2e38;
   --color-scrollbar-track: #111113;
 
-  /* Theme toggle (target: light) */
   --theme-toggle-light-border: #f0bf42;
   --theme-toggle-light-bg: #1c1c1f;
   --theme-toggle-light-fg: #f0bf42;
@@ -199,39 +191,39 @@ hr {
   --theme-toggle-light-shadow: inset 0 1px 4px rgba(240, 191, 66, 1);
 }
 
-/* ── 2c. Light Theme ───────────────────────────────────────── */
+
 [data-theme="light"] {
-  /* Elevation stack - light mode surfaces are near-white, depth via shadows */
+
   --elevation-0: #f2f2f7; /* Page background (slightly off-white, not blinding) */
   --elevation-1: #ffffff; /* Cards, nav bar, header */
   --elevation-2: #f7f7fb; /* Inputs, secondary surfaces */
   --elevation-3: #ffffff; /* Modals (shadow does the heavy lifting here) */
   --elevation-4: #f2f2f7; /* Nested inputs in modals */
 
-  /* Shadows: light mode uses shadows for elevation perception */
+
   --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.07), 0 1px 8px rgba(0, 0, 0, 0.04);
   --shadow-modal: 0 8px 30px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08);
   --shadow-raised: 0 4px 16px rgba(0, 0, 0, 0.12);
 
-  /* Text */
+
   --color-text-primary: #111113;
   --color-text-secondary: #6e6e80;
   --color-text-disabled: #b0b0c0;
 
-  /* Borders & dividers */
+
   --color-border: #e4e4ef;
 
-  /* Like button active state */
+
   --color-like-active: #e05252;
 
-  /* Overlay backdrop */
+
   --color-backdrop: rgba(0, 0, 0, 0.45);
 
-  /* Scrollbar */
+
   --color-scrollbar-thumb: #d0d0e0;
   --color-scrollbar-track: #f2f2f7;
 
-  /* Theme toggle (target: dark) */
+
   --theme-toggle-dark-border: #463dc2;
   --theme-toggle-dark-bg: #ffffff;
   --theme-toggle-dark-fg: #463dc2;
@@ -240,19 +232,6 @@ hr {
   --theme-toggle-dark-shadow: inset 0 1px 4px rgba(70, 61, 194, 0.24);
 }
 
-/* ── 2d. Typography Scale ─────────────────────────────────── */
-
-/* ── 2i. Breakpoints (reference - cannot be used in @media) ─ */
-/*
-   --bp-sm:  480px   (large phones)
-   --bp-md:  640px   (tablet portrait)
-   --bp-lg:  1024px  (tablet landscape / desktop)
-   --bp-xl:  1280px  (wide desktop)
-*/
-
-/* ============================================================
-   3. BASE / BODY STYLES
-============================================================ */
 
 body {
   min-height: 100vh;
@@ -273,9 +252,7 @@ body {
     color var(--transition-normal);
 }
 
-/* ============================================================
-   4. TYPOGRAPHY DEFAULTS
-============================================================ */
+
 
 h1,
 h2,
@@ -327,9 +304,7 @@ pre {
   font-size: var(--font-size-sm);
 }
 
-/* ============================================================
-   5. SCROLLBAR STYLING
-============================================================ */
+
 
 ::-webkit-scrollbar {
   width: 5px;
@@ -349,11 +324,9 @@ pre {
   background: var(--color-text-disabled);
 }
 
-/* ============================================================
-   6. FOCUS STYLES (Accessibility)
-============================================================ */
 
-/* Keyboard navigation focus ring */
+
+
 :focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
@@ -365,11 +338,7 @@ pre {
   outline: none;
 }
 
-/* ============================================================
-   7. UTILITY CLASSES
-============================================================ */
 
-/* ── 7a. Display & Layout ─────────────────────────────────── */
 .flex {
   display: flex;
 }
@@ -475,14 +444,14 @@ pre {
   text-align: right;
 }
 
-/* Truncate single line with ellipsis */
+
 .text-truncate {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-/* Clamp to 2 or 3 lines */
+
 .text-clamp-2 {
   display: -webkit-box;
   -webkit-box-orient: vertical;
@@ -542,12 +511,12 @@ pre {
   display: none !important;
 }
 
-/* Visible but invisible (keeps layout space) */
+
 .invisible {
   visibility: hidden;
 }
 
-/* Accessible screen-reader-only text */
+
 .sr-only {
   position: absolute;
   width: 1px;
@@ -560,9 +529,7 @@ pre {
   border: 0;
 }
 
-/* ============================================================
-   8. COMPONENT BASE STYLES
-============================================================ */
+
 
 .avatar {
   border-radius: var(--radius-full);
@@ -597,7 +564,7 @@ pre {
   height: 112px;
 }
 
-/* Avatar with initials fallback (applied to a div, not img) */
+
 .avatar-placeholder {
   border-radius: var(--radius-full);
   flex-shrink: 0;
@@ -611,7 +578,7 @@ pre {
   user-select: none;
 }
 
-/* Base button - always applied alongside a variant */
+
 .btn {
   display: inline-flex;
   align-items: center;
@@ -639,7 +606,7 @@ pre {
   pointer-events: none;
 }
 
-/* Filled - primary */
+
 .btn-primary {
   background-color: var(--color-primary);
   color: #ffffff;
@@ -648,7 +615,7 @@ pre {
   background-color: var(--color-primary-hover);
 }
 
-/* Filled - danger */
+
 .btn-danger {
   background-color: var(--color-danger);
   color: #ffffff;
@@ -657,7 +624,7 @@ pre {
   background-color: var(--color-danger-hover);
 }
 
-/* Outlined / ghost */
+
 .btn-ghost {
   background-color: transparent;
   color: var(--color-text-primary);
@@ -667,7 +634,7 @@ pre {
   background-color: var(--elevation-2);
 }
 
-/* Outlined - primary color border */
+
 .btn-outline {
   background-color: transparent;
   color: var(--color-primary);
@@ -677,7 +644,7 @@ pre {
   background-color: var(--color-primary-subtle);
 }
 
-/* Subtle / text-only */
+
 .btn-subtle {
   background-color: transparent;
   color: var(--color-text-secondary);
@@ -687,7 +654,7 @@ pre {
   color: var(--color-text-primary);
 }
 
-/* Follow / Unfollow toggle - special variant */
+
 .btn-follow {
   background-color: var(--color-primary);
   color: #ffffff;
@@ -707,7 +674,7 @@ pre {
   color: var(--color-danger);
 }
 
-/* Size modifiers */
+
 .btn-sm {
   padding: var(--space-1) var(--space-3);
   font-size: var(--font-size-xs);
@@ -777,7 +744,7 @@ pre {
   font-size: var(--font-size-md);
 }
 
-/* Full width */
+
 .btn-block {
   width: 100%;
 }
@@ -810,7 +777,7 @@ pre {
   color: var(--color-text-disabled);
 }
 
-/* Error state */
+
 .input.error,
 .textarea.error {
   border-color: var(--color-danger);
@@ -821,7 +788,7 @@ pre {
   min-height: 100px;
 }
 
-/* Input wrapper for label + field stacking */
+
 .input-group {
   display: flex;
   flex-direction: column;
@@ -834,7 +801,7 @@ pre {
   color: var(--color-text-secondary);
 }
 
-/* Validation feedback text below input */
+
 .input-hint {
   font-size: var(--font-size-xs);
   color: var(--color-text-secondary);
@@ -846,7 +813,7 @@ pre {
   color: var(--color-success);
 }
 
-/* ── Shared auth-page styles ── */
+
 
 .password-field {
   position: relative;
@@ -933,7 +900,7 @@ pre {
   color: var(--color-primary-hover);
 }
 
-/* Character counter - sits below a textarea */
+
 .char-counter {
   font-size: var(--font-size-xs);
   color: var(--color-text-secondary);
@@ -955,7 +922,7 @@ pre {
   transition: background-color var(--transition-normal);
 }
 
-/* Clickable card - post cards, user cards */
+
 .card-interactive {
   cursor: pointer;
   transition:
@@ -972,14 +939,14 @@ pre {
   transform: scale(0.995);
 }
 
-/* Feed list (shared across feeds) */
+
 #feed-list {
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
 }
 
-/* Post card internals (shared across feeds) */
+
 .post-card {
   position: relative;
 }
@@ -1032,7 +999,7 @@ pre {
   margin: 0 var(--space-4);
 }
 
-/* Like / comment count button */
+
 .count-btn {
   display: inline-flex;
   align-items: center;
@@ -1079,7 +1046,7 @@ pre {
   animation: like-pop 300ms var(--transition-bounce);
 }
 
-/* Numeric badge (e.g. notification dot) */
+
 .badge {
   display: inline-flex;
   align-items: center;
@@ -1095,7 +1062,7 @@ pre {
   line-height: 1;
 }
 
-/* Backdrop overlay */
+
 .modal-backdrop {
   position: fixed;
   inset: 0;
@@ -1106,7 +1073,7 @@ pre {
   justify-content: center;
   padding: var(--space-4);
 
-  /* Entry animation */
+
   animation: backdrop-in var(--transition-normal) ease forwards;
 }
 
@@ -1119,12 +1086,12 @@ pre {
   }
 }
 
-/* Hidden state */
+
 .modal-backdrop.hidden {
   display: none !important;
 }
 
-/* Modal box */
+
 .modal {
   position: relative;
   background-color: var(--elevation-3);
@@ -1221,7 +1188,7 @@ pre {
   }
 }
 
-/* Full page loader */
+
 .spinner-page {
   position: fixed;
   inset: 0;
@@ -1242,7 +1209,7 @@ pre {
   flex-direction: column;
   align-items: center;
   gap: var(--space-2);
-  pointer-events: none; /* clicks pass through */
+  pointer-events: none; 
 }
 
 .toast {
@@ -1327,7 +1294,7 @@ pre {
   line-height: var(--line-height-loose);
 }
 
-/* A bare icon in a tappable circular region */
+
 .icon-btn {
   display: inline-flex;
   align-items: center;
@@ -1357,7 +1324,7 @@ pre {
   background-color: var(--color-primary-subtle);
 }
 
-/* Mask-based icon system: color is inherited via current text color. */
+
 .icon {
   display: inline-block;
   width: 24px;
@@ -1432,18 +1399,16 @@ pre {
   mask-image: url("assets/icon-search.svg");
 }
 
-/* ============================================================
-   9. APP SHELL
-============================================================ */
 
-/* The outer shell wrapping everything */
+
+
 .app-shell {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
-/* Reserve shell space before JS injects header/nav to avoid layout jump */
+
 #shell-root {
   min-height: var(--header-height);
 }
@@ -1510,7 +1475,7 @@ pre {
   color: var(--color-text-primary);
 }
 
-/* Sub-header for drill-down pages (Post page, User page) */
+
 .app-subheader {
   display: flex;
   align-items: center;
@@ -1540,7 +1505,7 @@ pre {
   align-items: center;
   justify-content: space-around;
   padding: 0 var(--space-4);
-  padding-bottom: env(safe-area-inset-bottom, 0); /* iPhone home bar */
+  padding-bottom: env(safe-area-inset-bottom, 0); 
 
   transition: background-color var(--transition-normal);
 }
@@ -1571,7 +1536,7 @@ pre {
   transform: scale(0.85);
 }
 
-/* Raised FAB-style Create Post button */
+
 .bottom-nav-fab {
   display: flex;
   align-items: center;
@@ -1588,7 +1553,7 @@ pre {
     transform var(--transition-bounce),
     box-shadow var(--transition-fast);
   -webkit-tap-highlight-color: transparent;
-  margin-bottom: var(--space-2); /* lift it slightly above the bar */
+  margin-bottom: var(--space-2); 
 }
 
 .bottom-nav-fab:hover {
@@ -1600,7 +1565,7 @@ pre {
   box-shadow: none;
 }
 
-/* Hidden on mobile, visible on desktop */
+
 .app-sidebar {
   display: none;
 }
@@ -1693,12 +1658,12 @@ pre {
   font-weight: var(--font-weight-semibold);
 }
 
-/* New Post button in sidebar */
+
 .sidebar-new-post {
   margin: var(--space-5) var(--space-4);
 }
 
-/* User identity at the bottom of sidebar */
+
 .sidebar-user {
   padding: var(--space-4) var(--space-5);
   border-top: 1px solid var(--color-border);
@@ -1716,7 +1681,7 @@ pre {
 
 .sidebar-user-info {
   flex: 1;
-  min-width: 0; /* allows text-truncate to work inside flex */
+  min-width: 0;
 }
 
 .sidebar-user-name {
@@ -1739,7 +1704,7 @@ pre {
   padding-top: var(--space-3);
 }
 
-/* Centered content column (feed, post detail, etc.) */
+
 .content-column {
   width: min(100%, var(--feed-max-width));
   max-width: 100%;
@@ -1747,18 +1712,13 @@ pre {
   padding: 0 clamp(var(--space-4), 4vw, var(--space-8));
 }
 
-/* Page section heading */
+
 .page-title {
   font-size: var(--font-size-xl);
   font-weight: var(--font-weight-bold);
   padding: var(--space-4) 0 var(--space-2);
 }
 
-/* ============================================================
-   10. PAGE TRANSITIONS
-============================================================ */
-
-/* Used on page-level containers to fade in on navigation */
 .page-enter {
   animation: page-fade-in 200ms ease forwards;
 }
@@ -1774,11 +1734,8 @@ pre {
   }
 }
 
-/* ============================================================
-   11. VALIDATION & FORM FEEDBACK
-============================================================ */
 
-/* Shake animation for invalid form submission */
+
 @keyframes shake {
   0%,
   100% {
@@ -1802,22 +1759,14 @@ pre {
   animation: shake 400ms ease;
 }
 
-/* Inline validation state colors are handled via .input.error 
-   and .input-hint.error above */
 
-/* ============================================================
-   12. RESPONSIVE OVERRIDES
-   
-   Mobile-first: base styles target mobile (<1024px).
-   Desktop styles are added inside the @media block.
-============================================================ */
 
 @media (min-width: 1024px) {
   :root {
     --feed-max-width: 760px;
   }
 
-  /* ── Restructure the app shell for desktop ── */
+
 
   .app-shell {
     flex-direction: row;
@@ -1829,7 +1778,7 @@ pre {
     flex-shrink: 0;
   }
 
-  /* Show sidebar, hide mobile elements */
+
   .app-sidebar {
     display: flex;
     flex-direction: column;
@@ -1845,22 +1794,22 @@ pre {
   }
 
   .app-header {
-    display: none; /* replaced by sidebar on desktop */
+    display: none; 
   }
 
   .bottom-nav {
-    display: none; /* replaced by sidebar on desktop */
+    display: none;
   }
 
-  /* Main content fills remaining space */
+
   .app-main {
     flex: 1;
-    padding-bottom: 0; /* no bottom nav to avoid */
+    padding-bottom: 0; 
     overflow-y: auto;
     height: 100vh;
   }
 
-  /* Toasts sit at bottom-right on desktop, away from sidebar */
+
   .toast-container {
     bottom: var(--space-6);
     left: auto;
@@ -1869,13 +1818,13 @@ pre {
     align-items: flex-end;
   }
 
-  /* Content column can be wider on desktop */
+
   .content-column {
     padding: 0 clamp(var(--space-6), 3vw, var(--space-10));
   }
 }
 
-/* Very wide screens - add more breathing room */
+
 @media (min-width: 1280px) {
   :root {
     --sidebar-width: 260px;
@@ -1883,7 +1832,7 @@ pre {
   }
 }
 
-/* ── MEDIA GRID ──────────────────────────────────── */
+
 
 .media-grid {
   display: grid;
@@ -1962,14 +1911,14 @@ pre {
   background: rgba(0, 0, 0, 0.08);
 }
 
-/* Inside post cards / user cards: grid sits above the stretched link */
+
 .post-card .media-grid,
 .user-post-card .media-grid {
   position: relative;
   z-index: 2;
 }
 
-/* ── LIGHTBOX ────────────────────────────────────── */
+
 
 .lightbox-backdrop {
   position: fixed;
