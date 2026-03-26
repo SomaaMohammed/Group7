@@ -185,9 +185,14 @@ async function handleDeleteAccount() {
   await db.follows.deleteMany({ where: { followerId: userId } });
   await db.follows.deleteMany({ where: { followingId: userId } });
 
-  // 6. Delete the user record
+  // 6. Delete profile picture blob
+  if (freshUser.profilePicture) {
+    await storage.delete(freshUser.profilePicture).catch(() => {});
+  }
+
+  // 7. Delete the user record
   await db.users.delete({ where: { id: userId } });
 
-  // 7. Clear session and redirect
+  // 8. Clear session and redirect
   logout();
 }

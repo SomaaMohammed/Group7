@@ -11,17 +11,16 @@
 
 import { getCurrentUser } from "./auth.js";
 import { goToHome, goToHomeNewPost } from "./router.js";
-import { escapeHtml, toSafeImageSrc } from "./sanitize.js";
+import { escapeHtml } from "./sanitize.js";
 import { setupThemeToggle } from "./theme.js";
+import { resolveAvatarUrls, getAvatarSrc } from "./avatar.js";
 
 export async function injectShell() {
   const user = await getCurrentUser();
   if (!user) return;
 
-  const avatarSrc = toSafeImageSrc(
-    user.profilePicture,
-    "../assets/default-avatar.svg",
-  );
+  await resolveAvatarUrls([user]);
+  const avatarSrc = getAvatarSrc(user, "../assets/default-avatar.svg");
   const safeAvatarSrc = escapeHtml(avatarSrc);
   const safeUsername = escapeHtml(user.username || "user");
   const safeUserId = encodeURIComponent(String(user.id || ""));

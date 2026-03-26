@@ -1,7 +1,8 @@
 // js/global/post-card.js
 // Shared post-card renderer used by both the "Your Feed" and "Global Feed" pages.
 
-import { escapeHtml, toSafeImageSrc } from "./sanitize.js";
+import { escapeHtml } from "./sanitize.js";
+import { getAvatarSrc } from "./avatar.js";
 import { formatTime } from "./time.js";
 import { renderMediaGrid } from "./media.js";
 
@@ -14,7 +15,7 @@ export function renderPostCard(
 ) {
   const username = escapeHtml(author?.username || "Unknown");
   const avatarSrc = escapeHtml(
-    toSafeImageSrc(author?.profilePicture, "../assets/default-avatar.svg"),
+    getAvatarSrc(author, "../assets/default-avatar.svg"),
   );
   const content = escapeHtml(post.content || "");
   const time = formatTime(post.createdAt);

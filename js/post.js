@@ -2,7 +2,8 @@ import { requireAuth } from './global/auth.js';
 import db from './global/db.js';
 import { navigateWithToast } from './global/router.js';
 import { injectShell } from './global/shell.js';
-import { escapeHtml, toSafeImageSrc } from './global/sanitize.js';
+import { escapeHtml } from './global/sanitize.js';
+import { resolveAvatarUrls, getAvatarSrc } from './global/avatar.js';
 import { applyTheme, getInitialTheme } from './global/theme.js';
 import { flushQueuedToast, showToast } from './global/toast.js';
 import { COMMENT_MAX_LENGTH } from './global/constants.js';
@@ -92,9 +93,11 @@ async function renderPostPage(pageData) {
 
   const { post, author } = pageData;
 
+  await resolveAvatarUrls(Object.values(pageData.userMap));
+
   if (postAuthorAvatar) {
     const username = author?.username || 'Unknown user';
-    postAuthorAvatar.src = toSafeImageSrc(author?.profilePicture, '../assets/default-avatar.svg');
+    postAuthorAvatar.src = getAvatarSrc(author, '../assets/default-avatar.svg');
     postAuthorAvatar.alt = `${username}'s avatar`;
   }
 
@@ -281,7 +284,7 @@ function renderComments(comments, userMap) {
       const author = userMap[comment.authorId];
       const username = escapeHtml(author?.username || 'Unknown user');
       const avatarSrc = escapeHtml(
-        toSafeImageSrc(author?.profilePicture, '../assets/default-avatar.svg'),
+        getAvatarSrc(author, '../assets/default-avatar.svg'),
       );
       const content = escapeHtml(comment.content || '');
       const timestamp = escapeHtml(formatTime(comment.createdAt));

@@ -157,6 +157,16 @@ async function deleteMany(mediaIds) {
 }
 
 /**
+ * Synchronously return a previously cached object URL, or null.
+ * Call getUrl() first to prime the cache.
+ * @param {string} mediaId
+ * @returns {string|null}
+ */
+function getCachedUrl(mediaId) {
+  return urlCache.get(mediaId) ?? null;
+}
+
+/**
  * Wipe the entire blob store and revoke all cached URLs.
  */
 async function clearAll() {
@@ -175,4 +185,4 @@ async function clearAll() {
   urlCache.clear();
 }
 
-export const storage = { upload, getUrl, getMimeType, delete: remove, deleteMany, clearAll };
+export const storage = { upload, getUrl, getCachedUrl, getMimeType, delete: remove, deleteMany, clearAll };

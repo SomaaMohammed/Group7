@@ -1,7 +1,8 @@
 import { requireAuth } from "./global/auth.js";
 import db from "./global/db.js";
 import { injectShell } from "./global/shell.js";
-import { escapeHtml, toSafeImageSrc } from "./global/sanitize.js";
+import { escapeHtml } from "./global/sanitize.js";
+import { resolveAvatarUrls, getAvatarSrc } from "./global/avatar.js";
 import { applyTheme, getInitialTheme } from "./global/theme.js";
 import { flushQueuedToast, showToast } from "./global/toast.js";
 
@@ -79,6 +80,7 @@ async function runSearch() {
     return;
   }
 
+  await resolveAvatarUrls(results);
   searchResults.innerHTML = results.map((user) => renderUserCard(user)).join("");
 }
 
@@ -121,7 +123,7 @@ function renderUserCard(user) {
   const username = escapeHtml(user.username || "Unknown");
   const bio = escapeHtml(user.bio || "");
   const avatarSrc = escapeHtml(
-    toSafeImageSrc(user.profilePicture, "../assets/default-avatar.svg"),
+    getAvatarSrc(user, "../assets/default-avatar.svg"),
   );
   const userHref = `user.html?id=${encodeURIComponent(user.id)}`;
   const isFollowing = followedIds.has(user.id);

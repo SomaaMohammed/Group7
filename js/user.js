@@ -2,13 +2,17 @@ import { requireAuth } from "./global/auth.js";
 import db from "./global/db.js";
 import { goToPost } from "./global/router.js";
 import { injectShell } from "./global/shell.js";
-import { escapeHtml, toSafeImageSrc } from "./global/sanitize.js";
+import { escapeHtml } from "./global/sanitize.js";
+import { resolveAvatarUrls, getAvatarSrc } from "./global/avatar.js";
+import { storage } from "./global/storage.js";
 import { applyTheme, getInitialTheme } from "./global/theme.js";
 import { flushQueuedToast, showToast } from "./global/toast.js";
 import { setError, clearFieldError } from "./global/form.js";
 import {
   USERNAME_MIN_LENGTH,
   USERNAME_MAX_LENGTH,
+  ACCEPTED_IMAGE_TYPES,
+  MAX_IMAGE_SIZE,
 } from "./global/constants.js";
 import { formatTime } from "./global/time.js";
 import { resolveMedia, renderMediaGrid } from "./global/media.js";
@@ -31,12 +35,18 @@ const profileFormEdit = document.getElementById("edit-profile-form");
 const changeUsernameInput = document.getElementById("edit-username");
 const changeUsernameHint = document.getElementById("edit-username-hint");
 const bioInputNew = document.getElementById("edit-bio");
-const avatarInputNew = document.getElementById("edit-avatar-url");
+const avatarFileInput = document.getElementById("edit-avatar-file");
+const avatarPreview = document.getElementById("edit-avatar-preview");
+const avatarRemoveBtn = document.getElementById("edit-avatar-remove");
+const avatarHint = document.getElementById("avatar-hint");
 const changeSaveButton = document.getElementById("edit-save-btn");
 const changeCancelButton = document.getElementById("edit-cancel-btn");
 
 let currentUser = null;
 let viewedUser = null;
+let pendingAvatarFile = null;
+let removeAvatar = false;
+let previewObjectUrl = null;
 
 applyTheme(getInitialTheme());
 
@@ -89,6 +99,7 @@ async function initUserPage() {
 }
 
 async function renderPage() {
+  await resolveAvatarUrls([viewedUser]);
   renderProfileHeader();
   await renderProfileStats();
   await renderUserPosts();
@@ -101,8 +112,8 @@ function renderProfileHeader() {
   const handle = viewedUser.username || "unknown";
 
   if (profileAvatar) {
-    profileAvatar.src = toSafeImageSrc(
-      viewedUser.profilePicture,
+    profileAvatar.src = getAvatarSrc(
+      viewedUser,
       "../assets/default-avatar.svg",
     );
     profileAvatar.alt = `${username}'s avatar`;
@@ -268,6 +279,50 @@ function setupEditForm() {
   if (changeSaveButton) {
     changeSaveButton.addEventListener("click", handleSave);
   }
+
+  if (avatarFileInput) {
+    avatarFileInput.addEventListener("change", handleAvatarFileChange);
+  }
+
+  if (avatarRemoveBtn) {
+    avatarRemoveBtn.addEventListener("click", handleAvatarRemove);
+  }
+}
+
+function handleAvatarFileChange() {
+  const file = avatarFileInput?.files?.[0];
+  if (!file) return;
+
+  if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
+    showToast("Please select a JPEG, PNG, GIF, or WebP image.", "info");
+    avatarFileInput.value = "";
+    return;
+  }
+
+  if (file.size > MAX_IMAGE_SIZE) {
+    showToast("Image must be under 5 MB.", "info");
+    avatarFileInput.value = "";
+    return;
+  }
+
+  pendingAvatarFile = file;
+  removeAvatar = false;
+
+  if (previewObjectUrl) URL.revokeObjectURL(previewObjectUrl);
+  previewObjectUrl = URL.createObjectURL(file);
+  if (avatarPreview) avatarPreview.src = previewObjectUrl;
+}
+
+function handleAvatarRemove() {
+  pendingAvatarFile = null;
+  removeAvatar = true;
+
+  if (avatarFileInput) avatarFileInput.value = "";
+  if (previewObjectUrl) {
+    URL.revokeObjectURL(previewObjectUrl);
+    previewObjectUrl = null;
+  }
+  if (avatarPreview) avatarPreview.src = "../assets/default-avatar.svg";
 }
 
 function openEditForm() {
@@ -278,8 +333,15 @@ function openEditForm() {
   if (changeUsernameInput) {
     changeUsernameInput.value = currentUser.username || "";
   }
-  if (avatarInputNew) {
-    avatarInputNew.value = currentUser.profilePicture || "";
+  pendingAvatarFile = null;
+  removeAvatar = false;
+  if (avatarFileInput) avatarFileInput.value = "";
+  if (previewObjectUrl) {
+    URL.revokeObjectURL(previewObjectUrl);
+    previewObjectUrl = null;
+  }
+  if (avatarPreview) {
+    avatarPreview.src = getAvatarSrc(currentUser, "../assets/default-avatar.svg");
   }
   if (bioInputNew) {
     bioInputNew.value = currentUser.bio || "";
@@ -303,8 +365,12 @@ function closeEditForm() {
   if (bioInputNew) {
     bioInputNew.value = currentUser?.bio || "";
   }
-  if (avatarInputNew) {
-    avatarInputNew.value = currentUser?.profilePicture || "";
+  pendingAvatarFile = null;
+  removeAvatar = false;
+  if (avatarFileInput) avatarFileInput.value = "";
+  if (previewObjectUrl) {
+    URL.revokeObjectURL(previewObjectUrl);
+    previewObjectUrl = null;
   }
   if (changeUsernameInput) {
     changeUsernameInput.value = currentUser?.username || "";
@@ -320,11 +386,10 @@ async function handleSave() {
 
   const changedUsername = changeUsernameInput ? changeUsernameInput.value.trim() : "";
   const changedBio = bioInputNew ? bioInputNew.value.trim() : "";
-  const changedAvatar = avatarInputNew ? avatarInputNew.value.trim() : "";
 
   clearFieldError(changeUsernameInput, changeUsernameHint);
 
-  const validation = validateProfileInput(changedUsername, changedAvatar);
+  const validation = validateProfileInput(changedUsername);
   if (!validation.ok) {
     handleValidationFailure(validation);
     return;
@@ -335,15 +400,30 @@ async function handleSave() {
     return;
   }
 
+  // Build update data
+  const updateData = {
+    username: changedUsername,
+    bio: changedBio,
+  };
+
+  const oldMediaId = currentUser.profilePicture || null;
+
+  try {
+    if (pendingAvatarFile) {
+      updateData.profilePicture = await storage.upload(pendingAvatarFile);
+    } else if (removeAvatar) {
+      updateData.profilePicture = null;
+    }
+  } catch (err) {
+    showToast(err.message || "Could not upload image. Please try again.", "danger");
+    return;
+  }
+
   let updated = null;
   try {
     updated = await db.users.update({
       where: { id: currentUser.id },
-      data: {
-        username: changedUsername,
-        bio: changedBio,
-        profilePicture: changedAvatar === "" ? null : changedAvatar,
-      },
+      data: updateData,
     });
   } catch {
     showToast("Could not save changes. Please try again.", "danger");
@@ -355,9 +435,15 @@ async function handleSave() {
     return;
   }
 
+  // Clean up old avatar blob if it was replaced or removed
+  if (oldMediaId && (pendingAvatarFile || removeAvatar)) {
+    await storage.delete(oldMediaId).catch(() => {});
+  }
+
   currentUser = updated;
   viewedUser = updated;
 
+  await resolveAvatarUrls([updated]);
   renderProfileHeader();
   await renderProfileStats();
 
@@ -366,16 +452,7 @@ async function handleSave() {
   showToast("Updated Profile Successfully!", "success");
 }
 
-function isValidAvatarUrl(value) {
-  try {
-    const parsed = new URL(value, globalThis.location?.href || "http://localhost/");
-    return parsed.protocol === "http:" || parsed.protocol === "https:";
-  } catch {
-    return false;
-  }
-}
-
-function validateProfileInput(username, avatarUrl) {
+function validateProfileInput(username) {
   if (!username) {
     return { ok: false, field: "username", message: "Cannot have an empty username" };
   }
@@ -385,14 +462,6 @@ function validateProfileInput(username, avatarUrl) {
       ok: false,
       field: "username",
       message: `The username has to be between ${USERNAME_MIN_LENGTH} and ${USERNAME_MAX_LENGTH} characters`,
-    };
-  }
-
-  if (avatarUrl !== "" && !isValidAvatarUrl(avatarUrl)) {
-    return {
-      ok: false,
-      field: "avatar",
-      message: "Please enter a valid avatar URL (http or https).",
     };
   }
 
@@ -418,9 +487,6 @@ function handleValidationFailure(validation) {
   }
 
   showToast(validation.message, "info");
-  if (avatarInputNew) {
-    avatarInputNew.focus();
-  }
 }
 
 async function ensureUsernameAvailable(username) {

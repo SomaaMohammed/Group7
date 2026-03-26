@@ -4,6 +4,7 @@ import { injectShell } from "./global/shell.js";
 import { applyTheme, getInitialTheme } from "./global/theme.js";
 import { flushQueuedToast, showToast } from "./global/toast.js";
 import { renderPostCard } from "./global/post-card.js";
+import { resolveAvatarUrls } from "./global/avatar.js";
 import {
   POST_MAX_LENGTH,
   MAX_ATTACHMENTS,
@@ -356,6 +357,8 @@ async function renderFeed() {
     ]);
 
     const userMap = Object.fromEntries(allUsers.map((u) => [u.id, u]));
+
+    await resolveAvatarUrls(allUsers);
 
     // Batch-resolve media for all feed posts
     const mediaMap = new Map();

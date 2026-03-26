@@ -97,14 +97,18 @@
             </div>
  
             <div class="input-group">
-
-              <label class="input-label" for="edit-avatar-url">URL of Profile Picture</label>
-
-              <input id="edit-avatar-url" class="input" type="url" placeholder="https://example.com/avatar.jpg"
-                autocomplete="off"
-              />
-
-              <span id="avatar-hint" class="input-hint">Default avatar used when left blank</span>
+              <label class="input-label">Profile Picture</label>
+              <div class="avatar-upload">
+                <img id="edit-avatar-preview" class="avatar avatar-lg" src="../assets/default-avatar.svg" alt="Avatar preview" />
+                <div class="avatar-upload-actions">
+                  <label class="btn btn-outline btn-sm" for="edit-avatar-file">Choose Image</label>
+                  <input id="edit-avatar-file" class="sr-only" type="file"
+                    accept="image/jpeg,image/png,image/gif,image/webp"
+                  />
+                  <button id="edit-avatar-remove" class="btn btn-ghost btn-sm" type="button">Remove</button>
+                </div>
+              </div>
+              <span id="avatar-hint" class="input-hint">JPEG, PNG, GIF, or WebP. Max 5 MB.</span>
             </div>
  
             <div class="change-actions">

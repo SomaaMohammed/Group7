@@ -5,6 +5,7 @@ import { applyTheme, getInitialTheme } from "./global/theme.js";
 import { flushQueuedToast } from "./global/toast.js";
 import { renderPostCard } from "./global/post-card.js";
 import { resolveMedia } from "./global/media.js";
+import { resolveAvatarUrls } from "./global/avatar.js";
 import { openLightbox } from "./global/lightbox.js";
 
 const feedList = document.getElementById("feed-list");
@@ -66,6 +67,8 @@ async function renderFeed() {
   ]);
 
   const userMap = Object.fromEntries(allUsers.map((u) => [u.id, u]));
+
+  await resolveAvatarUrls(allUsers);
 
   // Batch-resolve media for all posts
   const mediaMap = new Map();
