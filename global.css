@@ -1949,3 +1949,22 @@ pre {
   padding: var(--space-1) var(--space-3);
   border-radius: var(--radius-full);
 }
+
+.company-header{
+  display: flex;
+  gap: var(--space-4);
+  text-align: center;
+  justify-content: center;
+  font-size: var(--font-size-2xl);
+  flex-direction: row-reverse;
+
+  color: var(--color-text-primary);
+
+  font-weight: var(--font-weight-bold);
+  margin-top: 5rem;
+}
+.company-header img{
+  width: var(--space-10);
+  height: var(--space-10);
+  border-radius: var(--radius-full);
+}
