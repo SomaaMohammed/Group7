@@ -38,23 +38,54 @@
           <hr class="divider" />
  
           <div class="main-settings-row">
-            <span class="main-settings-row-label">
-              Change Password
-              <span class="settings-badge">Yet to Implement</span>
-            </span>
-            <button class="btn btn-ghost btn-sm" type="button" disabled>
+            <span class="main-settings-row-label">Change Password</span>
+            <button id="change-password-toggle-btn" class="btn btn-ghost btn-sm" type="button">
               Change
             </button>
           </div>
- 
+
+          <form id="change-password-form" class="settings-inline-form hidden">
+            <div class="input-group">
+              <label class="input-label" for="current-password">Current Password</label>
+              <input id="current-password" class="input" type="password" placeholder="Enter current password" />
+              <p class="input-hint" id="current-password-hint"></p>
+            </div>
+            <div class="input-group">
+              <label class="input-label" for="new-password">New Password</label>
+              <input id="new-password" class="input" type="password" placeholder="At least 8 characters, letters and numbers" />
+              <p class="input-hint" id="new-password-hint"></p>
+            </div>
+            <div class="input-group">
+              <label class="input-label" for="confirm-new-password">Confirm New Password</label>
+              <input id="confirm-new-password" class="input" type="password" placeholder="Re-enter new password" />
+              <p class="input-hint" id="confirm-new-password-hint"></p>
+            </div>
+            <div class="flex gap-2">
+              <button id="change-password-save-btn" class="btn btn-primary btn-sm" type="submit">Save Password</button>
+              <button id="change-password-cancel-btn" class="btn btn-ghost btn-sm" type="button">Cancel</button>
+            </div>
+          </form>
+
+          <hr class="divider" />
+
           <div class="main-settings-row">
-            <span class="main-settings-row-label main-settings-row-label--danger">
-              Delete Account
-              <span class="settings-badge">Yet to Implement</span>
-            </span>
-            <button class="btn btn-ghost btn-sm" type="button" disabled>
+            <span class="main-settings-row-label main-settings-row-label--danger">Delete Account</span>
+            <button id="delete-account-toggle-btn" class="btn btn-danger btn-sm" type="button">
               Delete
             </button>
+          </div>
+
+          <div id="delete-account-confirm" class="settings-inline-form hidden">
+            <p class="text-secondary text-sm">This action is permanent. All your posts, comments, likes, and followers will be deleted. Type your password to confirm.</p>
+            <div class="input-group">
+              <label class="input-label" for="delete-confirm-password">Password</label>
+              <input id="delete-confirm-password" class="input" type="password" placeholder="Enter your password to confirm" />
+              <p class="input-hint" id="delete-confirm-password-hint"></p>
+            </div>
+            <div class="flex gap-2">
+              <button id="delete-account-confirm-btn" class="btn btn-danger btn-sm" type="button">Permanently Delete Account</button>
+              <button id="delete-account-cancel-btn" class="btn btn-ghost btn-sm" type="button">Cancel</button>
+            </div>
           </div>
         </section>
       </div>

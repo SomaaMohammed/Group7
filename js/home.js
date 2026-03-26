@@ -333,17 +333,7 @@ async function renderFeed() {
       where: { followerId: currentUser.id },
     });
     const followedIds = follows.map((f) => f.followingId);
-
-    if (followedIds.length === 0) {
-      feedList.innerHTML = `
-        <div class="empty-state">
-          <p class="empty-state-title">You're not following anyone yet.</p>
-          <p class="empty-state-description">
-            Follow some users to see their posts here.
-          </p>
-        </div>`;
-      return;
-    }
+    followedIds.push(currentUser.id);
 
     const allPosts = await db.posts.findMany();
     const feedPosts = allPosts.filter((p) => followedIds.includes(p.authorId));
@@ -354,7 +344,7 @@ async function renderFeed() {
         <div class="empty-state">
           <p class="empty-state-title">No posts yet.</p>
           <p class="empty-state-description">
-            The people you follow haven't posted anything yet.
+            Create a post or follow some users to see their posts here.
           </p>
         </div>`;
       return;

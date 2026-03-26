@@ -219,7 +219,12 @@ async function renderUserPosts() {
     return;
   }
 
-  // Batch-resolve media for all user posts
+  // Batch-fetch media, likes, and comments for all user posts
+  const [allLikes, allComments] = await Promise.all([
+    db.likes.findMany(),
+    db.comments.findMany(),
+  ]);
+
   const mediaMap = new Map();
   await Promise.all(
     posts.map(async (post) => {
@@ -233,10 +238,16 @@ async function renderUserPosts() {
     .map((post) => {
       const mediaItems = mediaMap.get(post.id) || [];
       const mediaHtml = mediaItems.length ? renderMediaGrid(mediaItems) : "";
+      const likeCount = allLikes.filter((l) => l.postId === post.id).length;
+      const commentCount = allComments.filter((c) => c.postId === post.id).length;
       return `
       <article class="card card-interactive user-post-card" data-post-id="${encodeURIComponent(post.id)}" aria-label="View post">
         <p>${escapeHtml(post.content || "")}</p>
         ${mediaHtml}
+        <div class="flex gap-4 text-secondary text-sm post-card-stats">
+          <span>${likeCount} like${likeCount === 1 ? "" : "s"}</span>
+          <span>${commentCount} comment${commentCount === 1 ? "" : "s"}</span>
+        </div>
         <small class="text-secondary">${formatTime(post.createdAt)}</small>
         <a
           class="user-post-link"

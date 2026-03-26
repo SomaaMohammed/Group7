@@ -139,7 +139,6 @@ async function renderPostPage(pageData) {
   }
 
   if (likeBtn) {
-    likeBtn.disabled = post.authorId === currentUser.id;
     likeBtn.classList.toggle('is-liked', pageData.likedByCurrentUser);
     const likeAction = pageData.likedByCurrentUser ? 'Unlike' : 'Like';
     likeBtn.setAttribute('aria-label', `${likeAction} post`);
