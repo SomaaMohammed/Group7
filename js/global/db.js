@@ -5,7 +5,7 @@
 //
 // Schema field reference:
 //   users:    id, username, email, password, bio, profilePicture, createdAt
-//   posts:    id, authorId, content, createdAt
+//   posts:    id, authorId, content, mediaIds, createdAt
 //   comments: id, postId, authorId, content, createdAt
 //   likes:    id, postId, userId, createdAt
 //   follows:  id, followerId, followingId, createdAt
