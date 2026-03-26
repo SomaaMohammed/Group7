@@ -7,6 +7,9 @@ import { applyTheme, getInitialTheme } from './global/theme.js';
 import { flushQueuedToast, showToast } from './global/toast.js';
 import { COMMENT_MAX_LENGTH } from './global/constants.js';
 import { formatTime } from './global/time.js';
+import { storage } from './global/storage.js';
+import { resolveMedia, renderMediaGrid } from './global/media.js';
+import { openLightbox } from './global/lightbox.js';
 
 const postAuthorLink = document.getElementById('post-author-link');
 const postAuthorAvatar = document.getElementById('post-author-avatar');
@@ -101,6 +104,30 @@ async function renderPostPage(pageData) {
 
   if (postContent) {
     postContent.textContent = post.content || '';
+  }
+
+  const postMedia = document.getElementById('post-media');
+  if (postMedia) {
+    if (post.mediaIds?.length) {
+      const mediaItems = await resolveMedia(post.mediaIds);
+      postMedia.innerHTML = renderMediaGrid(mediaItems);
+
+      postMedia.addEventListener('click', (e) => {
+        const gridItem = e.target.closest('.media-grid-item');
+        if (!gridItem) return;
+        e.preventDefault();
+        const grid = gridItem.closest('.media-grid');
+        const items = [...grid.querySelectorAll('.media-grid-item')];
+        const index = items.indexOf(gridItem);
+        const lightboxItems = items.map((item) => ({
+          url: item.querySelector('img,video')?.src,
+          mimeType: item.dataset.mimeType,
+        }));
+        openLightbox(lightboxItems, index);
+      });
+    } else {
+      postMedia.innerHTML = '';
+    }
   }
 
   if (postTimestamp) {
@@ -230,6 +257,10 @@ async function deletePost() {
   if (currentPostData.post.authorId !== currentUser.id) return;
 
   deleteBtn.disabled = true;
+
+  if (currentPostData.post.mediaIds?.length) {
+    await storage.deleteMany(currentPostData.post.mediaIds);
+  }
 
   await db.comments.deleteMany({ where: { postId: currentPostData.postId } });
   await db.likes.deleteMany({ where: { postId: currentPostData.postId } });

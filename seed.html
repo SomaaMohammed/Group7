@@ -68,9 +68,15 @@
         seedBtn.disabled = false;
       });
 
-      clearBtn.addEventListener("click", () => {
+      clearBtn.addEventListener("click", async () => {
         localStorage.clear();
-        status.textContent = "All data cleared. You can seed again.";
+        try {
+          const { storage } = await import("./js/global/storage.js");
+          await storage.clearAll();
+        } catch {
+          // IndexedDB may not exist yet — that's fine
+        }
+        status.textContent = "All data cleared (localStorage + media). You can seed again.";
       });
     </script>
   </body>

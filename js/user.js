@@ -11,6 +11,8 @@ import {
   USERNAME_MAX_LENGTH,
 } from "./global/constants.js";
 import { formatTime } from "./global/time.js";
+import { resolveMedia, renderMediaGrid } from "./global/media.js";
+import { openLightbox } from "./global/lightbox.js";
 
 const profileAvatar = document.getElementById("profile-avatar");
 const profileName = document.getElementById("profile-name");
@@ -62,6 +64,22 @@ async function initUserPage() {
 
   if (userPostsList) {
     userPostsList.addEventListener("click", (e) => {
+      // If clicking on a media grid item, open lightbox instead of navigating
+      const gridItem = e.target.closest(".media-grid-item");
+      if (gridItem) {
+        e.preventDefault();
+        e.stopPropagation();
+        const grid = gridItem.closest(".media-grid");
+        const items = [...grid.querySelectorAll(".media-grid-item")];
+        const index = items.indexOf(gridItem);
+        const mediaItems = items.map((item) => ({
+          url: item.querySelector("img,video")?.src,
+          mimeType: item.dataset.mimeType,
+        }));
+        openLightbox(mediaItems, index);
+        return;
+      }
+
       const card = e.target.closest("[data-post-id]");
       if (card) {
         goToPost(card.dataset.postId);
@@ -201,11 +219,24 @@ async function renderUserPosts() {
     return;
   }
 
+  // Batch-resolve media for all user posts
+  const mediaMap = new Map();
+  await Promise.all(
+    posts.map(async (post) => {
+      if (post.mediaIds?.length) {
+        mediaMap.set(post.id, await resolveMedia(post.mediaIds));
+      }
+    }),
+  );
+
   userPostsList.innerHTML = posts
-    .map(
-      (post) => `
-      <article class="card card-interactive user-post-card" aria-label="View post">
+    .map((post) => {
+      const mediaItems = mediaMap.get(post.id) || [];
+      const mediaHtml = mediaItems.length ? renderMediaGrid(mediaItems) : "";
+      return `
+      <article class="card card-interactive user-post-card" data-post-id="${encodeURIComponent(post.id)}" aria-label="View post">
         <p>${escapeHtml(post.content || "")}</p>
+        ${mediaHtml}
         <small class="text-secondary">${formatTime(post.createdAt)}</small>
         <a
           class="user-post-link"
@@ -213,8 +244,8 @@ async function renderUserPosts() {
           aria-label="View post"
         ></a>
       </article>
-    `,
-    ).join("");
+    `;
+    }).join("");
 }
 
 

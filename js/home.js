@@ -4,8 +4,18 @@ import { injectShell } from "./global/shell.js";
 import { escapeHtml, toSafeImageSrc } from "./global/sanitize.js";
 import { applyTheme, getInitialTheme } from "./global/theme.js";
 import { flushQueuedToast, showToast } from "./global/toast.js";
-import { POST_MAX_LENGTH } from "./global/constants.js";
+import {
+  POST_MAX_LENGTH,
+  MAX_ATTACHMENTS,
+  MAX_IMAGE_SIZE,
+  MAX_VIDEO_SIZE,
+  ACCEPTED_IMAGE_TYPES,
+  ACCEPTED_VIDEO_TYPES,
+} from "./global/constants.js";
 import { formatTime } from "./global/time.js";
+import { storage } from "./global/storage.js";
+import { resolveMedia, renderMediaGrid } from "./global/media.js";
+import { openLightbox } from "./global/lightbox.js";
 
 const feedList = document.getElementById("feed-list");
 const composerOpenBtn = document.getElementById("composer-open-btn");
@@ -17,8 +27,16 @@ const submitBtn = document.getElementById("new-post-submit-btn");
 const closeBtn = document.getElementById("new-post-close-btn");
 const cancelBtn = document.getElementById("new-post-cancel-btn");
 
+const dropZone = document.getElementById("new-post-drop-zone");
+const attachBtn = document.getElementById("new-post-attach-btn");
+const fileInput = document.getElementById("new-post-file-input");
+const previewsContainer = document.getElementById("new-post-previews");
+const attachError = document.getElementById("new-post-attach-error");
+
 let currentUser = null;
 let isRenderingFeed = false;
+let pendingFiles = [];
+let previewUrls = [];
 
 applyTheme(getInitialTheme());
 
@@ -54,17 +72,61 @@ async function initPage() {
     }
   });
 
-  // Character counter
+  // Character counter + submit state
   if (textarea) {
     textarea.addEventListener("input", () => {
       const len = textarea.value.length;
       if (charCount) charCount.textContent = `${len} / ${POST_MAX_LENGTH}`;
-      if (submitBtn) submitBtn.disabled = len === 0 || len > POST_MAX_LENGTH;
+      updateSubmitState();
     });
   }
 
   // Submit post
   if (submitBtn) submitBtn.addEventListener("click", submitPost);
+
+  // Attachment controls
+  if (attachBtn && fileInput) {
+    attachBtn.addEventListener("click", () => fileInput.click());
+    fileInput.addEventListener("change", () => {
+      handleFilesSelected(fileInput.files);
+      fileInput.value = "";
+    });
+  }
+
+  // Drag-and-drop
+  if (dropZone) {
+    dropZone.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      dropZone.classList.add("drag-over");
+    });
+    dropZone.addEventListener("dragleave", () => {
+      dropZone.classList.remove("drag-over");
+    });
+    dropZone.addEventListener("drop", (e) => {
+      e.preventDefault();
+      dropZone.classList.remove("drag-over");
+      handleFilesSelected(e.dataTransfer.files);
+    });
+  }
+
+  // Lightbox click delegation on feed
+  if (feedList) {
+    feedList.addEventListener("click", (e) => {
+      const gridItem = e.target.closest(".media-grid-item");
+      if (!gridItem) return;
+      e.preventDefault();
+      e.stopPropagation();
+
+      const grid = gridItem.closest(".media-grid");
+      const items = [...grid.querySelectorAll(".media-grid-item")];
+      const index = items.indexOf(gridItem);
+      const mediaItems = items.map((item) => ({
+        url: item.querySelector("img,video")?.src,
+        mimeType: item.dataset.mimeType,
+      }));
+      openLightbox(mediaItems, index);
+    });
+  }
 
   await renderFeed();
 
@@ -84,6 +146,10 @@ function overrideShellButton(id) {
   clone.addEventListener("click", openModal);
 }
 
+// ---------------------------------------------------------------------------
+// Modal helpers
+// ---------------------------------------------------------------------------
+
 function openModal() {
   if (!backdrop) return;
   backdrop.classList.remove("hidden");
@@ -92,6 +158,8 @@ function openModal() {
     textarea.focus();
   }
   if (charCount) charCount.textContent = `0 / ${POST_MAX_LENGTH}`;
+  clearPendingFiles();
+  clearAttachError();
   if (submitBtn) submitBtn.disabled = true;
 }
 
@@ -100,26 +168,150 @@ function closeModal() {
   backdrop.classList.add("hidden");
   if (textarea) textarea.value = "";
   if (charCount) charCount.textContent = `0 / ${POST_MAX_LENGTH}`;
+  clearPendingFiles();
+  clearAttachError();
   if (submitBtn) submitBtn.disabled = true;
 }
 
-async function submitPost() {
-  if (!textarea || !currentUser || !submitBtn) return;
+function updateSubmitState() {
+  if (!submitBtn) return;
+  const hasText = textarea && textarea.value.trim().length > 0;
+  const hasMedia = pendingFiles.length > 0;
+  const textTooLong = textarea && textarea.value.length > POST_MAX_LENGTH;
+  submitBtn.disabled = (!hasText && !hasMedia) || textTooLong;
+}
 
-  const content = textarea.value.trim();
-  if (!content || content.length > POST_MAX_LENGTH) return;
+// ---------------------------------------------------------------------------
+// Attachment handling
+// ---------------------------------------------------------------------------
+
+function handleFilesSelected(fileList) {
+  clearAttachError();
+  const files = [...fileList];
+  const allAccepted = [...ACCEPTED_IMAGE_TYPES, ...ACCEPTED_VIDEO_TYPES];
+
+  for (const file of files) {
+    if (pendingFiles.length >= MAX_ATTACHMENTS) {
+      showAttachError(`Maximum ${MAX_ATTACHMENTS} attachments allowed.`);
+      break;
+    }
+    if (!allAccepted.includes(file.type)) {
+      showAttachError(`"${file.name}" is not a supported file type.`);
+      continue;
+    }
+    const isVideo = file.type.startsWith("video/");
+    const maxSize = isVideo ? MAX_VIDEO_SIZE : MAX_IMAGE_SIZE;
+    const label = isVideo ? "video" : "image";
+    const limitMB = maxSize / (1024 * 1024);
+    if (file.size > maxSize) {
+      showAttachError(`"${file.name}" exceeds the ${limitMB}MB ${label} limit.`);
+      continue;
+    }
+    pendingFiles.push(file);
+  }
+
+  renderPreviews();
+  updateSubmitState();
+}
+
+function renderPreviews() {
+  if (!previewsContainer) return;
+
+  // Revoke old preview URLs
+  for (const url of previewUrls) {
+    URL.revokeObjectURL(url);
+  }
+  previewUrls = [];
+
+  previewsContainer.innerHTML = "";
+
+  pendingFiles.forEach((file, i) => {
+    const wrapper = document.createElement("div");
+    wrapper.className = "attachment-preview";
+
+    const url = URL.createObjectURL(file);
+    previewUrls.push(url);
+
+    if (file.type.startsWith("video/")) {
+      const vid = document.createElement("video");
+      vid.src = url;
+      vid.muted = true;
+      wrapper.appendChild(vid);
+    } else {
+      const img = document.createElement("img");
+      img.src = url;
+      img.alt = `Preview ${i + 1}`;
+      wrapper.appendChild(img);
+    }
+
+    const removeBtn = document.createElement("button");
+    removeBtn.className = "attachment-preview-remove";
+    removeBtn.setAttribute("aria-label", `Remove ${file.name}`);
+    removeBtn.textContent = "\u00d7";
+    removeBtn.addEventListener("click", () => removeFile(i));
+
+    wrapper.appendChild(removeBtn);
+    previewsContainer.appendChild(wrapper);
+  });
+}
+
+function removeFile(index) {
+  pendingFiles.splice(index, 1);
+  clearAttachError();
+  renderPreviews();
+  updateSubmitState();
+}
+
+function clearPendingFiles() {
+  pendingFiles = [];
+  for (const url of previewUrls) {
+    URL.revokeObjectURL(url);
+  }
+  previewUrls = [];
+  if (previewsContainer) previewsContainer.innerHTML = "";
+}
+
+function showAttachError(msg) {
+  if (!attachError) return;
+  attachError.textContent = msg;
+  attachError.classList.remove("hidden");
+}
+
+function clearAttachError() {
+  if (!attachError) return;
+  attachError.textContent = "";
+  attachError.classList.add("hidden");
+}
+
+// ---------------------------------------------------------------------------
+// Submit post
+// ---------------------------------------------------------------------------
+
+async function submitPost() {
+  if (!currentUser || !submitBtn) return;
+
+  const content = textarea ? textarea.value.trim() : "";
+  if (!content && pendingFiles.length === 0) return;
+  if (content.length > POST_MAX_LENGTH) return;
   if (submitBtn.disabled) return;
 
   submitBtn.disabled = true;
 
   try {
+    // Upload all pending files to IndexedDB
+    const mediaIds = await Promise.all(
+      pendingFiles.map((file) => storage.upload(file)),
+    );
+
     await db.posts.create({
-      data: { authorId: currentUser.id, content },
+      data: { authorId: currentUser.id, content, mediaIds },
     });
 
     closeModal();
     showToast("Post created!", "success");
     await renderFeed();
+  } catch (err) {
+    showToast(err.message || "Failed to create post.", "danger");
   } finally {
     if (!backdrop?.classList.contains("hidden")) {
       submitBtn.disabled = false;
@@ -127,13 +319,16 @@ async function submitPost() {
   }
 }
 
+// ---------------------------------------------------------------------------
+// Feed rendering
+// ---------------------------------------------------------------------------
+
 async function renderFeed() {
   if (!feedList || isRenderingFeed) return;
 
   isRenderingFeed = true;
 
   try {
-
     const follows = await db.follows.findMany({
       where: { followerId: currentUser.id },
     });
@@ -173,6 +368,16 @@ async function renderFeed() {
 
     const userMap = Object.fromEntries(allUsers.map((u) => [u.id, u]));
 
+    // Batch-resolve media for all feed posts
+    const mediaMap = new Map();
+    await Promise.all(
+      feedPosts.map(async (post) => {
+        if (post.mediaIds?.length) {
+          mediaMap.set(post.id, await resolveMedia(post.mediaIds));
+        }
+      }),
+    );
+
     feedList.innerHTML = feedPosts
       .map((post) => {
         const author = userMap[post.authorId];
@@ -180,7 +385,8 @@ async function renderFeed() {
         const commentCount = allComments.filter(
           (c) => c.postId === post.id,
         ).length;
-        return renderPostCard(post, author, likeCount, commentCount);
+        const mediaItems = mediaMap.get(post.id) || [];
+        return renderPostCard(post, author, likeCount, commentCount, mediaItems);
       })
       .join("");
   } finally {
@@ -188,7 +394,7 @@ async function renderFeed() {
   }
 }
 
-function renderPostCard(post, author, likeCount, commentCount) {
+function renderPostCard(post, author, likeCount, commentCount, mediaItems) {
   const username = escapeHtml(author?.username || "Unknown");
   const avatarSrc = escapeHtml(
     toSafeImageSrc(author?.profilePicture, "../assets/default-avatar.svg"),
@@ -197,6 +403,7 @@ function renderPostCard(post, author, likeCount, commentCount) {
   const time = formatTime(post.createdAt);
   const userHref = `user.html?id=${encodeURIComponent(author?.id || "")}`;
   const postHref = `post.html?id=${encodeURIComponent(post.id)}`;
+  const mediaHtml = mediaItems.length ? renderMediaGrid(mediaItems) : "";
 
   return `
     <article class="card card-interactive post-card" aria-label="Post by ${username}">
@@ -211,6 +418,7 @@ function renderPostCard(post, author, likeCount, commentCount) {
         </div>
       </div>
       <p class="post-card-content">${content}</p>
+      ${mediaHtml}
       <div class="flex gap-4 text-secondary text-sm post-card-stats">
         <span>${likeCount} like${likeCount === 1 ? "" : "s"}</span>
         <span>${commentCount} comment${commentCount === 1 ? "" : "s"}</span>

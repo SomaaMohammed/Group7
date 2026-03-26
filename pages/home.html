@@ -43,11 +43,31 @@
             class="textarea"
             id="new-post-content"
             rows="4"
-            maxlength="280"
+            maxlength="5000"
             placeholder="Write something..."
           ></textarea>
-          <p class="input-hint" id="new-post-char-count">0 / 280</p>
+          <p class="input-hint" id="new-post-char-count">0 / 5000</p>
         </div>
+
+        <div class="attachment-drop-zone" id="new-post-drop-zone">
+          Drop images or videos here
+        </div>
+        <div class="attachment-picker">
+          <button class="btn btn-ghost btn-sm" id="new-post-attach-btn" type="button">
+            Attach media
+          </button>
+          <input
+            type="file"
+            id="new-post-file-input"
+            class="hidden"
+            accept="image/jpeg,image/png,image/gif,image/webp,video/mp4,video/webm"
+            multiple
+          />
+          <span class="text-secondary text-xs" id="new-post-attach-hint">Max 4 files</span>
+        </div>
+        <div class="attachment-previews" id="new-post-previews"></div>
+        <p class="attachment-error hidden" id="new-post-attach-error"></p>
+
         <div class="modal-footer">
           <button class="btn btn-ghost" id="new-post-cancel-btn" type="button">Cancel</button>
           <button class="btn btn-primary" id="new-post-submit-btn" type="button" disabled>
