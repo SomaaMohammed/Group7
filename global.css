@@ -726,6 +726,7 @@ pre {
     color var(--transition-fast),
     box-shadow var(--transition-fast),
     transform var(--transition-fast);
+  margin-bottom: var(--space-2);  
 }
 
 .theme-toggle-icon {
@@ -1531,6 +1532,9 @@ pre {
   color: var(--color-text-primary);
   letter-spacing: -0.5px;
 }
+.sidebar-brand p{
+  padding-right: var(--space-8);
+}
 
 .sidebar-brand-row {
   display: flex;
@@ -1539,9 +1543,16 @@ pre {
   padding-right: var(--space-3);
 }
 
+.sidebar-brand-row img{
+  width: 48px;
+  height: 48px;
+  padding-bottom: var(--space-2);
+}
+
 .sidebar-brand-row .sidebar-brand {
   padding-right: var(--space-2);
 }
+
 
 .sidebar-nav {
   flex: 1;
@@ -1947,5 +1958,24 @@ pre {
   font-size: var(--font-size-sm);
   background: rgba(0, 0, 0, 0.5);
   padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+}
+
+.company-header{
+  display: flex;
+  gap: var(--space-4);
+  text-align: center;
+  justify-content: center;
+  font-size: var(--font-size-2xl);
+  flex-direction: row-reverse;
+
+  color: var(--color-text-primary);
+
+  font-weight: var(--font-weight-bold);
+  margin-top: 5rem;
+}
+.company-header img{
+  width: var(--space-10);
+  height: var(--space-10);
   border-radius: var(--radius-full);
 }
