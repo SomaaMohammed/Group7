@@ -2078,7 +2078,9 @@ pre {
   color: var(--color-text-primary);
 
   font-weight: var(--font-weight-bold);
-  margin-top: 5rem;
+  margin-top: var(--space-3);
+  margin-bottom: 0;
+  padding-top: 0;
 }
 .company-header img{
   width: var(--space-10);

@@ -445,11 +445,32 @@ async function handleSave() {
 
   await resolveAvatarUrls([updated]);
   renderProfileHeader();
+  updateShellUserIdentity(updated);
   await renderProfileStats();
 
   closeEditForm();
 
   showToast("Updated Profile Successfully!", "success");
+}
+
+function updateShellUserIdentity(user) {
+  if (!user) return;
+
+  const username = user.username || "user";
+  const avatarSrc = getAvatarSrc(user, "../assets/default-avatar.svg");
+
+  const shellAvatarImages = document.querySelectorAll(
+    ".sidebar-user .avatar, .app-sidebar .avatar.avatar-sm",
+  );
+  shellAvatarImages.forEach((img) => {
+    img.src = avatarSrc;
+    img.alt = `${username}'s avatar`;
+  });
+
+  const sidebarName = document.querySelector(".sidebar-user-name");
+  const sidebarHandle = document.querySelector(".sidebar-user-handle");
+  if (sidebarName) sidebarName.textContent = username;
+  if (sidebarHandle) sidebarHandle.textContent = `@${username}`;
 }
 
 function validateProfileInput(username) {
