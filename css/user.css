@@ -32,8 +32,21 @@
   display: inline-block;
 }
 
+.user-post-card {
+  position: relative;
+}
+
+.user-post-card p,
+.user-post-card small {
+  position: relative;
+  z-index: 2;
+}
+
 .user-post-link {
-  display: block;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
   color: inherit;
   text-decoration: none;
 }

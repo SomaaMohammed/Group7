@@ -204,11 +204,14 @@ async function renderUserPosts() {
   userPostsList.innerHTML = posts
     .map(
       (post) => `
-      <article class="card card-interactive" aria-label="View post">
-        <a class="user-post-link" href="post.html?id=${encodeURIComponent(post.id)}">
-          <p>${escapeHtml(post.content || "")}</p>
-          <small class="text-secondary">${formatTime(post.createdAt)}</small>
-        </a>
+      <article class="card card-interactive user-post-card" aria-label="View post">
+        <p>${escapeHtml(post.content || "")}</p>
+        <small class="text-secondary">${formatTime(post.createdAt)}</small>
+        <a
+          class="user-post-link"
+          href="post.html?id=${encodeURIComponent(post.id)}"
+          aria-label="View post"
+        ></a>
       </article>
     `,
     ).join("");
