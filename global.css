@@ -1581,31 +1581,42 @@ pre {
 }
 
 .sidebar-brand {
-  padding: var(--space-6) var(--space-5) var(--space-8);
-  font-size: var(--font-size-2xl);
+  padding: var(--space-4) 0 var(--space-4);
+  font-size: clamp(1rem, 1.2vw + 0.5rem, var(--font-size-2xl));
   font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
   letter-spacing: -0.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.sidebar-brand p{
-  padding-right: var(--space-8);
+
+.sidebar-brand p {
+  margin: 0;
 }
 
 .sidebar-brand-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding-right: var(--space-3);
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-3) 0;
+  min-width: 0;
 }
 
-.sidebar-brand-row img{
-  width: 48px;
-  height: 48px;
-  padding-bottom: var(--space-2);
+.sidebar-brand-row img {
+  width: clamp(32px, 15%, 48px);
+  height: auto;
+  aspect-ratio: 1;
+  flex-shrink: 0;
 }
 
 .sidebar-brand-row .sidebar-brand {
-  padding-right: var(--space-2);
+  flex: 1;
+  min-width: 0;
+}
+
+.sidebar-brand-row .theme-toggle-btn {
+  flex-shrink: 0;
 }
 
 
