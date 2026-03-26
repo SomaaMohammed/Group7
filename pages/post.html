@@ -14,29 +14,35 @@
   <body class="app-shell">
     <div id="shell-root"></div>
 
-    <main class="app-main" id="post-page-main">
+    <main class="app-main post-page" id="post-page-main">
       <div class="content-column page-enter">
-        <section class="card" aria-label="Post detail">
+        <section class="card post-detail-card" aria-label="Post detail">
           <h1 class="page-title">Post</h1>
 
-          <article class="flex-col gap-4" aria-label="Post content">
-            <header class="flex items-center gap-3">
-              <a id="post-author-link" href="#">
+          <article class="flex-col gap-4 post-detail" aria-label="Post content">
+            <header class="flex items-center gap-3 post-author-row">
+              <a id="post-author-link" class="post-author-link" href="#">
                 <img
                   id="post-author-avatar"
-                  class="avatar avatar-md"
+                  class="avatar avatar-md post-author-avatar"
                   src="../assets/default-avatar.svg"
                   alt="Post author avatar"
                 />
               </a>
               <div>
-                <h2><a id="post-author-name" href="#">Author Name</a></h2>
-                <p id="post-timestamp" class="text-secondary text-sm">Just now</p>
+                <h2>
+                  <a id="post-author-name" class="post-author-name" href="#"
+                    >Author Name</a
+                  >
+                </h2>
+                <p id="post-timestamp" class="text-secondary text-sm post-timestamp">
+                  Just now
+                </p>
               </div>
 
               <button
                 id="delete-btn"
-                class="btn btn-danger btn-sm hidden"
+                class="btn btn-danger btn-sm hidden post-delete-btn"
                 type="button"
                 aria-label="Delete post"
                 title="Delete post"
@@ -45,12 +51,12 @@
               </button>
             </header>
 
-            <p id="post-content">Post content will appear here.</p>
+            <p id="post-content" class="post-content">Post content will appear here.</p>
 
-            <div class="flex items-center gap-3 flex-wrap">
+            <div class="flex items-center gap-3 flex-wrap post-actions">
               <button
                 id="like-btn"
-                class="btn btn-outline btn-sm"
+                class="btn btn-outline btn-sm post-like-btn"
                 type="button"
                 aria-label="Like post"
                 title="Like post"
@@ -66,28 +72,28 @@
           </article>
         </section>
 
-        <section class="card" aria-label="Comments">
-          <h2>Comments</h2>
+        <section class="card post-comments-card" aria-label="Comments">
+          <h2 class="post-comments-title">Comments</h2>
 
-          <form id="comment-form" class="flex-col gap-3">
+          <form id="comment-form" class="flex-col gap-3 post-comment-form">
             <label class="input-label" for="comment-input">Add a comment</label>
             <textarea
               id="comment-input"
-              class="textarea"
+              class="textarea post-comment-input"
               rows="3"
               maxlength="280"
               placeholder="Write a comment..."
             ></textarea>
             <button
               id="comment-submit-btn"
-              class="btn btn-primary btn-block"
+              class="btn btn-primary btn-block post-comment-submit-btn"
               type="submit"
             >
               Comment
             </button>
           </form>
 
-          <div id="comments-list" class="flex-col"></div>
+          <div id="comments-list" class="flex-col post-comments-list"></div>
         </section>
       </div>
     </main>
