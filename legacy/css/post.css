@@ -1,258 +1,258 @@
 .post-page {
-  padding-top: var(--space-2);
+    padding-top: var(--space-2);
 }
 
 .post-detail-card {
-  box-shadow: none;
-  border: 1px solid var(--color-border);
-  border-bottom: none;
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
+    box-shadow: none;
+    border: 1px solid var(--color-border);
+    border-bottom: none;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
 }
 
 .post-comments-card {
-  box-shadow: none;
-  border: 1px solid var(--color-border);
-  margin-top: 0;
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
+    box-shadow: none;
+    border: 1px solid var(--color-border);
+    margin-top: 0;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
 }
 
 .post-comments-title {
-  margin: 0;
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-secondary);
+    margin: 0;
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-secondary);
 }
 
 .post-author-avatar {
-  border: 1px solid var(--color-border);
+    border: 1px solid var(--color-border);
 }
 
 .post-author-name {
-  display: inline-block;
-  margin: 0;
-  color: inherit;
-  text-decoration: none;
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-semibold);
+    display: inline-block;
+    margin: 0;
+    color: inherit;
+    text-decoration: none;
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
 }
 
 .post-author-name:hover {
-  text-decoration: underline;
+    text-decoration: underline;
 }
 
 .post-author-link {
-  display: inline-block;
+    display: inline-block;
 }
 
 .comment-author-link {
-  color: inherit;
-  text-decoration: none;
+    color: inherit;
+    text-decoration: none;
 }
 
 .comment-author-link:hover strong {
-  text-decoration: underline;
+    text-decoration: underline;
 }
 
 .post-timestamp {
-  margin: var(--space-1) 0 0;
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
+    margin: var(--space-1) 0 0;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
 }
 
 .post-delete-btn {
-  margin-left: auto;
-  padding: var(--space-1);
-  min-width: auto;
-  border-radius: 0;
-  border: none;
-  background-color: transparent;
+    margin-left: auto;
+    padding: var(--space-1);
+    min-width: auto;
+    border-radius: 0;
+    border: none;
+    background-color: transparent;
 }
 
 .post-delete-btn:hover:not(:disabled) {
-  background-color: transparent;
+    background-color: transparent;
 }
 
 .post-content {
-  margin: 0;
-  white-space: pre-wrap;
-  word-break: break-word;
-  line-height: var(--line-height-relaxed);
+    margin: 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+    line-height: var(--line-height-relaxed);
 }
 
 .post-actions {
-  padding-top: var(--space-3);
-  border-top: 1px solid var(--color-border);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--color-border);
 }
 
 .post-actions p {
-  margin: 0;
+    margin: 0;
 }
 
 .post-comments-list {
-  display: flex;
-  flex-direction: column;
-  margin-top: var(--space-3);
-  border-top: 1px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+    margin-top: var(--space-3);
+    border-top: 1px solid var(--color-border);
 }
 
 .post-comments-list > * {
-  padding: var(--space-4) 0;
+    padding: var(--space-4) 0;
 }
 
 .post-comments-list > * + * {
-  border-top: 1px solid var(--color-border);
+    border-top: 1px solid var(--color-border);
 }
 
 .post-comment-form {
-  margin-top: var(--space-2);
-  padding-top: var(--space-3);
+    margin-top: var(--space-2);
+    padding-top: var(--space-3);
 }
 
 .post-comment-input {
-  min-height: 56px;
-  max-height: 140px;
-  padding: var(--space-3);
-  border-radius: var(--radius-lg);
-  font-size: var(--font-size-sm);
-  line-height: var(--line-height-base);
-  resize: vertical;
+    min-height: 56px;
+    max-height: 140px;
+    padding: var(--space-3);
+    border-radius: var(--radius-lg);
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-base);
+    resize: vertical;
 }
 
 .post-comment-input::placeholder {
-  font-size: var(--font-size-sm);
+    font-size: var(--font-size-sm);
 }
 
 .post-comment-submit-btn {
-  min-width: 110px;
-  border-radius: var(--radius-full);
+    min-width: 110px;
+    border-radius: var(--radius-full);
 }
 
 .post-like-btn {
-  position: relative;
-  overflow: visible;
-  padding: var(--space-1);
-  min-width: auto;
-  border-radius: 0;
-  border: none;
-  color: var(--color-text-secondary);
+    position: relative;
+    overflow: visible;
+    padding: var(--space-1);
+    min-width: auto;
+    border-radius: 0;
+    border: none;
+    color: var(--color-text-secondary);
 }
 
 .post-like-btn:hover:not(:disabled) {
-  background-color: transparent;
-  color: var(--color-text-primary);
+    background-color: transparent;
+    color: var(--color-text-primary);
 }
 
 .post-like-btn.is-liked {
-  color: var(--color-like-active);
+    color: var(--color-like-active);
 }
 
 .post-like-btn.is-liked:hover:not(:disabled) {
-  color: var(--color-like-active);
+    color: var(--color-like-active);
 }
 
 .post-like-btn .icon-heart-fill {
-  display: none;
+    display: none;
 }
 
 .post-like-btn.is-liked .icon-heart {
-  display: none;
+    display: none;
 }
 
 .post-like-btn.is-liked .icon-heart-fill {
-  display: inline-block;
+    display: inline-block;
 }
 
 .post-like-btn .icon {
-  position: relative;
-  z-index: 2;
+    position: relative;
+    z-index: 2;
 }
 
 .post-like-btn .like-pop-circle {
-  position: absolute;
-  inset: 0;
-  margin: auto;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: var(--color-like-active);
-  opacity: 0;
-  pointer-events: none;
-  transform: scale(0);
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--color-like-active);
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0);
 }
 
 .like-particle {
-  position: absolute;
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: var(--color-like-active);
-  pointer-events: none;
-  opacity: 1;
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--color-like-active);
+    pointer-events: none;
+    opacity: 1;
 }
 
 @keyframes like-pop-circle {
-  0% {
-    opacity: 0.7;
-    transform: scale(0);
-  }
-  60% {
-    opacity: 0.25;
-    transform: scale(1.8);
-  }
-  100% {
-    opacity: 0;
-    transform: scale(2.3);
-  }
+    0% {
+        opacity: 0.7;
+        transform: scale(0);
+    }
+    60% {
+        opacity: 0.25;
+        transform: scale(1.8);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(2.3);
+    }
 }
 
 @keyframes like-heart-bounce {
-  0% {
-    transform: scale(0.7);
-  }
-  45% {
-    transform: scale(1.2);
-  }
-  100% {
-    transform: scale(1);
-  }
+    0% {
+        transform: scale(0.7);
+    }
+    45% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+    }
 }
 
 @keyframes like-particle-burst {
-  0% {
-    opacity: 1;
-    transform: translate(0, 0) scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: translate(var(--tx), var(--ty)) scale(0.2);
-  }
+    0% {
+        opacity: 1;
+        transform: translate(0, 0) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(var(--tx), var(--ty)) scale(0.2);
+    }
 }
 
 .post-like-btn.like-pop .like-pop-circle {
-  animation: like-pop-circle 420ms ease-out forwards;
+    animation: like-pop-circle 420ms ease-out forwards;
 }
 
 .post-like-btn.like-pop .icon-heart-fill {
-  animation: like-heart-bounce 340ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    animation: like-heart-bounce 340ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
 .post-like-btn.like-pop .like-particle {
-  animation: like-particle-burst 520ms ease-out forwards;
+    animation: like-particle-burst 520ms ease-out forwards;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .post-like-btn.like-pop .like-pop-circle,
-  .post-like-btn.like-pop .icon-heart-fill,
-  .post-like-btn.like-pop .like-particle {
-    animation: none;
-  }
+    .post-like-btn.like-pop .like-pop-circle,
+    .post-like-btn.like-pop .icon-heart-fill,
+    .post-like-btn.like-pop .like-particle {
+        animation: none;
+    }
 }
 
 @media (min-width: 640px) {
-  .post-comment-submit-btn {
-    width: auto;
-    align-self: flex-end;
-  }
+    .post-comment-submit-btn {
+        width: auto;
+        align-self: flex-end;
+    }
 }

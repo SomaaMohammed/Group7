@@ -4,36 +4,31 @@
 import db from "./db.js";
 import { goToLogin } from "./router.js";
 
-
 export async function getCurrentUser() {
-  const userId = localStorage.getItem("currentUserId");
-  if (!userId) return null;
+    const userId = localStorage.getItem("currentUserId");
+    if (!userId) return null;
 
-  const user = await db.users.findUnique({ where: { id: userId } });
-  if (!user) {
-
-    localStorage.removeItem("currentUserId");
-  }
-  return user;
+    const user = await db.users.findUnique({ where: { id: userId } });
+    if (!user) {
+        localStorage.removeItem("currentUserId");
+    }
+    return user;
 }
-
 
 export async function requireAuth() {
-  const user = await getCurrentUser();
-  if (!user) {
-    goToLogin();
-    return null;
-  }
-  return user;
+    const user = await getCurrentUser();
+    if (!user) {
+        goToLogin();
+        return null;
+    }
+    return user;
 }
-
 
 export function login(userId) {
-  localStorage.setItem("currentUserId", userId);
+    localStorage.setItem("currentUserId", userId);
 }
 
-
 export function logout() {
-  localStorage.removeItem("currentUserId");
-  goToLogin();
+    localStorage.removeItem("currentUserId");
+    goToLogin();
 }

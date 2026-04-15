@@ -7,23 +7,23 @@ import { formatTime } from "./time.js";
 import { renderMediaGrid } from "./media.js";
 
 export function renderPostCard(
-  post,
-  author,
-  likeCount,
-  commentCount,
-  mediaItems,
+    post,
+    author,
+    likeCount,
+    commentCount,
+    mediaItems,
 ) {
-  const username = escapeHtml(author?.username || "Unknown");
-  const avatarSrc = escapeHtml(
-    getAvatarSrc(author, "../assets/default-avatar.svg"),
-  );
-  const content = escapeHtml(post.content || "");
-  const time = formatTime(post.createdAt);
-  const userHref = `user.html?id=${encodeURIComponent(author?.id || "")}`;
-  const postHref = `post.html?id=${encodeURIComponent(post.id)}`;
-  const mediaHtml = mediaItems.length ? renderMediaGrid(mediaItems) : "";
+    const username = escapeHtml(author?.username || "Unknown");
+    const avatarSrc = escapeHtml(
+        getAvatarSrc(author, "../assets/default-avatar.svg"),
+    );
+    const content = escapeHtml(post.content || "");
+    const time = formatTime(post.createdAt);
+    const userHref = `user.html?id=${encodeURIComponent(author?.id || "")}`;
+    const postHref = `post.html?id=${encodeURIComponent(post.id)}`;
+    const mediaHtml = mediaItems.length ? renderMediaGrid(mediaItems) : "";
 
-  return `
+    return `
     <article class="card card-interactive post-card" aria-label="Post by ${username}">
       <a class="post-card-stretched-link" href="${postHref}" aria-label="View post details"></a>
       <div class="flex items-center gap-3 post-card-header">

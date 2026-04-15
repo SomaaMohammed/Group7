@@ -16,29 +16,29 @@ import { setupThemeToggle } from "./theme.js";
 import { resolveAvatarUrls, getAvatarSrc } from "./avatar.js";
 
 export async function injectShell() {
-  const user = await getCurrentUser();
-  if (!user) return;
+    const user = await getCurrentUser();
+    if (!user) return;
 
-  await resolveAvatarUrls([user]);
-  const avatarSrc = getAvatarSrc(user, "../assets/default-avatar.svg");
-  const safeAvatarSrc = escapeHtml(avatarSrc);
-  const safeUsername = escapeHtml(user.username || "user");
-  const safeUserId = encodeURIComponent(String(user.id || ""));
+    await resolveAvatarUrls([user]);
+    const avatarSrc = getAvatarSrc(user, "../assets/default-avatar.svg");
+    const safeAvatarSrc = escapeHtml(avatarSrc);
+    const safeUsername = escapeHtml(user.username || "user");
+    const safeUserId = encodeURIComponent(String(user.id || ""));
 
-  // Active page detection
-  const path = globalThis.location.pathname;
-  const isGlobal = path.endsWith("global.html");
-  const isHome = path.endsWith("home.html");
-  const isSearch = path.endsWith("search.html");
-  const isProfile = path.endsWith("user.html");
-  const isSettings = path.endsWith("settings.html");
+    // Active page detection
+    const path = globalThis.location.pathname;
+    const isGlobal = path.endsWith("global.html");
+    const isHome = path.endsWith("home.html");
+    const isSearch = path.endsWith("search.html");
+    const isProfile = path.endsWith("user.html");
+    const isSettings = path.endsWith("settings.html");
 
-  const activeClass = (flag) => (flag ? " active" : "");
+    const activeClass = (flag) => (flag ? " active" : "");
 
-  const shell = document.getElementById("shell-root");
-  if (!shell) return;
+    const shell = document.getElementById("shell-root");
+    if (!shell) return;
 
-  shell.innerHTML = `
+    shell.innerHTML = `
     <!-- Mobile header (sticky top) -->
     <header class="app-header">
       <div class="app-header-identity">
@@ -134,14 +134,14 @@ export async function injectShell() {
     </nav>
   `;
 
-  const newPostBtn = document.getElementById("shell-new-post-btn");
-  const fabBtn = document.getElementById("shell-fab-btn");
+    const newPostBtn = document.getElementById("shell-new-post-btn");
+    const fabBtn = document.getElementById("shell-fab-btn");
 
-  if (newPostBtn) newPostBtn.addEventListener("click", goToHomeNewPost);
-  if (fabBtn) fabBtn.addEventListener("click", goToHomeNewPost);
+    if (newPostBtn) newPostBtn.addEventListener("click", goToHomeNewPost);
+    if (fabBtn) fabBtn.addEventListener("click", goToHomeNewPost);
 
-  const themeToggleButtons = Array.from(
-    document.querySelectorAll("[data-theme-toggle]"),
-  );
-  setupThemeToggle({ buttons: themeToggleButtons });
+    const themeToggleButtons = Array.from(
+        document.querySelectorAll("[data-theme-toggle]"),
+    );
+    setupThemeToggle({ buttons: themeToggleButtons });
 }

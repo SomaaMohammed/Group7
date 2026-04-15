@@ -11,14 +11,14 @@ import { storage } from "./storage.js";
  * @param {Array<{profilePicture?: string|null}>} users
  */
 export async function resolveAvatarUrls(users) {
-  const ids = [
-    ...new Set(
-      users
-        .map((u) => u?.profilePicture)
-        .filter((id) => typeof id === "string" && id !== ""),
-    ),
-  ];
-  await Promise.all(ids.map((id) => storage.getUrl(id)));
+    const ids = [
+        ...new Set(
+            users
+                .map((u) => u?.profilePicture)
+                .filter((id) => typeof id === "string" && id !== ""),
+        ),
+    ];
+    await Promise.all(ids.map((id) => storage.getUrl(id)));
 }
 
 /**
@@ -29,7 +29,7 @@ export async function resolveAvatarUrls(users) {
  * @returns {string}
  */
 export function getAvatarSrc(user, fallback) {
-  const mediaId = user?.profilePicture;
-  if (!mediaId) return fallback;
-  return storage.getCachedUrl(mediaId) ?? fallback;
+    const mediaId = user?.profilePicture;
+    if (!mediaId) return fallback;
+    return storage.getCachedUrl(mediaId) ?? fallback;
 }
