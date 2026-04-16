@@ -1,4 +1,3 @@
-import Script from "next/script";
 import { Shell } from "@/components/Shell";
 import { ToastProvider } from "@/components/Toast";
 import { getSession } from "@/lib/auth";
@@ -15,12 +14,10 @@ export default async function RootLayout({ children }) {
 
     return (
         <html lang="en" suppressHydrationWarning>
+            <head>
+                <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+            </head>
             <body className="app-shell">
-                <Script
-                    id="theme-init"
-                    strategy="beforeInteractive"
-                    dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }}
-                />
                 <ToastProvider>
                     <Shell user={user} />
                     {children}
