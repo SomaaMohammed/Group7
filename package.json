@@ -1,41 +1,43 @@
 {
-    "name": "group7",
-    "version": "0.1.0",
-    "private": true,
-    "scripts": {
-        "dev": "next dev",
-        "build": "next build",
-        "start": "next start",
-        "lint": "biome check",
-        "format": "biome format --write",
-        "seed": "bun run prisma/seed.js"
-    },
-    "prisma": {
-        "seed": "bun run prisma/seed.js"
-    },
-    "dependencies": {
-        "@prisma/adapter-pg": "^7.7.0",
-        "@prisma/client": "^7.7.0",
-        "@supabase/ssr": "^0.10.2",
-        "@supabase/supabase-js": "^2.103.2",
-        "bcryptjs": "^3.0.3",
-        "next": "16.2.3",
-        "pg": "^8.20.0",
-        "react": "19.2.4",
-        "react-dom": "19.2.4"
-    },
-    "devDependencies": {
-        "@biomejs/biome": "2.2.0",
-        "babel-plugin-react-compiler": "1.0.0",
-        "dotenv": "^17.4.2",
-        "prisma": "^7.7.0"
-    },
-    "ignoreScripts": [
-        "sharp",
-        "unrs-resolver"
-    ],
-    "trustedDependencies": [
-        "sharp",
-        "unrs-resolver"
-    ]
+  "name": "group7",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "postinstall": "prisma generate",
+    "start": "next start",
+    "lint": "biome check",
+    "format": "biome format --write",
+    "seed": "bun run prisma/seed.js",
+    "vercel-build": "prisma generate && prisma migrate deploy && next build"
+  },
+  "prisma": {
+    "seed": "bun run prisma/seed.js"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.7.0",
+    "@prisma/client": "^7.7.0",
+    "@supabase/ssr": "^0.10.2",
+    "@supabase/supabase-js": "^2.103.2",
+    "bcryptjs": "^3.0.3",
+    "next": "16.2.3",
+    "pg": "^8.20.0",
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.2.0",
+    "babel-plugin-react-compiler": "1.0.0",
+    "dotenv": "^17.4.2",
+    "prisma": "^7.7.0"
+  },
+  "ignoreScripts": [
+    "sharp",
+    "unrs-resolver"
+  ],
+  "trustedDependencies": [
+    "sharp",
+    "unrs-resolver"
+  ]
 }
