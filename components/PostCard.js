@@ -1,11 +1,8 @@
-// Placeholder — Step 12 replaces with fuller version (avatar helper, time-ago, media grid).
-// Class names mirror legacy/js/global/post-card.js so global.css rules apply unchanged.
-
-import { formatTime } from "@/lib/format";
+import { Avatar } from "./Avatar";
+import { TimeAgo } from "./TimeAgo";
 
 export function PostCard({ post }) {
     const { id, author, content, media, createdAt, _count } = post;
-    const avatar = author.profilePicture || "/assets/default-avatar.svg";
 
     return (
         <article className="card card-interactive post-card" aria-label={`Post by ${author.username}`}>
@@ -20,7 +17,7 @@ export function PostCard({ post }) {
                     href={`/user/${author.username}`}
                     aria-label={`View ${author.username}'s profile`}
                 >
-                    <img className="avatar avatar-sm" src={avatar} alt="" />
+                    <Avatar user={author} size="sm" alt="" />
                 </a>
                 <div>
                     <a
@@ -29,14 +26,17 @@ export function PostCard({ post }) {
                     >
                         {author.username}
                     </a>
-                    <span className="text-secondary text-xs"> · {formatTime(createdAt)}</span>
+                    {" · "}
+                    <TimeAgo date={createdAt} />
                 </div>
             </div>
             <p className="post-card-content">{content}</p>
             {media?.length > 0 && (
-                <div className="post-card-media">
-                    {media.map((url) => (
-                        <img key={url} src={url} alt="" />
+                <div className={`media-grid media-grid-${Math.min(media.length, 4)}`}>
+                    {media.slice(0, 4).map((url, i) => (
+                        <div key={url} className="media-grid-item" data-index={i}>
+                            <img src={url} alt={`Attachment ${i + 1}`} loading="lazy" />
+                        </div>
                     ))}
                 </div>
             )}
