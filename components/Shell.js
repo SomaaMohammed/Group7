@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname, redirect } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { Avatar } from "./Avatar";
 import { ThemeToggle } from "./ThemeToggle";
 
@@ -149,6 +149,3 @@ export function Shell({ user }) {
   );
 }
 
-export default function HomePage() {
-  redirect("/global");
-}

@@ -42,3 +42,5 @@ next-env.d.ts
 
 md/
 /app/generated/prisma
+TRACK_C_CONTENT.md
+temp/
