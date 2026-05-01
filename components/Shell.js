@@ -1,31 +1,33 @@
-"use client";
+'use client';
 
-import { usePathname } from "next/navigation";
-import { Avatar } from "./Avatar";
-import { ThemeToggle } from "./ThemeToggle";
+import { usePathname, useRouter } from 'next/navigation';
+import { Avatar } from './Avatar';
+import { ThemeToggle } from './ThemeToggle';
 
 const NAV = [
-  { href: "/global", label: "Global Feed", icon: "icon-world" },
-  { href: "/home", label: "Your Feed", icon: "icon-home" },
-  { href: "/search", label: "Search", icon: "icon-search" },
+  { href: '/global', label: 'Global Feed', icon: 'icon-world' },
+  { href: '/home', label: 'Your Feed', icon: 'icon-home' },
+  { href: '/search', label: 'Search', icon: 'icon-search' },
 ];
 
 // When user is present: inject profile + settings nav. Otherwise render anon-safe shell.
 export function Shell({ user }) {
-  const pathname = usePathname() ?? "";
-  const isActive = (href) =>
-    pathname === href || pathname.startsWith(`${href}/`);
-  const profileHref = user ? `/user/${user.username}` : "/login";
+  const pathname = usePathname() ?? '';
+  const router = useRouter();
+
+  async function handleSignOut() {
+    await fetch('/api/auth/signout', { method: 'POST' });
+    router.push('/login');
+    router.refresh();
+  }
+  const isActive = (href) => pathname === href || pathname.startsWith(`${href}/`);
+  const profileHref = user ? `/user/${user.username}` : '/login';
 
   return (
     <>
       <header className="app-header">
         <div className="app-header-identity">
-          <a
-            className="app-header-brand"
-            href="/home"
-            aria-label="UNI HUB home"
-          >
+          <a className="app-header-brand" href="/home" aria-label="UNI HUB home">
             <img src="/assets/logo.svg" alt="UNI HUB logo" />
             <span>UNI HUB</span>
           </a>
@@ -33,11 +35,7 @@ export function Shell({ user }) {
         <div className="app-header-actions">
           <ThemeToggle />
           {user && (
-            <a
-              className="icon-btn app-header-settings"
-              href="/settings"
-              aria-label="Settings"
-            >
+            <a className="icon-btn app-header-settings" href="/settings" aria-label="Settings">
               <span className="icon icon-settings" aria-hidden="true" />
             </a>
           )}
@@ -46,11 +44,7 @@ export function Shell({ user }) {
 
       <aside className="app-sidebar">
         <div className="sidebar-brand-row">
-          <a
-            className="sidebar-brand-link"
-            href="/home"
-            aria-label="UNI HUB home"
-          >
+          <a className="sidebar-brand-link" href="/home" aria-label="UNI HUB home">
             <img src="/assets/logo.svg" alt="UNI HUB logo" />
             <div className="sidebar-brand">
               <p>UNI HUB</p>
@@ -63,7 +57,7 @@ export function Shell({ user }) {
           {NAV.map(({ href, label, icon }) => (
             <a
               key={href}
-              className={`sidebar-nav-item${isActive(href) ? " active" : ""}`}
+              className={`sidebar-nav-item${isActive(href) ? ' active' : ''}`}
               href={href}
             >
               <span className={`icon ${icon}`} aria-hidden="true" />
@@ -73,14 +67,14 @@ export function Shell({ user }) {
           {user && (
             <>
               <a
-                className={`sidebar-nav-item${isActive(profileHref) ? " active" : ""}`}
+                className={`sidebar-nav-item${isActive(profileHref) ? ' active' : ''}`}
                 href={profileHref}
               >
                 <span className="icon icon-person" aria-hidden="true" />
                 <span>Profile</span>
               </a>
               <a
-                className={`sidebar-nav-item${isActive("/settings") ? " active" : ""}`}
+                className={`sidebar-nav-item${isActive('/settings') ? ' active' : ''}`}
                 href="/settings"
               >
                 <span className="icon icon-settings" aria-hidden="true" />
@@ -97,13 +91,24 @@ export function Shell({ user }) {
                 New Post
               </a>
             </div>
-            <a className="sidebar-user" href={profileHref}>
-              <Avatar user={user} size="sm" alt={`${user.username}'s avatar`} />
-              <div className="sidebar-user-info">
-                <span className="sidebar-user-name">{user.username}</span>
-                <span className="sidebar-user-handle">@{user.username}</span>
-              </div>
-            </a>
+            <div className="sidebar-user-row">
+              <a className="sidebar-user" href={profileHref}>
+                <Avatar user={user} size="sm" alt={`${user.username}'s avatar`} />
+                <div className="sidebar-user-info">
+                  <span className="sidebar-user-name">{user.username}</span>
+                  <span className="sidebar-user-handle">@{user.username}</span>
+                </div>
+              </a>
+              <button
+                type="button"
+                className="btn btn-ghost btn-sm mr-7"
+                onClick={handleSignOut}
+                aria-label="Sign out"
+                title="Sign out"
+              >
+                Sign out
+              </button>
+            </div>
           </>
         )}
         {!user && (
@@ -119,7 +124,7 @@ export function Shell({ user }) {
         {NAV.map(({ href, label, icon }) => (
           <a
             key={href}
-            className={`bottom-nav-item${isActive(href) ? " active" : ""}`}
+            className={`bottom-nav-item${isActive(href) ? ' active' : ''}`}
             href={href}
             aria-label={label}
           >
@@ -128,15 +133,11 @@ export function Shell({ user }) {
         ))}
         {user && (
           <>
-            <a
-              className="bottom-nav-fab"
-              href="/home?compose=1"
-              aria-label="New post"
-            >
+            <a className="bottom-nav-fab" href="/home?compose=1" aria-label="New post">
               <span className="icon icon-plus" aria-hidden="true" />
             </a>
             <a
-              className={`bottom-nav-item${isActive(profileHref) ? " active" : ""}`}
+              className={`bottom-nav-item${isActive(profileHref) ? ' active' : ''}`}
               href={profileHref}
               aria-label="Profile"
             >
@@ -148,4 +149,3 @@ export function Shell({ user }) {
     </>
   );
 }
-

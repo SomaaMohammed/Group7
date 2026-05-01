@@ -38,7 +38,7 @@ export default function LoginPage() {
             setError("Invalid email or password.");
             return;
         }
-        router.replace("/global");
+        window.location.href = "/global";
     }
 
     return (

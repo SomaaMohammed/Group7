@@ -1,8 +1,11 @@
 import { Shell } from "@/components/Shell";
 import { ToastProvider } from "@/components/Toast";
 import { getSession } from "@/lib/auth";
+import { usersRepo } from "@/lib/repo/users";
 import { THEME_INIT_SCRIPT } from "@/lib/theme-init";
 import "./globals.css";
+
+export const dynamic = "force-dynamic";
 
 export const metadata = {
     title: "UNI HUB",
@@ -10,7 +13,8 @@ export const metadata = {
 };
 
 export default async function RootLayout({ children }) {
-    const user = await getSession().catch(() => null);
+    const session = await getSession().catch(() => null);
+    const user = session ? await usersRepo.findById(session.id).catch(() => null) : null;
 
     return (
         <html lang="en" suppressHydrationWarning>
