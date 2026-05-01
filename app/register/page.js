@@ -45,10 +45,7 @@ export default function RegisterPage() {
                 className="content-column page-enter"
                 style={{ maxWidth: 520 }}
             >
-                <h1 className="company-header">
-                    <img src="/assets/logo.svg" alt="UNI HUB logo" />
-                    UNI HUB
-                </h1>
+                <h1 className="company-header">UNI HUB</h1>
                 <section className="card auth-card" style={{ marginTop: 16 }}>
                     <h2 className="page-title" style={{ marginBottom: 12 }}>
                         Create account
