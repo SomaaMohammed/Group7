@@ -9,6 +9,7 @@ import { likesRepo } from "@/lib/repo/likes";
 import { postsRepo } from "@/lib/repo/posts";
 import { usersRepo } from "@/lib/repo/users";
 import { FollowButton } from "./FollowButton";
+import { OwnProfilePanel } from "./OwnProfilePanel";
 
 export const dynamic = "force-dynamic";
 
@@ -44,54 +45,88 @@ export default async function UserProfilePage({ params }) {
     }));
 
     return (
-        <main className="app-main">
+        <main className="app-main" id="user-page-main">
             <div className="content-column page-enter">
-                <section className="card">
-                    <div className="flex items-center justify-between gap-4">
-                        <div className="flex items-center gap-3">
-                            <Avatar
-                                user={profile}
-                                size="lg"
-                                alt={`${profile.username}'s avatar`}
-                            />
-                            <div>
-                                <h1 className="page-title">
-                                    @{profile.username}
-                                </h1>
-                                {profile.bio && (
-                                    <p className="text-secondary">
-                                        {profile.bio}
-                                    </p>
-                                )}
-                            </div>
-                        </div>
-                        {viewer && !isOwnProfile && (
-                            <FollowButton
-                                followingId={profile.id}
-                                initialFollowing={isFollowing}
-                            />
-                        )}
-                        {!viewer && (
-                            <Link className="btn btn-primary" href="/login">
-                                Sign in
-                            </Link>
-                        )}
-                    </div>
-                    <div
-                        className="flex gap-4 text-secondary text-sm"
-                        style={{ marginTop: 12 }}
-                    >
-                        <span>{profile._count.posts} posts</span>
-                        <span>{profile._count.followers} followers</span>
-                        <span>{profile._count.following} following</span>
-                    </div>
-                </section>
+                {isOwnProfile
+                    ? <OwnProfilePanel profile={profile} />
+                    : <section
+                          className="card"
+                          aria-labelledby="profile-heading"
+                      >
+                          <header className="user-profile-header">
+                              <div className="user-profile-identity">
+                                  <Avatar
+                                      user={profile}
+                                      size="2xl"
+                                      alt={`${profile.username}'s avatar`}
+                                  />
+                                  <div>
+                                      <h1
+                                          id="profile-heading"
+                                          className="user-profile-name"
+                                      >
+                                          {profile.username}
+                                      </h1>
+                                      <p
+                                          id="profile-handle"
+                                          className="text-secondary"
+                                      >
+                                          @{profile.username}
+                                      </p>
+                                  </div>
+                              </div>
+                              {viewer
+                                  ? <FollowButton
+                                        followingId={profile.id}
+                                        initialFollowing={isFollowing}
+                                    />
+                                  : <Link
+                                        className="btn btn-outline"
+                                        href="/login"
+                                    >
+                                        Sign in
+                                    </Link>}
+                          </header>
+
+                          <p id="profile-bio" className="text-secondary">
+                              {profile.bio ||
+                                  "This user has not added a bio yet."}
+                          </p>
+
+                          <div
+                              className="profile-stats"
+                              aria-label="Profile statistics"
+                          >
+                              <span className="profile-stat">
+                                  <span className="profile-stat-value">
+                                      {profile._count.posts}
+                                  </span>{" "}
+                                  Posts
+                              </span>
+                              <span className="profile-stat">
+                                  <span className="profile-stat-value">
+                                      {profile._count.followers}
+                                  </span>{" "}
+                                  Followers
+                              </span>
+                              <span className="profile-stat">
+                                  <span className="profile-stat-value">
+                                      {profile._count.following}
+                                  </span>{" "}
+                                  Following
+                              </span>
+                          </div>
+                      </section>}
 
                 <div id="feed-list" style={{ marginTop: 16 }}>
                     {postsWithViewerLikes.length === 0
                         ? <p className="text-secondary">No posts yet.</p>
                         : postsWithViewerLikes.map((post) => (
-                              <PostCard key={post.id} post={post} viewerIsAuthor={post.viewerIsAuthor} />
+                              <PostCard
+                                  key={post.id}
+                                  post={post}
+                                  viewerIsAuthor={post.viewerIsAuthor}
+                              />
                           ))}
                 </div>
             </div>
