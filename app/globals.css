@@ -1818,6 +1818,7 @@ pre {
     display: inline-flex;
     align-items: center;
     gap: var(--space-2);
+    padding-left: var(--space-3);
     color: inherit;
     text-decoration: none;
     min-width: 0;
