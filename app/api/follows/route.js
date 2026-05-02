@@ -1,5 +1,6 @@
 import { requireUser } from "@/lib/auth";
 import { followsRepo } from "@/lib/repo/follows";
+import { notificationsRepo } from "@/lib/repo/notifications";
 
 function getFollowingId(body) {
     return String(body?.followingId ?? "").trim();
@@ -25,6 +26,11 @@ export async function POST(request) {
     }
 
     await followsRepo.follow({ followerId: user.id, followingId });
+    await notificationsRepo.create({
+        recipientId: followingId,
+        actorId: user.id,
+        type: "FOLLOW",
+    });
     const following = await followsRepo.listFollowing(user.id, { limit: 1000 });
     return Response.json({
         ok: true,

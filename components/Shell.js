@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import PropTypes from "@/lib/prop-types";
 import { Avatar } from "./Avatar";
+import { NotificationBell } from "./NotificationBell";
 import { ThemeToggle } from "./ThemeToggle";
 
 const NAV = [
@@ -91,6 +92,7 @@ export function Shell({ user: initialUser }) {
                 </div>
                 <div className="app-header-actions">
                     <ThemeToggle />
+                    {user && <NotificationBell />}
                     {user && (
                         <Link
                             className="icon-btn app-header-settings"
@@ -144,6 +146,7 @@ export function Shell({ user: initialUser }) {
                     ))}
                     {user && (
                         <>
+                            <NotificationBell variant="sidebar" isActive={isActive("/notifications")} />
                             <Link
                                 className={`sidebar-nav-item${isActive(profileHref) ? " active" : ""}`}
                                 href={profileHref}
@@ -216,42 +219,55 @@ export function Shell({ user: initialUser }) {
             </aside>
 
             <nav className="bottom-nav">
-                {NAV.map(({ href, label, icon }) => (
-                    <Link
-                        key={href}
-                        className={`bottom-nav-item${isActive(href) ? " active" : ""}`}
-                        href={href}
-                        aria-label={label}
-                    >
-                        <span className={`icon ${icon}`} aria-hidden="true" />
-                        <span className="sr-only">{label}</span>
-                    </Link>
-                ))}
+                <Link
+                    className={`bottom-nav-item${isActive("/home") ? " active" : ""}`}
+                    href="/home"
+                    aria-label="Your Feed"
+                >
+                    <span className="icon icon-home" aria-hidden="true" />
+                    <span className="sr-only">Your Feed</span>
+                </Link>
+                <Link
+                    className={`bottom-nav-item${isActive("/global") ? " active" : ""}`}
+                    href="/global"
+                    aria-label="Global Feed"
+                >
+                    <span className="icon icon-world" aria-hidden="true" />
+                    <span className="sr-only">Global Feed</span>
+                </Link>
                 {user && (
-                    <>
-                        <Link
-                            className="bottom-nav-fab"
-                            href="/home?compose=1"
-                            aria-label="New post"
-                        >
-                            <span
-                                className="icon icon-plus"
-                                aria-hidden="true"
-                            />
-                            <span className="sr-only">New post</span>
-                        </Link>
-                        <Link
-                            className={`bottom-nav-item${isActive(profileHref) ? " active" : ""}`}
-                            href={profileHref}
-                            aria-label="Profile"
-                        >
-                            <span
-                                className="icon icon-person"
-                                aria-hidden="true"
-                            />
-                            <span className="sr-only">Profile</span>
-                        </Link>
-                    </>
+                    <Link
+                        className="bottom-nav-fab"
+                        href="/home?compose=1"
+                        aria-label="New post"
+                    >
+                        <span
+                            className="icon icon-plus"
+                            aria-hidden="true"
+                        />
+                        <span className="sr-only">New post</span>
+                    </Link>
+                )}
+                <Link
+                    className={`bottom-nav-item${isActive("/search") ? " active" : ""}`}
+                    href="/search"
+                    aria-label="Search"
+                >
+                    <span className="icon icon-search" aria-hidden="true" />
+                    <span className="sr-only">Search</span>
+                </Link>
+                {user && (
+                    <Link
+                        className={`bottom-nav-item${isActive(profileHref) ? " active" : ""}`}
+                        href={profileHref}
+                        aria-label="Profile"
+                    >
+                        <span
+                            className="icon icon-person"
+                            aria-hidden="true"
+                        />
+                        <span className="sr-only">Profile</span>
+                    </Link>
                 )}
             </nav>
         </>
