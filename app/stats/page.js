@@ -429,7 +429,7 @@ export default async function StatsPage() {
 
                         <div className="card stats-bar-chart-wrap">
 
-                            <DisplayBarChartFunc data={PostsPerDay} />
+                            <DisplayBarChartFunc DataToHandle={PostsPerDay} />
                         </div>
                     </section>
  
@@ -506,7 +506,7 @@ export default async function StatsPage() {
                     <div className="stats-ranked-list">
 
                         {HighestActivity.map((EachUser, Index) => (
-                            
+
                             <div key={EachUser.id} className="stats-ranked-item">
                                 <span className={`stats-rank-num${Index < 3 ? " top3" : ""}`}>
                                     {Index + 1}
