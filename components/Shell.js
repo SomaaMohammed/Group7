@@ -4,6 +4,7 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import PropTypes from "@/lib/prop-types";
 import { Avatar } from "./Avatar";
+import { NotificationBell } from "./NotificationBell";
 import { ThemeToggle } from "./ThemeToggle";
 
 const NAV = [
@@ -51,6 +52,7 @@ export function Shell({ user }) {
                 </div>
                 <div className="app-header-actions">
                     <ThemeToggle />
+                    {user && <NotificationBell />}
                     {user && (
                         <a
                             className="icon-btn app-header-settings"
@@ -104,6 +106,16 @@ export function Shell({ user }) {
                     ))}
                     {user && (
                         <>
+                            <a
+                                className={`sidebar-nav-item${isActive("/notifications") ? " active" : ""}`}
+                                href="/notifications"
+                            >
+                                <span
+                                    className="icon icon-bell"
+                                    aria-hidden="true"
+                                />
+                                <span>Notifications</span>
+                            </a>
                             <a
                                 className={`sidebar-nav-item${isActive(profileHref) ? " active" : ""}`}
                                 href={profileHref}
@@ -189,6 +201,17 @@ export function Shell({ user }) {
                 ))}
                 {user && (
                     <>
+                        <a
+                            className={`bottom-nav-item${isActive("/notifications") ? " active" : ""}`}
+                            href="/notifications"
+                            aria-label="Notifications"
+                        >
+                            <span
+                                className="icon icon-bell"
+                                aria-hidden="true"
+                            />
+                            <span className="sr-only">Notifications</span>
+                        </a>
                         <a
                             className="bottom-nav-fab"
                             href="/home?compose=1"
