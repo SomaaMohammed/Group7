@@ -107,3 +107,16 @@ model MediaAsset {
 
   @@index([ownerId, createdAt])
 }
+
+model MediaChunk {
+  id         String   @id @default(cuid(2))
+  uploadId   String
+  ownerId    String
+  chunkIndex Int
+  bytes      Bytes
+  createdAt  DateTime @default(now())
+
+  @@unique([uploadId, chunkIndex])
+  @@index([uploadId])
+  @@index([createdAt])
+}

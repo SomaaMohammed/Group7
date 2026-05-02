@@ -1,120 +1,138 @@
-import { statsRepo } from '@/lib/repo/stats';
+import { statsRepo } from "@/lib/repo/stats";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: 'Statistics | UNI HUB',
+    title: "Statistics | UNI HUB",
 };
 
 function DisplayBarChartFunc({ DataToHandle }) {
-  if (!DataToHandle || DataToHandle.length === 0) {
-    return <p className="text-secondary text-sm">No available data.</p>;
-  }
+    if (!DataToHandle || DataToHandle.length === 0) {
+        return <p className="text-secondary text-sm">No available data.</p>;
+    }
 
-  const MaximumCount = Math.max(...DataToHandle.map((DataEntry) => DataEntry.count), 1);
-  return (
-    <div className="stats-bar-chart" aria-label="Posts per day chart">
-      {DataToHandle.map((Entry, indexation) => {
-        const PercentageRounded = Math.round((Entry.count / MaximumCount) * 100);
-        const DateLabel =
-          Entry.day instanceof Date
-            ? Entry.day.toLocaleDateString('en-GB', {
-                day: 'numeric',
-                month: 'short',
-              })
-            : new Date(Entry.day).toLocaleDateString('en-GB', {
-                day: 'numeric',
-                month: 'short',
-              });
-        return (
-          <div
-            key={indexation}
-            className="stats-bar-item"
-            title={`${DateLabel}: ${Entry.count} posts`}
-          >
-            <div
-              className="stats-bar-fill"
-              style={{ height: `${Math.max(PercentageRounded, 2)}%` }}
-              aria-label={`${Entry.count} posts`}
-            />
-            {indexation % 7 === 0 && <span className="stats-bar-label">{DateLabel}</span>}
-          </div>
-        );
-      })}
-    </div>
-  );
+    const MaximumCount = Math.max(
+        ...DataToHandle.map((DataEntry) => DataEntry.count),
+        1,
+    );
+    return (
+        <div className="stats-bar-chart" aria-label="Posts per day chart">
+            {DataToHandle.map((Entry, indexation) => {
+                const PercentageRounded = Math.round(
+                    (Entry.count / MaximumCount) * 100,
+                );
+                const DateLabel =
+                    Entry.day instanceof Date
+                        ? Entry.day.toLocaleDateString("en-GB", {
+                              day: "numeric",
+                              month: "short",
+                          })
+                        : new Date(Entry.day).toLocaleDateString("en-GB", {
+                              day: "numeric",
+                              month: "short",
+                          });
+                return (
+                    <div
+                        key={indexation}
+                        className="stats-bar-item"
+                        title={`${DateLabel}: ${Entry.count} posts`}
+                    >
+                        <div
+                            className="stats-bar-fill"
+                            style={{
+                                height: `${Math.max(PercentageRounded, 2)}%`,
+                            }}
+                            aria-label={`${Entry.count} posts`}
+                        />
+                        {indexation % 7 === 0 && (
+                            <span className="stats-bar-label">{DateLabel}</span>
+                        )}
+                    </div>
+                );
+            })}
+        </div>
+    );
 }
 
 function WordCloudSizeRank({ words }) {
-  if (!words || words.length === 0) {
-    return <p className="text-secondary text-sm">No data is available.</p>;
-  }
-  const MaximumCounter = Math.max(...words.map((wordentry) => wordentry.count), 1);
-  return (
-    <div className="stats-word-cloud">
-      {words.map((wordentry) => {
-        const DecidedRatio = wordentry.count / MaximumCounter;
-        let size;
+    if (!words || words.length === 0) {
+        return <p className="text-secondary text-sm">No data is available.</p>;
+    }
+    const MaximumCounter = Math.max(
+        ...words.map((wordentry) => wordentry.count),
+        1,
+    );
+    return (
+        <div className="stats-word-cloud">
+            {words.map((wordentry) => {
+                const DecidedRatio = wordentry.count / MaximumCounter;
+                let size;
 
-        if (DecidedRatio > 0.75) {
-          size = 'xl';
-        } else if (DecidedRatio > 0.5) {
-          size = 'lg';
-        } else if (DecidedRatio > 0.25) {
-          size = 'md';
-        } else {
-          size = 'sm';
-        }
+                if (DecidedRatio > 0.75) {
+                    size = "xl";
+                } else if (DecidedRatio > 0.5) {
+                    size = "lg";
+                } else if (DecidedRatio > 0.25) {
+                    size = "md";
+                } else {
+                    size = "sm";
+                }
 
-        return (
-          <span key={wordentry.word} className={`stats-word stats-word-${size}`}>
-            {wordentry.word}
-          </span>
-        );
-      })}
-    </div>
-  );
+                return (
+                    <span
+                        key={wordentry.word}
+                        className={`stats-word stats-word-${size}`}
+                    >
+                        {wordentry.word}
+                    </span>
+                );
+            })}
+        </div>
+    );
 }
 
 function StatCardNumber({ PassedLabel, GivenValue, sub }) {
-  return (
-    <div className="card stats-stat-card">
-      <p className="stats-stat-value">{GivenValue}</p>
-      <p className="stats-stat-label">{PassedLabel}</p>
-      {sub && (
-        <p className="text-secondary text-xs" style={{ marginTop: 'var(--space-1)' }}>
-          {sub}
-        </p>
-      )}
-    </div>
-  );
+    return (
+        <div className="card stats-stat-card">
+            <p className="stats-stat-value">{GivenValue}</p>
+            <p className="stats-stat-label">{PassedLabel}</p>
+            {sub && (
+                <p
+                    className="text-secondary text-xs"
+                    style={{ marginTop: "var(--space-1)" }}
+                >
+                    {sub}
+                </p>
+            )}
+        </div>
+    );
 }
 
 export default async function StatsPage() {
-  const [
-    TotalsData,
-    RankedTopPosts,
-    RankedTopUsers,
-    PostsPerDay,
-    TopWords,
-    HighestActivity,
-    AverageFollowers,
-    AveragePosts,
-  ] = await Promise.all([
-    statsRepo.totals(),
-    statsRepo.topPostsByLikes({ limit: 5 }),
-    statsRepo.topUsersByFollowers({ limit: 5 }),
-    statsRepo.postsPerDay({ days: 35 }),
-    statsRepo.topWords({ limit: 15 }),
-    statsRepo.mostActiveUsersLast3Months({ limit: 5 }),
+    const [
+        TotalsData,
+        RankedTopPosts,
+        RankedTopUsers,
+        PostsPerDay,
+        TopWords,
+        HighestActivity,
+        AverageFollowers,
+        AveragePosts,
+    ] = await Promise.all([
+        statsRepo.totals(),
+        statsRepo.topPostsByLikes({ limit: 5 }),
+        statsRepo.topUsersByFollowers({ limit: 5 }),
+        statsRepo.postsPerDay({ days: 35 }),
+        statsRepo.topWords({ limit: 15 }),
+        statsRepo.mostActiveUsersLast3Months({ limit: 5 }),
 
-    statsRepo.avgFollowersPerUser(),
-    statsRepo.avgPostsPerUser(),
-  ]);
+        statsRepo.avgFollowersPerUser(),
+        statsRepo.avgPostsPerUser(),
+    ]);
 
-  return (
-    <>
-      <style>{`
+    return (
+        <>
+            <style>{`
                 .stats-page {
                     padding-top: var(--space-6);
                     padding-bottom: var(--space-12);
@@ -423,134 +441,210 @@ export default async function StatsPage() {
                 }
             `}</style>
 
-      <div className="content-column stats-page page-enter">
-        <h1 className="page-title">Statistics Overview</h1>
+            <div className="content-column stats-page page-enter">
+                <h1 className="page-title">Statistics Overview</h1>
 
-        <section className="stats-section">
-          <p className="stats-section-title">A Look at The Platform</p>
-          <div className="stats-totals-grid">
-            <StatCardNumber PassedLabel="Users" GivenValue={TotalsData.users.toLocaleString()} />
-            <StatCardNumber PassedLabel="Posts" GivenValue={TotalsData.posts.toLocaleString()} />
-
-            <StatCardNumber
-              PassedLabel="Comments"
-              GivenValue={TotalsData.comments.toLocaleString()}
-            />
-            <StatCardNumber PassedLabel="Likes" GivenValue={TotalsData.likes.toLocaleString()} />
-
-            <StatCardNumber
-              PassedLabel="Follows"
-              GivenValue={TotalsData.follows.toLocaleString()}
-            />
-            <StatCardNumber
-              PassedLabel="Average followers"
-              GivenValue={Number(AverageFollowers).toFixed(1)}
-              sub="per user"
-            />
-
-            <StatCardNumber
-              PassedLabel="Average posts"
-              GivenValue={Number(AveragePosts).toFixed(1)}
-              sub="per user"
-            />
-          </div>
-        </section>
-
-        <div className="stats-two-col" style={{ marginBottom: 'var(--space-6)' }}>
-          <section className="stats-section" style={{ marginBottom: 0 }}>
-            <p className="stats-section-title">Posts per day in the last 30 days</p>
-
-            <div className="card stats-bar-chart-wrap">
-              <DisplayBarChartFunc DataToHandle={PostsPerDay} />
-            </div>
-          </section>
-
-          <section className="stats-section" style={{ marginBottom: 0 }}>
-            <p className="stats-section-title">Top Words</p>
-            <div className="stats-word-cloud-card">
-              <WordCloudSizeRank words={TopWords} />
-            </div>
-          </section>
-        </div>
-
-        <div className="stats-two-col" style={{ marginBottom: 'var(--space-6)' }}>
-          <section className="stats-section" style={{ marginBottom: 0 }}>
-            <p className="stats-section-title">Most Liked Posts</p>
-
-            <div className="stats-ranked-list">
-              {RankedTopPosts.map((EachPosting, Index) => (
-                <div key={EachPosting.id} className="stats-ranked-item">
-                  <span className={`stats-rank-num${Index < 3 ? ' top3' : ''}`}>{Index + 1}</span>
-                  <div className="stats-ranked-info">
-                    <p className="stats-ranked-name"> @{EachPosting.author.username}</p>
-                    <p className="stats-ranked-meta">
-                      {' '}
-                      {EachPosting.content.slice(0, 60)}{' '}
-                      {EachPosting.content.length > 60 ? '…' : ''}
+                <section className="stats-section">
+                    <p className="stats-section-title">
+                        A Look at The Platform
                     </p>
-                  </div>
-                  <span className="stats-ranked-count">♥ {EachPosting._count.likes}</span>
-                </div>
-              ))}
-            </div>
-          </section>
+                    <div className="stats-totals-grid">
+                        <StatCardNumber
+                            PassedLabel="Users"
+                            GivenValue={TotalsData.users.toLocaleString()}
+                        />
+                        <StatCardNumber
+                            PassedLabel="Posts"
+                            GivenValue={TotalsData.posts.toLocaleString()}
+                        />
 
-          <section className="stats-section" style={{ marginBottom: 0 }}>
-            <p className="stats-section-title">Top Users by Followers</p>
-            <div className="stats-ranked-list">
-              {RankedTopUsers.map((EachUser, Index) => (
-                <div key={EachUser.id} className="stats-ranked-item">
-                  <span className={`stats-rank-num${Index < 3 ? ' top3' : ''}`}>{Index + 1}</span>
-                  {EachUser.profilePicture ? (
-                    <img
-                      className="stats-avatar"
-                      src={EachUser.profilePicture}
-                      alt={EachUser.username}
-                    />
-                  ) : (
-                    <div className="stats-avatar-placeholder" aria-hidden="true">
-                      {EachUser.username[0].toUpperCase()}
+                        <StatCardNumber
+                            PassedLabel="Comments"
+                            GivenValue={TotalsData.comments.toLocaleString()}
+                        />
+                        <StatCardNumber
+                            PassedLabel="Likes"
+                            GivenValue={TotalsData.likes.toLocaleString()}
+                        />
+
+                        <StatCardNumber
+                            PassedLabel="Follows"
+                            GivenValue={TotalsData.follows.toLocaleString()}
+                        />
+                        <StatCardNumber
+                            PassedLabel="Average followers"
+                            GivenValue={Number(AverageFollowers).toFixed(1)}
+                            sub="per user"
+                        />
+
+                        <StatCardNumber
+                            PassedLabel="Average posts"
+                            GivenValue={Number(AveragePosts).toFixed(1)}
+                            sub="per user"
+                        />
                     </div>
-                  )}
-                  <div className="stats-ranked-info">
-                    <p className="stats-ranked-name">@{EachUser.username}</p>
-                    <p className="stats-ranked-meta">{EachUser._count.following} Following</p>
-                  </div>
-                  <span className="stats-ranked-count">{EachUser._count.followers} Followers</span>
+                </section>
+
+                <div
+                    className="stats-two-col"
+                    style={{ marginBottom: "var(--space-6)" }}
+                >
+                    <section
+                        className="stats-section"
+                        style={{ marginBottom: 0 }}
+                    >
+                        <p className="stats-section-title">
+                            Posts per day in the last 30 days
+                        </p>
+
+                        <div className="card stats-bar-chart-wrap">
+                            <DisplayBarChartFunc DataToHandle={PostsPerDay} />
+                        </div>
+                    </section>
+
+                    <section
+                        className="stats-section"
+                        style={{ marginBottom: 0 }}
+                    >
+                        <p className="stats-section-title">Top Words</p>
+                        <div className="stats-word-cloud-card">
+                            <WordCloudSizeRank words={TopWords} />
+                        </div>
+                    </section>
                 </div>
-              ))}
+
+                <div
+                    className="stats-two-col"
+                    style={{ marginBottom: "var(--space-6)" }}
+                >
+                    <section
+                        className="stats-section"
+                        style={{ marginBottom: 0 }}
+                    >
+                        <p className="stats-section-title">Most Liked Posts</p>
+
+                        <div className="stats-ranked-list">
+                            {RankedTopPosts.map((EachPosting, Index) => (
+                                <div
+                                    key={EachPosting.id}
+                                    className="stats-ranked-item"
+                                >
+                                    <span
+                                        className={`stats-rank-num${Index < 3 ? " top3" : ""}`}
+                                    >
+                                        {Index + 1}
+                                    </span>
+                                    <div className="stats-ranked-info">
+                                        <p className="stats-ranked-name">
+                                            {" "}
+                                            @{EachPosting.author.username}
+                                        </p>
+                                        <p className="stats-ranked-meta">
+                                            {" "}
+                                            {EachPosting.content.slice(0, 60)}{" "}
+                                            {EachPosting.content.length > 60
+                                                ? "…"
+                                                : ""}
+                                        </p>
+                                    </div>
+                                    <span className="stats-ranked-count">
+                                        ♥ {EachPosting._count.likes}
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+
+                    <section
+                        className="stats-section"
+                        style={{ marginBottom: 0 }}
+                    >
+                        <p className="stats-section-title">
+                            Top Users by Followers
+                        </p>
+                        <div className="stats-ranked-list">
+                            {RankedTopUsers.map((EachUser, Index) => (
+                                <div
+                                    key={EachUser.id}
+                                    className="stats-ranked-item"
+                                >
+                                    <span
+                                        className={`stats-rank-num${Index < 3 ? " top3" : ""}`}
+                                    >
+                                        {Index + 1}
+                                    </span>
+                                    {EachUser.profilePicture
+                                        ? <img
+                                              className="stats-avatar"
+                                              src={EachUser.profilePicture}
+                                              alt={EachUser.username}
+                                          />
+                                        : <div
+                                              className="stats-avatar-placeholder"
+                                              aria-hidden="true"
+                                          >
+                                              {EachUser.username[0].toUpperCase()}
+                                          </div>}
+                                    <div className="stats-ranked-info">
+                                        <p className="stats-ranked-name">
+                                            @{EachUser.username}
+                                        </p>
+                                        <p className="stats-ranked-meta">
+                                            {EachUser._count.following}{" "}
+                                            Following
+                                        </p>
+                                    </div>
+                                    <span className="stats-ranked-count">
+                                        {EachUser._count.followers} Followers
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+                </div>
+
+                <section className="stats-section">
+                    <p className="stats-section-title">
+                        Most Active in The Last 3 months
+                    </p>
+                    <div className="stats-ranked-list">
+                        {HighestActivity.map((EachUser, Index) => (
+                            <div
+                                key={EachUser.id}
+                                className="stats-ranked-item"
+                            >
+                                <span
+                                    className={`stats-rank-num${Index < 3 ? " top3" : ""}`}
+                                >
+                                    {Index + 1}
+                                </span>
+                                {EachUser.profilePicture
+                                    ? <img
+                                          className="stats-avatar"
+                                          src={EachUser.profilePicture}
+                                          alt={EachUser.username}
+                                      />
+                                    : <div
+                                          className="stats-avatar-placeholder"
+                                          aria-hidden="true"
+                                      >
+                                          {EachUser.username[0].toUpperCase()}
+                                      </div>}
+
+                                <div className="stats-ranked-info">
+                                    <p className="stats-ranked-name">
+                                        @{EachUser.username}
+                                    </p>
+                                </div>
+
+                                <span className="stats-ranked-count">
+                                    {EachUser.postCount} posts
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                </section>
             </div>
-          </section>
-        </div>
-
-        <section className="stats-section">
-          <p className="stats-section-title">Most Active in The Last 3 months</p>
-          <div className="stats-ranked-list">
-            {HighestActivity.map((EachUser, Index) => (
-              <div key={EachUser.id} className="stats-ranked-item">
-                <span className={`stats-rank-num${Index < 3 ? ' top3' : ''}`}>{Index + 1}</span>
-                {EachUser.profilePicture ? (
-                  <img
-                    className="stats-avatar"
-                    src={EachUser.profilePicture}
-                    alt={EachUser.username}
-                  />
-                ) : (
-                  <div className="stats-avatar-placeholder" aria-hidden="true">
-                    {EachUser.username[0].toUpperCase()}
-                  </div>
-                )}
-
-                <div className="stats-ranked-info">
-                  <p className="stats-ranked-name">@{EachUser.username}</p>
-                </div>
-
-                <span className="stats-ranked-count">{EachUser.postCount} posts</span>
-              </div>
-            ))}
-          </div>
-        </section>
-      </div>
-    </>
-  );
+        </>
+    );
 }

@@ -4,7 +4,14 @@ import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import PropTypes from "@/lib/prop-types";
 
-export function ConfirmDialog({ title, message, confirmLabel = "Delete", onConfirm, onCancel, loading = false }) {
+export function ConfirmDialog({
+    title,
+    message,
+    confirmLabel = "Delete",
+    onConfirm,
+    onCancel,
+    loading = false,
+}) {
     const cancelRef = useRef(null);
 
     useEffect(() => {
@@ -18,11 +25,18 @@ export function ConfirmDialog({ title, message, confirmLabel = "Delete", onConfi
 
     return createPortal(
         <div className="modal-backdrop" onClick={onCancel}>
-            <div className="modal" style={{ maxWidth: 400 }} onClick={(e) => e.stopPropagation()}>
+            <div
+                className="modal"
+                style={{ maxWidth: 400 }}
+                onClick={(e) => e.stopPropagation()}
+            >
                 <div className="modal-header">
                     <h2 className="modal-title">{title}</h2>
                 </div>
-                <p className="text-secondary" style={{ marginBottom: "var(--space-5)" }}>
+                <p
+                    className="text-secondary"
+                    style={{ marginBottom: "var(--space-5)" }}
+                >
                     {message}
                 </p>
                 <div className="modal-footer">

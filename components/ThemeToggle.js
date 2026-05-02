@@ -3,9 +3,7 @@
 import { useEffect, useState } from "react";
 
 function readTheme() {
-    return document.documentElement.dataset.theme === "dark"
-        ? "dark"
-        : "light";
+    return document.documentElement.dataset.theme === "dark" ? "dark" : "light";
 }
 
 export function ThemeToggle() {

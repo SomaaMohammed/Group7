@@ -8,6 +8,67 @@ import PropTypes from "@/lib/prop-types";
 const MAX_ATTACHMENTS = 4;
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
 const MAX_VIDEO_BYTES = 25 * 1024 * 1024;
+const CHUNK_SIZE = 3.5 * 1024 * 1024;
+const CHUNKED_THRESHOLD = 4 * 1024 * 1024;
+
+async function uploadFile(file) {
+    if (file.size <= CHUNKED_THRESHOLD) {
+        const formData = new FormData();
+        formData.append("file", file);
+        const res = await fetch("/api/media", {
+            method: "POST",
+            body: formData,
+        });
+        if (!res.ok) {
+            const err = await res.json().catch(() => null);
+            throw new Error(err?.error || "Upload failed.");
+        }
+        const { url } = await res.json();
+        return url;
+    }
+
+    const uploadId = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+
+    for (let i = 0; i < totalChunks; i++) {
+        const start = i * CHUNK_SIZE;
+        const end = Math.min(start + CHUNK_SIZE, file.size);
+        const chunk = file.slice(start, end);
+
+        const formData = new FormData();
+        formData.append("chunk", chunk);
+        formData.append("uploadId", uploadId);
+        formData.append("chunkIndex", String(i));
+
+        const res = await fetch("/api/media/chunk", {
+            method: "POST",
+            body: formData,
+        });
+        if (!res.ok) {
+            const err = await res.json().catch(() => null);
+            throw new Error(err?.error || "Chunk upload failed.");
+        }
+    }
+
+    const completeRes = await fetch("/api/media/complete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            uploadId,
+            filename: file.name,
+            mimeType: file.type,
+            totalChunks,
+        }),
+    });
+
+    if (!completeRes.ok) {
+        const err = await completeRes.json().catch(() => null);
+        throw new Error(err?.error || "Upload assembly failed.");
+    }
+
+    const { url } = await completeRes.json();
+    return url;
+}
 
 function getMediaKind(file) {
     if (file.type.startsWith("image/")) return "image";
@@ -140,20 +201,7 @@ export function PostComposer({ defaultOpen = false }) {
             const mediaUrls = [];
 
             for (const { file } of attachments.slice(0, MAX_ATTACHMENTS)) {
-                const formData = new FormData();
-                formData.append("file", file);
-
-                const uploadRes = await fetch("/api/media", {
-                    method: "POST",
-                    body: formData,
-                });
-
-                if (!uploadRes.ok) {
-                    const error = await uploadRes.json().catch(() => null);
-                    throw new Error(error?.error || "Upload failed.");
-                }
-
-                const { url } = await uploadRes.json();
+                const url = await uploadFile(file);
                 mediaUrls.push(url);
             }
 

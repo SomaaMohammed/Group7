@@ -15,7 +15,9 @@ export function DeleteCommentButton({ commentId }) {
     async function handleDelete() {
         setLoading(true);
         try {
-            const res = await fetch(`/api/comments/${commentId}`, { method: "DELETE" });
+            const res = await fetch(`/api/comments/${commentId}`, {
+                method: "DELETE",
+            });
             if (!res.ok) {
                 const data = await res.json().catch(() => null);
                 throw new Error(data?.error || "Failed to delete comment.");
