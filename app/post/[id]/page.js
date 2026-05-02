@@ -30,7 +30,11 @@ export default async function PostPage({ params }) {
         <main className="app-main">
             <div className="content-column page-enter">
                 <h1 className="page-title">Post</h1>
-                <PostCard post={{ ...post, viewerLiked }} mediaDisplay="full" viewerIsAuthor={session?.id === post.author.id} />
+                <PostCard
+                    post={{ ...post, viewerLiked }}
+                    mediaDisplay="full"
+                    viewerIsAuthor={session?.id === post.author.id}
+                />
 
                 <section className="card" style={{ marginTop: 16 }}>
                     <div className="flex-between" style={{ marginBottom: 16 }}>
@@ -49,7 +53,8 @@ export default async function PostPage({ params }) {
                           >
                               <Link
                                   className="text-accent font-semibold"
-                                  href="/login"
+                                  href={`/login?next=${encodeURIComponent(`/post/${id}`)}`}
+                                  transitionTypes={["nav-forward"]}
                               >
                                   Sign in
                               </Link>{" "}
@@ -73,6 +78,7 @@ export default async function PostPage({ params }) {
                                               className="post-card-user-link"
                                               href={authorHref}
                                               aria-label={`View ${comment.author.username}'s profile`}
+                                              transitionTypes={["nav-forward"]}
                                           >
                                               <Avatar
                                                   user={comment.author}
@@ -85,6 +91,9 @@ export default async function PostPage({ params }) {
                                                   <Link
                                                       className="font-semibold post-card-username post-card-user-link"
                                                       href={authorHref}
+                                                      transitionTypes={[
+                                                          "nav-forward",
+                                                      ]}
                                                   >
                                                       {comment.author.username}
                                                   </Link>
@@ -99,13 +108,18 @@ export default async function PostPage({ params }) {
                                               </div>
                                               <p
                                                   className="text-sm"
-                                                  style={{ whiteSpace: "pre-wrap" }}
+                                                  style={{
+                                                      whiteSpace: "pre-wrap",
+                                                  }}
                                               >
                                                   {comment.content}
                                               </p>
                                           </div>
-                                          {session?.id === comment.author.id && (
-                                              <DeleteCommentButton commentId={comment.id} />
+                                          {session?.id ===
+                                              comment.author.id && (
+                                              <DeleteCommentButton
+                                                  commentId={comment.id}
+                                              />
                                           )}
                                       </article>
                                   );

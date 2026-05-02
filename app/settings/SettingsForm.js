@@ -26,7 +26,7 @@ export function SettingsForm() {
             showToast(data.error ?? "Logout failed.", "danger");
             return;
         }
-        router.push("/login");
+        router.replace("/login", { transitionTypes: ["nav-back"] });
         router.refresh();
     }
 
@@ -81,7 +81,7 @@ export function SettingsForm() {
             }
 
             showToast("Account deleted.", "success");
-            router.push("/login");
+            router.replace("/login", { transitionTypes: ["nav-back"] });
             router.refresh();
         } catch {
             showToast("Failed to delete account.", "danger");

@@ -15,13 +15,15 @@ export function DeletePostButton({ postId }) {
     async function handleDelete() {
         setLoading(true);
         try {
-            const res = await fetch(`/api/posts/${postId}`, { method: "DELETE" });
+            const res = await fetch(`/api/posts/${postId}`, {
+                method: "DELETE",
+            });
             if (!res.ok) {
                 const data = await res.json().catch(() => null);
                 throw new Error(data?.error || "Failed to delete post.");
             }
             showToast("Post deleted.", "success");
-            router.push("/");
+            router.replace("/home", { transitionTypes: ["nav-back"] });
             router.refresh();
         } catch (error) {
             showToast(error?.message || "Something went wrong.", "danger");

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import PropTypes from "@/lib/prop-types";
 
 export function SearchInput({ defaultValue = "" }) {
@@ -21,7 +21,11 @@ export function SearchInput({ defaultValue = "" }) {
             } else {
                 params.delete("q");
             }
-            router.push(`/search?${params.toString()}`);
+            const query = params.toString();
+            router.replace(query ? `/search?${query}` : "/search", {
+                scroll: false,
+                transitionTypes: ["route-update"],
+            });
         }, 300);
     }
 

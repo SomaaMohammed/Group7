@@ -43,6 +43,7 @@ export default async function SearchPage({ searchParams }) {
                                   href={`/user/${user.username}`}
                                   className="card card-interactive search-result"
                                   style={{ animationDelay: `${index * 45}ms` }}
+                                  transitionTypes={["nav-forward"]}
                               >
                                   <Avatar
                                       src={user.profilePicture}

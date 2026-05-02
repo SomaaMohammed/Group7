@@ -82,7 +82,8 @@ export default async function UserProfilePage({ params }) {
                                     />
                                   : <Link
                                         className="btn btn-outline"
-                                        href="/login"
+                                        href={`/login?next=${encodeURIComponent(`/user/${profile.username}`)}`}
+                                        transitionTypes={["nav-forward"]}
                                     >
                                         Sign in
                                     </Link>}

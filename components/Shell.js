@@ -61,7 +61,8 @@ export function Shell({ user: initialUser }) {
 
     async function handleSignOut() {
         await fetch("/api/auth/signout", { method: "POST" });
-        router.replace("/login");
+        router.replace("/login", { transitionTypes: ["nav-back"] });
+        router.refresh();
     }
 
     if (isAuthPage) return null;
@@ -78,6 +79,7 @@ export function Shell({ user: initialUser }) {
                         className="app-header-brand"
                         href="/home"
                         aria-label="UNI HUB home"
+                        transitionTypes={["nav-back"]}
                     >
                         <Image
                             src="/assets/logo.svg"
@@ -95,6 +97,7 @@ export function Shell({ user: initialUser }) {
                         className={`icon-btn${isActive("/stats") ? " active" : ""}`}
                         href="/stats"
                         aria-label="Statistics"
+                        transitionTypes={["nav-forward"]}
                     >
                         <span className="icon icon-eye" aria-hidden="true" />
                         <span className="sr-only">Statistics</span>
@@ -105,6 +108,7 @@ export function Shell({ user: initialUser }) {
                             className="icon-btn app-header-settings"
                             href="/settings"
                             aria-label="Settings"
+                            transitionTypes={["nav-forward"]}
                         >
                             <span
                                 className="icon icon-settings"
@@ -122,6 +126,7 @@ export function Shell({ user: initialUser }) {
                         className="sidebar-brand-link"
                         href="/home"
                         aria-label="UNI HUB home"
+                        transitionTypes={["nav-back"]}
                     >
                         <Image
                             src="/assets/logo.svg"
@@ -143,6 +148,7 @@ export function Shell({ user: initialUser }) {
                             key={href}
                             className={`sidebar-nav-item${isActive(href) ? " active" : ""}`}
                             href={href}
+                            transitionTypes={["nav-forward"]}
                         >
                             <span
                                 className={`icon ${icon}`}
@@ -160,6 +166,7 @@ export function Shell({ user: initialUser }) {
                             <Link
                                 className={`sidebar-nav-item${isActive(profileHref) ? " active" : ""}`}
                                 href={profileHref}
+                                transitionTypes={["nav-forward"]}
                             >
                                 <span
                                     className="icon icon-person"
@@ -170,6 +177,7 @@ export function Shell({ user: initialUser }) {
                             <Link
                                 className={`sidebar-nav-item${isActive("/settings") ? " active" : ""}`}
                                 href="/settings"
+                                transitionTypes={["nav-forward"]}
                             >
                                 <span
                                     className="icon icon-settings"
@@ -187,12 +195,17 @@ export function Shell({ user: initialUser }) {
                             <Link
                                 className="btn btn-primary"
                                 href="/home?compose=1"
+                                transitionTypes={["nav-forward"]}
                             >
                                 New Post
                             </Link>
                         </div>
                         <div className="sidebar-user-row">
-                            <Link className="sidebar-user" href={profileHref}>
+                            <Link
+                                className="sidebar-user"
+                                href={profileHref}
+                                transitionTypes={["nav-forward"]}
+                            >
                                 <Avatar
                                     user={user}
                                     size="sm"
@@ -221,7 +234,11 @@ export function Shell({ user: initialUser }) {
                 )}
                 {!user && (
                     <div className="sidebar-new-post">
-                        <Link className="btn btn-primary" href="/login">
+                        <Link
+                            className="btn btn-primary"
+                            href="/login"
+                            transitionTypes={["nav-forward"]}
+                        >
                             Sign in
                         </Link>
                     </div>
@@ -233,6 +250,7 @@ export function Shell({ user: initialUser }) {
                     className={`bottom-nav-item${isActive("/home") ? " active" : ""}`}
                     href="/home"
                     aria-label="Your Feed"
+                    transitionTypes={["nav-back"]}
                 >
                     <span className="icon icon-home" aria-hidden="true" />
                     <span className="sr-only">Your Feed</span>
@@ -241,6 +259,7 @@ export function Shell({ user: initialUser }) {
                     className={`bottom-nav-item${isActive("/global") ? " active" : ""}`}
                     href="/global"
                     aria-label="Global Feed"
+                    transitionTypes={["nav-forward"]}
                 >
                     <span className="icon icon-world" aria-hidden="true" />
                     <span className="sr-only">Global Feed</span>
@@ -250,6 +269,7 @@ export function Shell({ user: initialUser }) {
                         className="bottom-nav-fab"
                         href="/home?compose=1"
                         aria-label="New post"
+                        transitionTypes={["nav-forward"]}
                     >
                         <span className="icon icon-plus" aria-hidden="true" />
                         <span className="sr-only">New post</span>
@@ -259,6 +279,7 @@ export function Shell({ user: initialUser }) {
                     className={`bottom-nav-item${isActive("/search") ? " active" : ""}`}
                     href="/search"
                     aria-label="Search"
+                    transitionTypes={["nav-forward"]}
                 >
                     <span className="icon icon-search" aria-hidden="true" />
                     <span className="sr-only">Search</span>
@@ -268,6 +289,7 @@ export function Shell({ user: initialUser }) {
                         className={`bottom-nav-item${isActive(profileHref) ? " active" : ""}`}
                         href={profileHref}
                         aria-label="Profile"
+                        transitionTypes={["nav-forward"]}
                     >
                         <span className="icon icon-person" aria-hidden="true" />
                         <span className="sr-only">Profile</span>

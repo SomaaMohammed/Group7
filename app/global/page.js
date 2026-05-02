@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { PostCard } from "@/components/PostCard";
 import { getSession } from "@/lib/auth";
 import { likesRepo } from "@/lib/repo/likes";
@@ -29,12 +30,30 @@ export default async function GlobalPage() {
             <div className="content-column page-enter">
                 <h1 className="page-title">Global Feed</h1>
                 {postsWithViewerLikes.length === 0
-                    ? <p className="text-secondary">
-                          No posts yet. Run the seed script.
-                      </p>
+                    ? <section className="empty-state card">
+                          <h2 className="empty-state-title">
+                              No posts here yet.
+                          </h2>
+                          <p className="empty-state-description">
+                              Start the first campus update or check back soon.
+                          </p>
+                          {session && (
+                              <Link
+                                  className="btn btn-primary"
+                                  href="/home?compose=1"
+                                  transitionTypes={["nav-forward"]}
+                              >
+                                  New post
+                              </Link>
+                          )}
+                      </section>
                     : <div id="feed-list">
                           {postsWithViewerLikes.map((post) => (
-                              <PostCard key={post.id} post={post} viewerIsAuthor={post.viewerIsAuthor} />
+                              <PostCard
+                                  key={post.id}
+                                  post={post}
+                                  viewerIsAuthor={post.viewerIsAuthor}
+                              />
                           ))}
                       </div>}
             </div>

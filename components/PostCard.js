@@ -6,7 +6,11 @@ import { LikeButton } from "./LikeButton";
 import { PostMediaGrid } from "./PostMediaGrid";
 import { TimeAgo } from "./TimeAgo";
 
-export function PostCard({ post, mediaDisplay = "grid", viewerIsAuthor = false }) {
+export function PostCard({
+    post,
+    mediaDisplay = "grid",
+    viewerIsAuthor = false,
+}) {
     const { id, author, content, media, createdAt, _count } = post;
 
     return (
@@ -18,6 +22,7 @@ export function PostCard({ post, mediaDisplay = "grid", viewerIsAuthor = false }
                 className="post-card-stretched-link"
                 href={`/post/${id}`}
                 aria-label="View post details"
+                transitionTypes={["nav-forward"]}
             >
                 <span className="sr-only">View post details</span>
             </Link>
@@ -26,6 +31,7 @@ export function PostCard({ post, mediaDisplay = "grid", viewerIsAuthor = false }
                     className="post-card-user-link"
                     href={`/user/${author.username}`}
                     aria-label={`View ${author.username}'s profile`}
+                    transitionTypes={["nav-forward"]}
                 >
                     <Avatar user={author} size="sm" alt="" />
                 </Link>
@@ -33,6 +39,7 @@ export function PostCard({ post, mediaDisplay = "grid", viewerIsAuthor = false }
                     <Link
                         className="font-semibold post-card-username post-card-user-link"
                         href={`/user/${author.username}`}
+                        transitionTypes={["nav-forward"]}
                     >
                         {author.username}
                     </Link>
