@@ -1,5 +1,6 @@
 /* biome-ignore-all lint/security/noDangerouslySetInnerHtml: Static theme bootstrap must run before first paint. */
 import { cookies } from "next/headers";
+import { RouteTransition } from "@/components/RouteTransition";
 import { Shell } from "@/components/Shell";
 import { ToastProvider } from "@/components/Toast";
 import { getSession } from "@/lib/auth";
@@ -49,7 +50,7 @@ export default async function RootLayout({ children }) {
             <body className="app-shell">
                 <ToastProvider>
                     <Shell user={user} />
-                    {children}
+                    <RouteTransition>{children}</RouteTransition>
                 </ToastProvider>
             </body>
         </html>
