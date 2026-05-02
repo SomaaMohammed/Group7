@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import { firstParam, getSafeRedirectPath } from "@/lib/navigation";
-import PropTypes from "@/lib/prop-types";
 import { RegisterForm } from "./RegisterForm";
 
 export const dynamic = "force-dynamic";
@@ -17,7 +16,3 @@ export default async function RegisterPage({ searchParams }) {
 
     return <RegisterForm nextPath={nextPath} />;
 }
-
-RegisterPage.propTypes = {
-    searchParams: PropTypes.object,
-};

@@ -607,7 +607,7 @@ pre {
   cursor: not-allowed;
 }
 
-:where(.delete-btn) .icon {
+.delete-btn .icon {
   width: 18px;
   height: 18px;
 }
@@ -1116,19 +1116,19 @@ pre {
   justify-content: center;
 }
 
-:where(.post-like-btn) .icon-heart-fill {
+.post-like-btn .icon-heart-fill {
   display: none;
 }
 
-:where(.post-like-btn.is-liked) .icon-heart {
+.post-like-btn.is-liked .icon-heart {
   display: none;
 }
 
-:where(.post-like-btn.is-liked) .icon-heart-fill {
+.post-like-btn.is-liked .icon-heart-fill {
   display: inline-block;
 }
 
-:where(.post-like-btn) .icon {
+.post-like-btn .icon {
   position: relative;
   z-index: 2;
 }
@@ -1843,7 +1843,7 @@ pre {
   color: var(--color-primary);
 }
 
-:where(#user-page-main) .content-column {
+#user-page-main .content-column {
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
@@ -1935,7 +1935,7 @@ pre {
 }
 
 @media (min-width: 1024px) {
-  :where(#user-page-main) .content-column {
+  #user-page-main .content-column {
     gap: var(--space-5);
   }
 

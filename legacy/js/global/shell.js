@@ -1,0 +1,147 @@
+// js/global/shell.js
+// Injects the application chrome (header, sidebar, bottom-nav) into #shell-root.
+// Call once per protected page, after requireAuth().
+//
+// Required page structure:
+//   <body class="app-shell">
+//     <div id="shell-root"></div>
+//     <main class="app-main"> ... </main>
+//     <div class="toast-container"></div>
+//   </body>
+
+import { getCurrentUser } from "./auth.js";
+import { getAvatarSrc, resolveAvatarUrls } from "./avatar.js";
+import { goToHomeNewPost } from "./router.js";
+import { escapeHtml } from "./sanitize.js";
+import { setupThemeToggle } from "./theme.js";
+
+export async function injectShell() {
+    const user = await getCurrentUser();
+    if (!user) return;
+
+    await resolveAvatarUrls([user]);
+    const avatarSrc = getAvatarSrc(user, "../assets/default-avatar.svg");
+    const safeAvatarSrc = escapeHtml(avatarSrc);
+    const safeUsername = escapeHtml(user.username || "user");
+    const safeUserId = encodeURIComponent(String(user.id || ""));
+
+    // Active page detection
+    const path = globalThis.location.pathname;
+    const isGlobal = path.endsWith("global.html");
+    const isHome = path.endsWith("home.html");
+    const isSearch = path.endsWith("search.html");
+    const isProfile = path.endsWith("user.html");
+    const isSettings = path.endsWith("settings.html");
+
+    const activeClass = (flag) => (flag ? " active" : "");
+
+    const shell = document.getElementById("shell-root");
+    if (!shell) return;
+
+    shell.innerHTML = `
+    <!-- Mobile header (sticky top) -->
+    <header class="app-header">
+      <div class="app-header-identity">
+        <a class="app-header-brand" href="home.html" aria-label="UNI HUB home">
+          <img src="/assets/logo.svg" alt="UNI HUB logo">
+          <span>UNI HUB</span>
+        </a>
+      </div>
+      <div class="app-header-actions">
+        <button
+          class="icon-btn theme-toggle-btn"
+          type="button"
+          data-theme-toggle
+          aria-label="Toggle theme"
+        ></button>
+        <a class="icon-btn app-header-settings" href="settings.html" aria-label="Settings">
+          <span class="icon icon-settings" aria-hidden="true"></span>
+        </a>
+      </div>
+    </header>
+
+    <!-- Desktop sidebar (left column) -->
+    <aside class="app-sidebar">
+      <div class="sidebar-brand-row">
+        <a class="sidebar-brand-link" href="home.html" aria-label="UNI HUB home">
+          <img src="/assets/logo.svg" alt="UNI HUB logo"/>
+          <div class="sidebar-brand">
+            <p>UNI HUB</p>
+          </div>
+        </a>
+
+        <button
+          class="icon-btn theme-toggle-btn"
+          type="button"
+          data-theme-toggle
+          aria-label="Toggle theme"
+        ></button>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a class="sidebar-nav-item${activeClass(isGlobal)}" href="global.html">
+          <span class="icon icon-world" aria-hidden="true"></span>
+          <span>Global Feed</span>
+        </a>
+        <a class="sidebar-nav-item${activeClass(isHome)}" href="home.html">
+          <span class="icon icon-home" aria-hidden="true"></span>
+          <span>Your Feed</span>
+        </a>
+        <a class="sidebar-nav-item${activeClass(isSearch)}" href="search.html">
+          <span class="icon icon-search" aria-hidden="true"></span>
+          <span>Search</span>
+        </a>
+        <a class="sidebar-nav-item${activeClass(isProfile)}" href="user.html?id=${safeUserId}">
+          <span class="icon icon-person" aria-hidden="true"></span>
+          <span>Profile</span>
+        </a>
+        <a class="sidebar-nav-item${activeClass(isSettings)}" href="settings.html">
+          <span class="icon icon-settings" aria-hidden="true"></span>
+          <span>Settings</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-new-post">
+        <button class="btn btn-primary" id="shell-new-post-btn">New Post</button>
+      </div>
+
+      <a class="sidebar-user" href="user.html?id=${safeUserId}">
+        <img class="avatar avatar-sm" src="${safeAvatarSrc}" alt="${safeUsername}'s avatar">
+        <div class="sidebar-user-info">
+          <span class="sidebar-user-name">${safeUsername}</span>
+          <span class="sidebar-user-handle">@${safeUsername}</span>
+        </div>
+      </a>
+    </aside>
+
+    <!-- Mobile bottom navigation (fixed bottom) -->
+    <nav class="bottom-nav">
+      <a class="bottom-nav-item${activeClass(isGlobal)}" href="global.html" aria-label="Global Feed">
+        <span class="icon icon-world" aria-hidden="true"></span>
+      </a>
+      <a class="bottom-nav-item${activeClass(isHome)}" href="home.html" aria-label="Your Feed">
+        <span class="icon icon-home" aria-hidden="true"></span>
+      </a>
+      <button class="bottom-nav-fab" id="shell-fab-btn" aria-label="New post">
+        <span class="icon icon-plus" aria-hidden="true"></span>
+      </button>
+      <a class="bottom-nav-item${activeClass(isSearch)}" href="search.html" aria-label="Search">
+        <span class="icon icon-search" aria-hidden="true"></span>
+      </a>
+      <a class="bottom-nav-item${activeClass(isProfile)}" href="user.html?id=${safeUserId}" aria-label="Profile">
+        <span class="icon icon-person" aria-hidden="true"></span>
+      </a>
+    </nav>
+  `;
+
+    const newPostBtn = document.getElementById("shell-new-post-btn");
+    const fabBtn = document.getElementById("shell-fab-btn");
+
+    if (newPostBtn) newPostBtn.addEventListener("click", goToHomeNewPost);
+    if (fabBtn) fabBtn.addEventListener("click", goToHomeNewPost);
+
+    const themeToggleButtons = Array.from(
+        document.querySelectorAll("[data-theme-toggle]"),
+    );
+    setupThemeToggle({ buttons: themeToggleButtons });
+}

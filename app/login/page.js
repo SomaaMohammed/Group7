@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import { firstParam, getSafeRedirectPath } from "@/lib/navigation";
-import PropTypes from "@/lib/prop-types";
 import { LoginForm } from "./LoginForm";
 
 export const dynamic = "force-dynamic";
@@ -22,7 +21,3 @@ export default async function LoginPage({ searchParams }) {
         />
     );
 }
-
-LoginPage.propTypes = {
-    searchParams: PropTypes.object,
-};
