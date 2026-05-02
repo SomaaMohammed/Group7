@@ -399,7 +399,50 @@ export default async function StatsPage() {
 
                     flex-shrink: 0;
                 }
-            `}</style>      
+            `}</style>   
+
+            <div className="content-column stats-page page-enter">
+                <h1 className="page-title">Statistics Overview</h1>
+
+                <section className="stats-section">
+                    <p className="stats-section-title">A Look at The Platform</p>
+                    <div className="stats-totals-grid">
+
+                        <StatCardNumber label="Users" value={TotalsData.users.toLocaleString()} />
+                        <StatCardNumber label="Posts" value={TotalsData.posts.toLocaleString()} />
+
+
+                        <StatCardNumber label="Comments" value={TotalsData.comments.toLocaleString()} />
+                        <StatCardNumber label="Likes" value={TotalsData.likes.toLocaleString()} />
+
+                        <StatCardNumber label="Follows" value={TotalsData.follows.toLocaleString()} />
+                        <StatCardNumber label="Average followers" value={Number(AverageFollowers).toFixed(1)} sub="per user"/>
+                        
+                        <StatCardNumber label="Average posts" value={Number(AveragePosts).toFixed(1)} sub="per user"/>
+                    </div>
+                </section>
+ 
+                <div className="stats-two-col" style={{ marginBottom: "var(--space-6)" }}>
+                    <section className="stats-section" style={{ marginBottom: 0 }}>
+
+                        <p className="stats-section-title">Posts per day in the last 30 days</p>
+
+                        <div className="card stats-bar-chart-wrap">
+
+                            <DisplayBarChartFunc data={perDay} />
+                        </div>
+                    </section>
+ 
+                    <section className="stats-section" style={{ marginBottom: 0 }}>
+                        <p className="stats-section-title">The Top Words</p>
+                        <div className="card" style={{ minHeight: "128px" }}>
+                            
+                            <WordCloudSizeRank words={words} />
+                        </div>
+                    </section>
+                </div>
+                
+            </div>   
         </>
     );
 }
