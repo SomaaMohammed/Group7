@@ -408,17 +408,17 @@ export default async function StatsPage() {
                     <p className="stats-section-title">A Look at The Platform</p>
                     <div className="stats-totals-grid">
 
-                        <StatCardNumber label="Users" value={TotalsData.users.toLocaleString()} />
-                        <StatCardNumber label="Posts" value={TotalsData.posts.toLocaleString()} />
+                        <StatCardNumber PassedLabel="Users" GivenValue={TotalsData.users.toLocaleString()} />
+                        <StatCardNumber PassedLabel="Posts" GivenValue={TotalsData.posts.toLocaleString()} />
 
 
-                        <StatCardNumber label="Comments" value={TotalsData.comments.toLocaleString()} />
-                        <StatCardNumber label="Likes" value={TotalsData.likes.toLocaleString()} />
+                        <StatCardNumber PassedLabel="Comments" GivenValue={TotalsData.comments.toLocaleString()} />
+                        <StatCardNumber PassedLabel="Likes" GivenValue={TotalsData.likes.toLocaleString()} />
 
-                        <StatCardNumber label="Follows" value={TotalsData.follows.toLocaleString()} />
-                        <StatCardNumber label="Average followers" value={Number(AverageFollowers).toFixed(1)} sub="per user"/>
+                        <StatCardNumber PassedLabel="Follows" GivenValue={TotalsData.follows.toLocaleString()} />
+                        <StatCardNumber PassedLabel="Average followers" GivenValue={Number(AverageFollowers).toFixed(1)} sub="per user"/>
                         
-                        <StatCardNumber label="Average posts" value={Number(AveragePosts).toFixed(1)} sub="per user"/>
+                        <StatCardNumber PassedLabel="Average posts" GivenValue={Number(AveragePosts).toFixed(1)} sub="per user"/>
                     </div>
                 </section>
  
