@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Avatar } from "@/components/Avatar";
 import { CommentComposer } from "@/components/CommentComposer";
+import { DeleteCommentButton } from "@/components/DeleteCommentButton";
 import { PostCard } from "@/components/PostCard";
 import { getSession } from "@/lib/auth";
 import PropTypes from "@/lib/prop-types";
@@ -29,7 +30,7 @@ export default async function PostPage({ params }) {
         <main className="app-main">
             <div className="content-column page-enter">
                 <h1 className="page-title">Post</h1>
-                <PostCard post={{ ...post, viewerLiked }} mediaDisplay="full" />
+                <PostCard post={{ ...post, viewerLiked }} mediaDisplay="full" viewerIsAuthor={session?.id === post.author.id} />
 
                 <section className="card" style={{ marginTop: 16 }}>
                     <div className="flex-between" style={{ marginBottom: 16 }}>
@@ -91,6 +92,9 @@ export default async function PostPage({ params }) {
                                               {comment.content}
                                           </p>
                                       </div>
+                                      {session?.id === comment.author.id && (
+                                          <DeleteCommentButton commentId={comment.id} />
+                                      )}
                                   </article>
                               ))}
                     </div>

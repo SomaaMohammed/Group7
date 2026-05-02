@@ -40,6 +40,7 @@ export default async function UserProfilePage({ params }) {
     const postsWithViewerLikes = posts.map((post) => ({
         ...post,
         viewerLiked: likedPostIds.has(post.id),
+        viewerIsAuthor: viewer ? post.author.id === viewer.id : false,
     }));
 
     return (
@@ -90,7 +91,7 @@ export default async function UserProfilePage({ params }) {
                     {postsWithViewerLikes.length === 0
                         ? <p className="text-secondary">No posts yet.</p>
                         : postsWithViewerLikes.map((post) => (
-                              <PostCard key={post.id} post={post} />
+                              <PostCard key={post.id} post={post} viewerIsAuthor={post.viewerIsAuthor} />
                           ))}
                 </div>
             </div>

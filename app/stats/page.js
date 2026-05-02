@@ -123,11 +123,13 @@ export default async function StatsPage() {
                 }
  
                 .stats-stat-card {
-                    
-                    padding-top: var(--space-5) 
+                    padding-top: var(--space-5);
                     padding-bottom: var(--space-3);
-
                     text-align: center;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
                 }
  
                 .stats-stat-value {
@@ -184,15 +186,13 @@ export default async function StatsPage() {
  
                 .stats-ranked-item {
                     display: flex;
-
                     align-items: center;
-                   
-                    padding-top: var(--space-3)
+                    padding-top: var(--space-3);
                     padding-bottom: var(--space-4);
-
+                    padding-left: var(--space-3);
+                    padding-right: var(--space-4);
                     background-color: var(--elevation-1);
                     border-radius: var(--radius-md);
-
                     box-shadow: var(--shadow-card);
                     gap: var(--space-3);
                 }
@@ -275,8 +275,8 @@ export default async function StatsPage() {
                     gap: 3px;
                     height: 100px;
 
-                    padding-top: var(--space-2)
-                    padding-left: 0
+                    padding-top: var(--space-2);
+                    padding-left: 0;
                     padding-bottom: var(--space-1);
 
                     padding-right: 0;

@@ -21,6 +21,7 @@ export default async function GlobalPage() {
     const postsWithViewerLikes = posts.map((post) => ({
         ...post,
         viewerLiked: likedPostIds.has(post.id),
+        viewerIsAuthor: session ? post.author.id === session.id : false,
     }));
 
     return (
@@ -33,7 +34,7 @@ export default async function GlobalPage() {
                       </p>
                     : <div id="feed-list">
                           {postsWithViewerLikes.map((post) => (
-                              <PostCard key={post.id} post={post} />
+                              <PostCard key={post.id} post={post} viewerIsAuthor={post.viewerIsAuthor} />
                           ))}
                       </div>}
             </div>

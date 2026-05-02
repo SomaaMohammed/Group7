@@ -1,5 +1,7 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { Avatar } from "@/components/Avatar";
+import { SearchInput } from "@/components/SearchInput";
 import PropTypes from "@/lib/prop-types";
 import { usersRepo } from "@/lib/repo/users";
 
@@ -21,30 +23,11 @@ export default async function SearchPage({ searchParams }) {
                 <p className="text-secondary" style={{ marginBottom: 16 }}>
                     Find classmates and creators by username.
                 </p>
-                <form
-                    action="/search"
-                    className="card"
-                    style={{ marginBottom: 16 }}
-                >
-                    <div className="input-group">
-                        <label className="input-label" htmlFor="post-search">
-                            Search users
-                        </label>
-                        <div className="flex gap-2">
-                            <input
-                                id="post-search"
-                                className="input"
-                                type="search"
-                                name="q"
-                                placeholder="Search users..."
-                                defaultValue={q}
-                            />
-                            <button className="btn btn-primary" type="submit">
-                                Search
-                            </button>
-                        </div>
-                    </div>
-                </form>
+                <div className="card" style={{ marginBottom: 16 }}>
+                    <Suspense fallback={null}>
+                        <SearchInput defaultValue={q} />
+                    </Suspense>
+                </div>
 
                 {q && users.length === 0 ? (
                     <p

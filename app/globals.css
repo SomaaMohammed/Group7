@@ -576,6 +576,42 @@ pre {
     background-color: var(--color-danger-hover);
 }
 
+.delete-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-1);
+    border-radius: var(--radius-md);
+    color: var(--color-danger);
+    background-color: transparent;
+    transition:
+        color var(--transition-fast),
+        background-color var(--transition-fast),
+        transform var(--transition-bounce);
+    cursor: pointer;
+    position: relative;
+    z-index: 2;
+}
+
+.delete-btn:hover:not(:disabled) {
+    color: #fff;
+    background-color: var(--color-danger);
+}
+
+.delete-btn:active:not(:disabled) {
+    transform: scale(0.9);
+}
+
+.delete-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.delete-btn .icon {
+    width: 18px;
+    height: 18px;
+}
+
 .btn-ghost {
     background-color: transparent;
     color: var(--color-text-primary);
@@ -908,6 +944,7 @@ pre {
 .post-card-stats {
     padding-top: var(--space-2);
     border-top: 1px solid var(--color-border);
+    align-items: center;
 }
 
 .post-card-username,

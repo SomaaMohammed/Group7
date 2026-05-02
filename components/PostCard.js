@@ -1,11 +1,12 @@
 import Link from "next/link";
 import PropTypes from "@/lib/prop-types";
 import { Avatar } from "./Avatar";
+import { DeletePostButton } from "./DeletePostButton";
 import { LikeButton } from "./LikeButton";
 import { PostMediaGrid } from "./PostMediaGrid";
 import { TimeAgo } from "./TimeAgo";
 
-export function PostCard({ post, mediaDisplay = "grid" }) {
+export function PostCard({ post, mediaDisplay = "grid", viewerIsAuthor = false }) {
     const { id, author, content, media, createdAt, _count } = post;
 
     return (
@@ -52,6 +53,11 @@ export function PostCard({ post, mediaDisplay = "grid" }) {
                 <span>
                     {_count.comments} comment{_count.comments === 1 ? "" : "s"}
                 </span>
+                {viewerIsAuthor && (
+                    <span style={{ marginLeft: "auto" }}>
+                        <DeletePostButton postId={id} />
+                    </span>
+                )}
             </div>
         </article>
     );
@@ -77,4 +83,5 @@ PostCard.propTypes = {
         }).isRequired,
     }).isRequired,
     mediaDisplay: PropTypes.string,
+    viewerIsAuthor: PropTypes.bool,
 };

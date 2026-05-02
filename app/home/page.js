@@ -29,6 +29,7 @@ export default async function HomePage({ searchParams }) {
     const postsWithViewerLikes = posts.map((post) => ({
         ...post,
         viewerLiked: likedPostIds.has(post.id),
+        viewerIsAuthor: post.author.id === session.id,
     }));
     const showComposer = firstParam(query?.compose) === "1";
 
@@ -52,7 +53,7 @@ export default async function HomePage({ searchParams }) {
                       </section>
                     : <div id="feed-list">
                           {postsWithViewerLikes.map((post) => (
-                              <PostCard key={post.id} post={post} />
+                              <PostCard key={post.id} post={post} viewerIsAuthor={post.viewerIsAuthor} />
                           ))}
                       </div>}
             </div>
