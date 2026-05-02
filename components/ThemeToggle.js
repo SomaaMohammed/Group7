@@ -2,16 +2,30 @@
 
 import { useEffect, useState } from "react";
 
+function readTheme() {
+    return document.documentElement.dataset.theme === "dark"
+        ? "dark"
+        : "light";
+}
+
 export function ThemeToggle() {
     const [theme, setTheme] = useState(null);
 
     // Mount-only read: DOM data-theme is authoritative (set by theme-init.js pre-paint).
     useEffect(() => {
-        setTheme(
-            document.documentElement.dataset.theme === "dark"
-                ? "dark"
-                : "light",
-        );
+        setTheme(readTheme());
+
+        function handleThemeChange() {
+            setTheme(readTheme());
+        }
+
+        globalThis.addEventListener("themechange", handleThemeChange);
+        globalThis.addEventListener("storage", handleThemeChange);
+
+        return () => {
+            globalThis.removeEventListener("themechange", handleThemeChange);
+            globalThis.removeEventListener("storage", handleThemeChange);
+        };
     }, []);
 
     useEffect(() => {
@@ -23,6 +37,8 @@ export function ThemeToggle() {
             // biome-ignore lint/suspicious/noDocumentCookie: Keep server-rendered theme in sync for no-flash page loads.
             document.cookie = `theme=${theme}; Path=/; Max-Age=31536000; SameSite=Lax`;
         } catch {}
+
+        globalThis.dispatchEvent(new Event("themechange"));
     }, [theme]);
 
     // Before mount: render neutral shell. Same HTML on server + first client render → no mismatch.
