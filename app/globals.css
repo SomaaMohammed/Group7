@@ -1130,6 +1130,57 @@ pre {
     z-index: var(--z-modal);
 }
 
+.route-loading {
+    min-height: min(480px, calc(100vh - var(--header-height)));
+    display: grid;
+    place-items: center;
+    gap: var(--space-4);
+}
+
+.route-loading-stack {
+    width: min(100%, 520px);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.route-loading-line,
+.route-loading-card {
+    overflow: hidden;
+    border-radius: var(--radius-sm);
+    background: linear-gradient(
+        90deg,
+        var(--elevation-2) 0%,
+        var(--elevation-3) 45%,
+        var(--elevation-2) 90%
+    );
+    background-size: 220% 100%;
+    animation: loading-shimmer 1.2s ease-in-out infinite;
+}
+
+.route-loading-title {
+    width: 38%;
+    height: 28px;
+}
+
+.route-loading-card {
+    width: 100%;
+    height: 148px;
+}
+
+.route-loading-card-sm {
+    height: 96px;
+}
+
+@keyframes loading-shimmer {
+    0% {
+        background-position: 120% 0;
+    }
+    100% {
+        background-position: -120% 0;
+    }
+}
+
 .toast-container {
     position: fixed;
     bottom: calc(var(--bottom-nav-height, 64px) + var(--space-4));
@@ -1881,6 +1932,30 @@ pre {
     background: rgba(0, 0, 0, 0.08);
 }
 
+.media-grid-full {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    overflow: visible;
+}
+
+.media-grid-full .media-grid-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    aspect-ratio: auto;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background-color: #050505;
+}
+
+.media-grid-full .media-grid-full-image {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
 .post-card .media-grid,
 .user-post-card .media-grid {
     position: relative;
@@ -1902,8 +1977,8 @@ pre {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: min(92vw, 1200px);
-    height: 84vh;
+    width: min(98vw, 1600px);
+    height: 92vh;
 }
 
 .lightbox-content img,

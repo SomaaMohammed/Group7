@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useEffect, useState } from "react";
 
@@ -10,6 +11,7 @@ function getFormString(form, key) {
 }
 
 export default function LoginPage() {
+    const router = useRouter();
     const [error, setError] = useState("");
     const [pending, setPending] = useState(false);
     const [didRegister, setDidRegister] = useState(false);
@@ -34,12 +36,13 @@ export default function LoginPage() {
             redirect: false,
         });
 
-        setPending(false);
         if (result?.error) {
+            setPending(false);
             setError("Invalid email or password.");
             return;
         }
-        globalThis.location.href = "/global";
+        router.replace("/global");
+        router.refresh();
     }
 
     return (

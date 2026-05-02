@@ -5,7 +5,7 @@ import { LikeButton } from "./LikeButton";
 import { PostMediaGrid } from "./PostMediaGrid";
 import { TimeAgo } from "./TimeAgo";
 
-export function PostCard({ post }) {
+export function PostCard({ post, mediaDisplay = "grid" }) {
     const { id, author, content, media, createdAt, _count } = post;
 
     return (
@@ -40,7 +40,9 @@ export function PostCard({ post }) {
                 </div>
             </div>
             <p className="post-card-content">{content}</p>
-            {media?.length > 0 && <PostMediaGrid media={media} />}
+            {media?.length > 0 && (
+                <PostMediaGrid media={media} display={mediaDisplay} />
+            )}
             <div className="flex gap-4 text-secondary text-sm post-card-stats">
                 <LikeButton
                     postId={id}
@@ -74,4 +76,5 @@ PostCard.propTypes = {
             likes: PropTypes.number.isRequired,
         }).isRequired,
     }).isRequired,
+    mediaDisplay: PropTypes.string,
 };

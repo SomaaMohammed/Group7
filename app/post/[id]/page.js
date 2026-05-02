@@ -29,7 +29,7 @@ export default async function PostPage({ params }) {
         <main className="app-main">
             <div className="content-column page-enter">
                 <h1 className="page-title">Post</h1>
-                <PostCard post={{ ...post, viewerLiked }} />
+                <PostCard post={{ ...post, viewerLiked }} mediaDisplay="full" />
 
                 <section className="card" style={{ marginTop: 16 }}>
                     <div className="flex-between" style={{ marginBottom: 16 }}>

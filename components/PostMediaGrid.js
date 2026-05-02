@@ -7,8 +7,9 @@ import PropTypes from "@/lib/prop-types";
 
 const MAX_VISIBLE_MEDIA = 4;
 
-export function PostMediaGrid({ media }) {
+export function PostMediaGrid({ media, display = "grid" }) {
     const items = media.slice(0, MAX_VISIBLE_MEDIA);
+    const isFullDisplay = display === "full";
     const [mounted, setMounted] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(null);
     const closeButtonRef = useRef(null);
@@ -157,7 +158,9 @@ export function PostMediaGrid({ media }) {
 
     return (
         <>
-            <div className={`media-grid media-grid-${items.length}`}>
+            <div
+                className={`media-grid media-grid-${items.length}${isFullDisplay ? " media-grid-full" : ""}`}
+            >
                 {items.map((url, index) => (
                     <button
                         key={url}
@@ -166,14 +169,23 @@ export function PostMediaGrid({ media }) {
                         onClick={() => setCurrentIndex(index)}
                         aria-label={`View attachment ${index + 1} fullscreen`}
                     >
-                        <Image
-                            src={url}
-                            alt={`Attachment ${index + 1}`}
-                            fill
-                            sizes="(max-width: 768px) 100vw, 680px"
-                            style={{ objectFit: "cover" }}
-                            unoptimized
-                        />
+                        {isFullDisplay
+                            ? <>
+                                  {/* biome-ignore lint/performance/noImgElement: Detail media needs natural dimensions for uncropped full-size display. */}
+                                  <img
+                                      className="media-grid-full-image"
+                                      src={url}
+                                      alt={`Attachment ${index + 1}`}
+                                  />
+                              </>
+                            : <Image
+                                  src={url}
+                                  alt={`Attachment ${index + 1}`}
+                                  fill
+                                  sizes="(max-width: 768px) 100vw, 680px"
+                                  style={{ objectFit: "cover" }}
+                                  unoptimized
+                              />}
                     </button>
                 ))}
             </div>
@@ -184,4 +196,5 @@ export function PostMediaGrid({ media }) {
 
 PostMediaGrid.propTypes = {
     media: PropTypes.arrayOf(PropTypes.string).isRequired,
+    display: PropTypes.string,
 };

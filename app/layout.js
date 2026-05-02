@@ -4,7 +4,6 @@ import { Shell } from "@/components/Shell";
 import { ToastProvider } from "@/components/Toast";
 import { getSession } from "@/lib/auth";
 import PropTypes from "@/lib/prop-types";
-import { usersRepo } from "@/lib/repo/users";
 import { THEME_INIT_SCRIPT } from "@/lib/theme-init";
 import "./globals.css";
 
@@ -26,7 +25,10 @@ export default async function RootLayout({ children }) {
     ]);
     const initialTheme = normalizeTheme(cookieStore.get("theme")?.value);
     const user = session
-        ? await usersRepo.findById(session.id).catch(() => null)
+        ? {
+              username: session.username,
+              profilePicture: session.profilePicture,
+          }
         : null;
 
     return (

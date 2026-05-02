@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import PropTypes from "@/lib/prop-types";
 import { Avatar } from "./Avatar";
 import { ThemeToggle } from "./ThemeToggle";
@@ -14,13 +15,51 @@ const NAV = [
 ];
 
 // When user is present: inject profile + settings nav. Otherwise render anon-safe shell.
-export function Shell({ user }) {
+export function Shell({ user: initialUser }) {
     const pathname = usePathname() ?? "";
     const router = useRouter();
+    const [user, setUser] = useState(initialUser);
     const isAuthPage = pathname === "/login" || pathname === "/register";
+
+    useEffect(() => {
+        setUser(initialUser);
+    }, [initialUser]);
+
+    useEffect(() => {
+        if (isAuthPage) return;
+
+        let cancelled = false;
+
+        async function refreshShellUser() {
+            try {
+                const response = await fetch("/api/users/me", {
+                    cache: "no-store",
+                });
+
+                if (cancelled) return;
+
+                if (!response.ok) {
+                    setUser(null);
+                    return;
+                }
+
+                const data = await response.json();
+                setUser(data?.user ?? null);
+            } catch {
+                if (!cancelled) setUser(initialUser ?? null);
+            }
+        }
+
+        refreshShellUser();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [initialUser, isAuthPage]);
 
     async function handleSignOut() {
         await fetch("/api/auth/signout", { method: "POST" });
+        setUser(null);
         router.push("/login");
         router.refresh();
     }
