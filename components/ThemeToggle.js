@@ -7,7 +7,11 @@ export function ThemeToggle() {
 
     // Mount-only read: DOM data-theme is authoritative (set by theme-init.js pre-paint).
     useEffect(() => {
-        setTheme(document.documentElement.dataset.theme === "dark" ? "dark" : "light");
+        setTheme(
+            document.documentElement.dataset.theme === "dark"
+                ? "dark"
+                : "light",
+        );
     }, []);
 
     useEffect(() => {
@@ -45,7 +49,10 @@ export function ThemeToggle() {
             title={`Switch to ${label} theme`}
             onClick={() => setTheme(target)}
         >
-            <span className={`icon ${iconName} theme-toggle-icon`} aria-hidden="true" />
+            <span
+                className={`icon ${iconName} theme-toggle-icon`}
+                aria-hidden="true"
+            />
             <span className="theme-toggle-label">{label}</span>
         </button>
     );

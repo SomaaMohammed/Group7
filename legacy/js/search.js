@@ -1,8 +1,8 @@
 import { requireAuth } from "./global/auth.js";
+import { getAvatarSrc, resolveAvatarUrls } from "./global/avatar.js";
 import db from "./global/db.js";
-import { injectShell } from "./global/shell.js";
 import { escapeHtml } from "./global/sanitize.js";
-import { resolveAvatarUrls, getAvatarSrc } from "./global/avatar.js";
+import { injectShell } from "./global/shell.js";
 import { applyTheme, getInitialTheme } from "./global/theme.js";
 import { flushQueuedToast, showToast } from "./global/toast.js";
 

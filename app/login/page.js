@@ -1,18 +1,21 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useEffect, useState } from "react";
 
+function getFormString(form, key) {
+    const value = form.get(key);
+    return typeof value === "string" ? value : "";
+}
+
 export default function LoginPage() {
-    const router = useRouter();
     const [error, setError] = useState("");
     const [pending, setPending] = useState(false);
     const [didRegister, setDidRegister] = useState(false);
 
     useEffect(() => {
-        const params = new URLSearchParams(window.location.search);
+        const params = new URLSearchParams(globalThis.location.search);
         setDidRegister(params.get("registered") === "1");
     }, []);
 
@@ -22,10 +25,8 @@ export default function LoginPage() {
         setError("");
 
         const form = new FormData(event.currentTarget);
-        const email = String(form.get("email") ?? "")
-            .trim()
-            .toLowerCase();
-        const password = String(form.get("password") ?? "");
+        const email = getFormString(form, "email").trim().toLowerCase();
+        const password = getFormString(form, "password");
 
         const result = await signIn("credentials", {
             email,
@@ -38,7 +39,7 @@ export default function LoginPage() {
             setError("Invalid email or password.");
             return;
         }
-        window.location.href = "/global";
+        globalThis.location.href = "/global";
     }
 
     return (

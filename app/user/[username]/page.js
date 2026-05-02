@@ -1,10 +1,12 @@
+import { notFound } from "next/navigation";
 import { Avatar } from "@/components/Avatar";
 import { PostCard } from "@/components/PostCard";
 import { getSession } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import PropTypes from "@/lib/prop-types";
 import { followsRepo } from "@/lib/repo/follows";
+import { likesRepo } from "@/lib/repo/likes";
+import { postsRepo } from "@/lib/repo/posts";
 import { usersRepo } from "@/lib/repo/users";
-import { notFound } from "next/navigation";
 import { FollowButton } from "./FollowButton";
 
 export const dynamic = "force-dynamic";
@@ -25,25 +27,19 @@ export default async function UserProfilePage({ params }) {
         });
     }
 
-    const posts = await prisma.post.findMany({
-        where: { authorId: profile.id },
-        take: 30,
-        orderBy: { createdAt: "desc" },
-        select: {
-            id: true,
-            content: true,
-            media: true,
-            createdAt: true,
-            author: {
-                select: {
-                    id: true,
-                    username: true,
-                    profilePicture: true,
-                },
-            },
-            _count: { select: { comments: true, likes: true } },
-        },
-    });
+    const posts = await postsRepo.listByAuthor(profile.id, { limit: 30 });
+    const likedPostIds = viewer
+        ? new Set(
+              await likesRepo.listPostIdsByUser({
+                  userId: viewer.id,
+                  postIds: posts.map((post) => post.id),
+              }),
+          )
+        : new Set();
+    const postsWithViewerLikes = posts.map((post) => ({
+        ...post,
+        viewerLiked: likedPostIds.has(post.id),
+    }));
 
     return (
         <main className="app-main">
@@ -57,22 +53,27 @@ export default async function UserProfilePage({ params }) {
                                 alt={`${profile.username}'s avatar`}
                             />
                             <div>
-                                <h1 className="page-title">@{profile.username}</h1>
+                                <h1 className="page-title">
+                                    @{profile.username}
+                                </h1>
                                 {profile.bio && (
-                                    <p className="text-secondary">{profile.bio}</p>
+                                    <p className="text-secondary">
+                                        {profile.bio}
+                                    </p>
                                 )}
                             </div>
                         </div>
-                        {!viewer ? (
-                            <a className="btn btn-primary" href="/login">
-                                Sign in
-                            </a>
-                        ) : !isOwnProfile ? (
+                        {viewer && !isOwnProfile && (
                             <FollowButton
                                 followingId={profile.id}
                                 initialFollowing={isFollowing}
                             />
-                        ) : null}
+                        )}
+                        {!viewer && (
+                            <a className="btn btn-primary" href="/login">
+                                Sign in
+                            </a>
+                        )}
                     </div>
                     <div
                         className="flex gap-4 text-secondary text-sm"
@@ -85,13 +86,17 @@ export default async function UserProfilePage({ params }) {
                 </section>
 
                 <div id="feed-list" style={{ marginTop: 16 }}>
-                    {posts.length === 0 ? (
-                        <p className="text-secondary">No posts yet.</p>
-                    ) : (
-                        posts.map((post) => <PostCard key={post.id} post={post} />)
-                    )}
+                    {postsWithViewerLikes.length === 0
+                        ? <p className="text-secondary">No posts yet.</p>
+                        : postsWithViewerLikes.map((post) => (
+                              <PostCard key={post.id} post={post} />
+                          ))}
                 </div>
             </div>
         </main>
     );
 }
+
+UserProfilePage.propTypes = {
+    params: PropTypes.object.isRequired,
+};

@@ -1,151 +1,226 @@
-'use client';
+"use client";
 
-import { usePathname, useRouter } from 'next/navigation';
-import { Avatar } from './Avatar';
-import { ThemeToggle } from './ThemeToggle';
+import Image from "next/image";
+import { usePathname, useRouter } from "next/navigation";
+import PropTypes from "@/lib/prop-types";
+import { Avatar } from "./Avatar";
+import { ThemeToggle } from "./ThemeToggle";
 
 const NAV = [
-  { href: '/global', label: 'Global Feed', icon: 'icon-world' },
-  { href: '/home', label: 'Your Feed', icon: 'icon-home' },
-  { href: '/search', label: 'Search', icon: 'icon-search' },
+    { href: "/global", label: "Global Feed", icon: "icon-world" },
+    { href: "/home", label: "Your Feed", icon: "icon-home" },
+    { href: "/search", label: "Search", icon: "icon-search" },
 ];
 
 // When user is present: inject profile + settings nav. Otherwise render anon-safe shell.
 export function Shell({ user }) {
-  const pathname = usePathname() ?? '';
-  const router = useRouter();
+    const pathname = usePathname() ?? "";
+    const router = useRouter();
+    const isAuthPage = pathname === "/login" || pathname === "/register";
 
-  async function handleSignOut() {
-    await fetch('/api/auth/signout', { method: 'POST' });
-    router.push('/login');
-    router.refresh();
-  }
-  const isActive = (href) => pathname === href || pathname.startsWith(`${href}/`);
-  const profileHref = user ? `/user/${user.username}` : '/login';
+    async function handleSignOut() {
+        await fetch("/api/auth/signout", { method: "POST" });
+        router.push("/login");
+        router.refresh();
+    }
 
-  return (
-    <>
-      <header className="app-header">
-        <div className="app-header-identity">
-          <a className="app-header-brand" href="/home" aria-label="UNI HUB home">
-            <img src="/assets/logo.svg" alt="UNI HUB logo" />
-            <span>UNI HUB</span>
-          </a>
-        </div>
-        <div className="app-header-actions">
-          <ThemeToggle />
-          {user && (
-            <a className="icon-btn app-header-settings" href="/settings" aria-label="Settings">
-              <span className="icon icon-settings" aria-hidden="true" />
-            </a>
-          )}
-        </div>
-      </header>
+    if (isAuthPage) return null;
 
-      <aside className="app-sidebar">
-        <div className="sidebar-brand-row">
-          <a className="sidebar-brand-link" href="/home" aria-label="UNI HUB home">
-            <img src="/assets/logo.svg" alt="UNI HUB logo" />
-            <div className="sidebar-brand">
-              <p>UNI HUB</p>
-            </div>
-          </a>
-          <ThemeToggle />
-        </div>
+    const isActive = (href) =>
+        pathname === href || pathname.startsWith(`${href}/`);
+    const profileHref = user ? `/user/${user.username}` : "/login";
 
-        <nav className="sidebar-nav">
-          {NAV.map(({ href, label, icon }) => (
-            <a
-              key={href}
-              className={`sidebar-nav-item${isActive(href) ? ' active' : ''}`}
-              href={href}
-            >
-              <span className={`icon ${icon}`} aria-hidden="true" />
-              <span>{label}</span>
-            </a>
-          ))}
-          {user && (
-            <>
-              <a
-                className={`sidebar-nav-item${isActive(profileHref) ? ' active' : ''}`}
-                href={profileHref}
-              >
-                <span className="icon icon-person" aria-hidden="true" />
-                <span>Profile</span>
-              </a>
-              <a
-                className={`sidebar-nav-item${isActive('/settings') ? ' active' : ''}`}
-                href="/settings"
-              >
-                <span className="icon icon-settings" aria-hidden="true" />
-                <span>Settings</span>
-              </a>
-            </>
-          )}
-        </nav>
-
-        {user && (
-          <>
-            <div className="sidebar-new-post">
-              <a className="btn btn-primary" href="/home?compose=1">
-                New Post
-              </a>
-            </div>
-            <div className="sidebar-user-row">
-              <a className="sidebar-user" href={profileHref}>
-                <Avatar user={user} size="sm" alt={`${user.username}'s avatar`} />
-                <div className="sidebar-user-info">
-                  <span className="sidebar-user-name">{user.username}</span>
-                  <span className="sidebar-user-handle">@{user.username}</span>
+    return (
+        <>
+            <header className="app-header">
+                <div className="app-header-identity">
+                    <a
+                        className="app-header-brand"
+                        href="/home"
+                        aria-label="UNI HUB home"
+                    >
+                        <Image
+                            src="/assets/logo.svg"
+                            alt="UNI HUB logo"
+                            width={48}
+                            height={48}
+                            unoptimized
+                        />
+                        <span>UNI HUB</span>
+                    </a>
                 </div>
-              </a>
-              <button
-                type="button"
-                className="btn btn-ghost btn-sm mr-7"
-                onClick={handleSignOut}
-                aria-label="Sign out"
-                title="Sign out"
-              >
-                Sign out
-              </button>
-            </div>
-          </>
-        )}
-        {!user && (
-          <div className="sidebar-new-post">
-            <a className="btn btn-primary" href="/login">
-              Sign in
-            </a>
-          </div>
-        )}
-      </aside>
+                <div className="app-header-actions">
+                    <ThemeToggle />
+                    {user && (
+                        <a
+                            className="icon-btn app-header-settings"
+                            href="/settings"
+                            aria-label="Settings"
+                        >
+                            <span
+                                className="icon icon-settings"
+                                aria-hidden="true"
+                            />
+                            <span className="sr-only">Settings</span>
+                        </a>
+                    )}
+                </div>
+            </header>
 
-      <nav className="bottom-nav">
-        {NAV.map(({ href, label, icon }) => (
-          <a
-            key={href}
-            className={`bottom-nav-item${isActive(href) ? ' active' : ''}`}
-            href={href}
-            aria-label={label}
-          >
-            <span className={`icon ${icon}`} aria-hidden="true" />
-          </a>
-        ))}
-        {user && (
-          <>
-            <a className="bottom-nav-fab" href="/home?compose=1" aria-label="New post">
-              <span className="icon icon-plus" aria-hidden="true" />
-            </a>
-            <a
-              className={`bottom-nav-item${isActive(profileHref) ? ' active' : ''}`}
-              href={profileHref}
-              aria-label="Profile"
-            >
-              <span className="icon icon-person" aria-hidden="true" />
-            </a>
-          </>
-        )}
-      </nav>
-    </>
-  );
+            <aside className="app-sidebar">
+                <div className="sidebar-brand-row">
+                    <a
+                        className="sidebar-brand-link"
+                        href="/home"
+                        aria-label="UNI HUB home"
+                    >
+                        <Image
+                            src="/assets/logo.svg"
+                            alt="UNI HUB logo"
+                            width={48}
+                            height={48}
+                            unoptimized
+                        />
+                        <div className="sidebar-brand">
+                            <p>UNI HUB</p>
+                        </div>
+                    </a>
+                    <ThemeToggle />
+                </div>
+
+                <nav className="sidebar-nav">
+                    {NAV.map(({ href, label, icon }) => (
+                        <a
+                            key={href}
+                            className={`sidebar-nav-item${isActive(href) ? " active" : ""}`}
+                            href={href}
+                        >
+                            <span
+                                className={`icon ${icon}`}
+                                aria-hidden="true"
+                            />
+                            <span>{label}</span>
+                        </a>
+                    ))}
+                    {user && (
+                        <>
+                            <a
+                                className={`sidebar-nav-item${isActive(profileHref) ? " active" : ""}`}
+                                href={profileHref}
+                            >
+                                <span
+                                    className="icon icon-person"
+                                    aria-hidden="true"
+                                />
+                                <span>Profile</span>
+                            </a>
+                            <a
+                                className={`sidebar-nav-item${isActive("/settings") ? " active" : ""}`}
+                                href="/settings"
+                            >
+                                <span
+                                    className="icon icon-settings"
+                                    aria-hidden="true"
+                                />
+                                <span>Settings</span>
+                            </a>
+                        </>
+                    )}
+                </nav>
+
+                {user && (
+                    <>
+                        <div className="sidebar-new-post">
+                            <a
+                                className="btn btn-primary"
+                                href="/home?compose=1"
+                            >
+                                New Post
+                            </a>
+                        </div>
+                        <div className="sidebar-user-row">
+                            <a className="sidebar-user" href={profileHref}>
+                                <Avatar
+                                    user={user}
+                                    size="sm"
+                                    alt={`${user.username}'s avatar`}
+                                />
+                                <div className="sidebar-user-info">
+                                    <span className="sidebar-user-name">
+                                        {user.username}
+                                    </span>
+                                    <span className="sidebar-user-handle">
+                                        @{user.username}
+                                    </span>
+                                </div>
+                            </a>
+                            <button
+                                type="button"
+                                className="btn btn-ghost btn-sm mr-7"
+                                onClick={handleSignOut}
+                                aria-label="Sign out"
+                                title="Sign out"
+                            >
+                                Sign out
+                            </button>
+                        </div>
+                    </>
+                )}
+                {!user && (
+                    <div className="sidebar-new-post">
+                        <a className="btn btn-primary" href="/login">
+                            Sign in
+                        </a>
+                    </div>
+                )}
+            </aside>
+
+            <nav className="bottom-nav">
+                {NAV.map(({ href, label, icon }) => (
+                    <a
+                        key={href}
+                        className={`bottom-nav-item${isActive(href) ? " active" : ""}`}
+                        href={href}
+                        aria-label={label}
+                    >
+                        <span className={`icon ${icon}`} aria-hidden="true" />
+                        <span className="sr-only">{label}</span>
+                    </a>
+                ))}
+                {user && (
+                    <>
+                        <a
+                            className="bottom-nav-fab"
+                            href="/home?compose=1"
+                            aria-label="New post"
+                        >
+                            <span
+                                className="icon icon-plus"
+                                aria-hidden="true"
+                            />
+                            <span className="sr-only">New post</span>
+                        </a>
+                        <a
+                            className={`bottom-nav-item${isActive(profileHref) ? " active" : ""}`}
+                            href={profileHref}
+                            aria-label="Profile"
+                        >
+                            <span
+                                className="icon icon-person"
+                                aria-hidden="true"
+                            />
+                            <span className="sr-only">Profile</span>
+                        </a>
+                    </>
+                )}
+            </nav>
+        </>
+    );
 }
+
+Shell.propTypes = {
+    user: PropTypes.shape({
+        username: PropTypes.string.isRequired,
+        profilePicture: PropTypes.string,
+    }),
+};

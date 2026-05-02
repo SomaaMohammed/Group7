@@ -4,6 +4,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+function getFormString(form, key) {
+    const value = form.get(key);
+    return typeof value === "string" ? value : "";
+}
+
 export default function RegisterPage() {
     const router = useRouter();
     const [error, setError] = useState("");
@@ -15,13 +20,9 @@ export default function RegisterPage() {
         setError("");
 
         const form = new FormData(event.currentTarget);
-        const email = String(form.get("email") ?? "")
-            .trim()
-            .toLowerCase();
-        const username = String(form.get("username") ?? "")
-            .trim()
-            .toLowerCase();
-        const password = String(form.get("password") ?? "");
+        const email = getFormString(form, "email").trim().toLowerCase();
+        const username = getFormString(form, "username").trim().toLowerCase();
+        const password = getFormString(form, "password");
 
         const response = await fetch("/api/auth/register", {
             method: "POST",
