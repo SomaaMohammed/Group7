@@ -7,8 +7,23 @@ import PropTypes from "@/lib/prop-types";
 
 const MAX_VISIBLE_MEDIA = 4;
 
+function getMediaKind(url) {
+    try {
+        const parsed = new URL(url, "http://localhost");
+        const mimeType = parsed.searchParams.get("mime") ?? "";
+        if (mimeType.startsWith("video/")) return "video";
+    } catch {
+        // Ignore malformed URLs and treat them as images.
+    }
+
+    return "image";
+}
+
 export function PostMediaGrid({ media, display = "grid" }) {
-    const items = media.slice(0, MAX_VISIBLE_MEDIA);
+    const items = media.slice(0, MAX_VISIBLE_MEDIA).map((url) => ({
+        url,
+        kind: getMediaKind(url),
+    }));
     const isFullDisplay = display === "full";
     const [mounted, setMounted] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(null);
@@ -114,24 +129,36 @@ export function PostMediaGrid({ media, display = "grid" }) {
                               type="button"
                               onClick={showPrevious}
                               disabled={currentIndex === 0}
-                              aria-label="Previous image"
+                              aria-label="Previous media"
                           >
                               {"<"}
                           </button>
                       )}
 
                       <div className="lightbox-content">
-                          <div className="lightbox-image-frame">
-                              <Image
-                                  src={activeItem}
-                                  alt={`Attachment ${currentIndex + 1}`}
-                                  fill
-                                  sizes="100vw"
-                                  style={{ objectFit: "contain" }}
-                                  unoptimized
-                                  priority
-                              />
-                          </div>
+                          {activeItem.kind === "video"
+                              ? <>
+                                    {/* biome-ignore lint/a11y/useMediaCaption: Uploaded media has no sidecar caption tracks in current storage model. */}
+                                    <video
+                                        className="lightbox-video"
+                                        src={activeItem.url}
+                                        controls
+                                        autoPlay
+                                        playsInline
+                                        preload="metadata"
+                                    />
+                                </>
+                              : <div className="lightbox-image-frame">
+                                    <Image
+                                        src={activeItem.url}
+                                        alt={`Attachment ${currentIndex + 1}`}
+                                        fill
+                                        sizes="100vw"
+                                        style={{ objectFit: "contain" }}
+                                        unoptimized
+                                        priority
+                                    />
+                                </div>}
                       </div>
 
                       {items.length > 1 && (
@@ -140,7 +167,7 @@ export function PostMediaGrid({ media, display = "grid" }) {
                               type="button"
                               onClick={showNext}
                               disabled={currentIndex === items.length - 1}
-                              aria-label="Next image"
+                              aria-label="Next media"
                           >
                               {">"}
                           </button>
@@ -161,31 +188,43 @@ export function PostMediaGrid({ media, display = "grid" }) {
             <div
                 className={`media-grid media-grid-${items.length}${isFullDisplay ? " media-grid-full" : ""}`}
             >
-                {items.map((url, index) => (
+                {items.map((item, index) => (
                     <button
-                        key={url}
+                        key={`${item.url}-${index}`}
                         className="media-grid-item"
                         type="button"
                         onClick={() => setCurrentIndex(index)}
                         aria-label={`View attachment ${index + 1} fullscreen`}
                     >
-                        {isFullDisplay
-                            ? <>
-                                  {/* biome-ignore lint/performance/noImgElement: Detail media needs natural dimensions for uncropped full-size display. */}
-                                  <img
-                                      className="media-grid-full-image"
-                                      src={url}
-                                      alt={`Attachment ${index + 1}`}
-                                  />
-                              </>
-                            : <Image
-                                  src={url}
-                                  alt={`Attachment ${index + 1}`}
-                                  fill
-                                  sizes="(max-width: 768px) 100vw, 680px"
-                                  style={{ objectFit: "cover" }}
-                                  unoptimized
-                              />}
+                        {item.kind === "video"
+                            ? <video
+                                  className={
+                                      isFullDisplay
+                                          ? "media-grid-full-video"
+                                          : undefined
+                                  }
+                                  src={item.url}
+                                  muted
+                                  playsInline
+                                  preload="metadata"
+                              />
+                            : isFullDisplay
+                              ? <>
+                                    {/* biome-ignore lint/performance/noImgElement: Detail media needs natural dimensions for uncropped full-size display. */}
+                                    <img
+                                        className="media-grid-full-image"
+                                        src={item.url}
+                                        alt={`Attachment ${index + 1}`}
+                                    />
+                                </>
+                              : <Image
+                                    src={item.url}
+                                    alt={`Attachment ${index + 1}`}
+                                    fill
+                                    sizes="(max-width: 768px) 100vw, 680px"
+                                    style={{ objectFit: "cover" }}
+                                    unoptimized
+                                />}
                     </button>
                 ))}
             </div>

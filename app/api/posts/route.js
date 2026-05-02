@@ -19,6 +19,23 @@ function normalizeMedia(value) {
     return value.map((item) => String(item ?? "").trim()).filter(Boolean);
 }
 
+function isValidMediaUrl(value) {
+    try {
+        const parsed = new URL(value, "http://localhost");
+        if (parsed.origin !== "http://localhost") return false;
+        if (!MEDIA_PATH_RE.test(parsed.pathname)) return false;
+
+        const keys = [...parsed.searchParams.keys()];
+        if (keys.length === 0) return true;
+        if (keys.length !== 1 || keys[0] !== "mime") return false;
+
+        const mime = parsed.searchParams.get("mime") ?? "";
+        return /^(image|video)\/[a-z0-9.+-]+$/i.test(mime);
+    } catch {
+        return false;
+    }
+}
+
 export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const limit = parseLimit(searchParams.get("limit"));
@@ -46,9 +63,9 @@ export async function POST(request) {
         );
     }
 
-    if (!media || media.some((item) => !MEDIA_PATH_RE.test(item))) {
+    if (!media || media.some((item) => !isValidMediaUrl(item))) {
         return Response.json(
-            { error: "Media must include up to 4 uploaded image URLs." },
+            { error: "Media must include up to 4 uploaded image/video URLs." },
             { status: 400 },
         );
     }

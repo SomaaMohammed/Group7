@@ -7,12 +7,21 @@ import PropTypes from "@/lib/prop-types";
 
 const MAX_ATTACHMENTS = 4;
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+const MAX_VIDEO_BYTES = 25 * 1024 * 1024;
+
+function getMediaKind(file) {
+    if (file.type.startsWith("image/")) return "image";
+    if (file.type.startsWith("video/")) return "video";
+    return null;
+}
 
 function makeAttachment(file) {
+    const kind = getMediaKind(file) ?? "image";
     return {
         id: `${file.name}-${file.size}-${file.lastModified}-${Date.now()}-${Math.random().toString(36).slice(2)}`,
         file,
         url: URL.createObjectURL(file),
+        kind,
     };
 }
 
@@ -62,7 +71,7 @@ export function PostComposer({ defaultOpen = false }) {
         const availableSlots = MAX_ATTACHMENTS - attachments.length;
         if (availableSlots <= 0) {
             showToast(
-                `You can attach up to ${MAX_ATTACHMENTS} images.`,
+                `You can attach up to ${MAX_ATTACHMENTS} files.`,
                 "danger",
             );
             return;
@@ -73,17 +82,24 @@ export function PostComposer({ defaultOpen = false }) {
 
         for (const file of selectedFiles) {
             if (nextAttachments.length >= availableSlots) {
-                errors.add(`You can attach up to ${MAX_ATTACHMENTS} images.`);
+                errors.add(`You can attach up to ${MAX_ATTACHMENTS} files.`);
                 break;
             }
 
-            if (!file.type.startsWith("image/")) {
-                errors.add("Only image files can be attached.");
+            const mediaKind = getMediaKind(file);
+            if (!mediaKind) {
+                errors.add("Only image and video files can be attached.");
                 continue;
             }
 
-            if (file.size > MAX_IMAGE_BYTES) {
-                errors.add("Each image must be under 5 MB.");
+            const maxBytes =
+                mediaKind === "video" ? MAX_VIDEO_BYTES : MAX_IMAGE_BYTES;
+            if (file.size > maxBytes) {
+                errors.add(
+                    mediaKind === "video"
+                        ? "Each video must be under 25 MB."
+                        : "Each image must be under 5 MB.",
+                );
                 continue;
             }
 
@@ -206,14 +222,14 @@ export function PostComposer({ defaultOpen = false }) {
                     className="sr-only"
                     type="file"
                     multiple
-                    accept="image/*"
+                    accept="image/*,video/*"
                     disabled={posting}
                     onChange={handleMediaChange}
                 />
                 <span className="char-counter">
                     {`${content.length}/2000${
                         attachments.length > 0
-                            ? `, ${attachments.length} image(s)`
+                            ? `, ${attachments.length} attachment(s)`
                             : ""
                     }`}
                 </span>
@@ -222,15 +238,25 @@ export function PostComposer({ defaultOpen = false }) {
             {attachments.length > 0 && (
                 <ul
                     className="attachment-previews"
-                    aria-label="Selected image previews"
+                    aria-label="Selected media previews"
                 >
                     {attachments.map((attachment, index) => (
                         <li className="attachment-preview" key={attachment.id}>
-                            {/* biome-ignore lint/performance/noImgElement: Object URLs are local upload previews and cannot be optimized by next/image. */}
-                            <img
-                                src={attachment.url}
-                                alt={`Preview ${index + 1}: ${attachment.file.name}`}
-                            />
+                            {attachment.kind === "video"
+                                ? <video
+                                      src={attachment.url}
+                                      muted
+                                      playsInline
+                                      preload="metadata"
+                                      aria-label={`Preview ${index + 1}: ${attachment.file.name}`}
+                                  />
+                                : <>
+                                      {/* biome-ignore lint/performance/noImgElement: Object URLs are local upload previews and cannot be optimized by next/image. */}
+                                      <img
+                                          src={attachment.url}
+                                          alt={`Preview ${index + 1}: ${attachment.file.name}`}
+                                      />
+                                  </>}
                             <button
                                 className="attachment-preview-remove"
                                 type="button"
