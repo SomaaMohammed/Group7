@@ -1698,6 +1698,39 @@ pre {
     animation: page-fade-in 200ms ease forwards;
 }
 
+@keyframes search-result-in {
+    from {
+        opacity: 0;
+        transform: translateY(8px) scale(0.99);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.search-results {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.search-result {
+    align-items: center;
+    gap: var(--space-3);
+    text-decoration: none;
+    color: inherit;
+    animation: search-result-in 240ms ease both;
+}
+
+.search-result:hover {
+    transform: translateY(-1px);
+}
+
+.search-empty-state {
+    animation: page-fade-in 220ms ease both;
+}
+
 @keyframes page-fade-in {
     from {
         opacity: 0;
