@@ -61,42 +61,55 @@ export default async function PostPage({ params }) {
                             ? <p className="text-secondary text-sm">
                                   No comments yet.
                               </p>
-                            : comments.map((comment) => (
-                                  <article
-                                      key={comment.id}
-                                      className="flex gap-3"
-                                  >
-                                      <Avatar
-                                          user={comment.author}
-                                          size="sm"
-                                          alt=""
-                                      />
-                                      <div className="flex-1">
-                                          <div className="flex-between gap-3">
-                                              <strong className="font-semibold">
-                                                  {comment.author.username}
-                                              </strong>
-                                              <time
-                                                  className="text-secondary text-xs"
-                                                  dateTime={comment.createdAt.toISOString()}
-                                              >
-                                                  {new Date(
-                                                      comment.createdAt,
-                                                  ).toLocaleDateString()}
-                                              </time>
-                                          </div>
-                                          <p
-                                              className="text-sm"
-                                              style={{ whiteSpace: "pre-wrap" }}
+                            : comments.map((comment) => {
+                                  const authorHref = `/user/${comment.author.username}`;
+
+                                  return (
+                                      <article
+                                          key={comment.id}
+                                          className="flex gap-3"
+                                      >
+                                          <Link
+                                              className="post-card-user-link"
+                                              href={authorHref}
+                                              aria-label={`View ${comment.author.username}'s profile`}
                                           >
-                                              {comment.content}
-                                          </p>
-                                      </div>
-                                      {session?.id === comment.author.id && (
-                                          <DeleteCommentButton commentId={comment.id} />
-                                      )}
-                                  </article>
-                              ))}
+                                              <Avatar
+                                                  user={comment.author}
+                                                  size="sm"
+                                                  alt=""
+                                              />
+                                          </Link>
+                                          <div className="flex-1">
+                                              <div className="flex-between gap-3">
+                                                  <Link
+                                                      className="font-semibold post-card-username post-card-user-link"
+                                                      href={authorHref}
+                                                  >
+                                                      {comment.author.username}
+                                                  </Link>
+                                                  <time
+                                                      className="text-secondary text-xs"
+                                                      dateTime={comment.createdAt.toISOString()}
+                                                  >
+                                                      {new Date(
+                                                          comment.createdAt,
+                                                      ).toLocaleDateString()}
+                                                  </time>
+                                              </div>
+                                              <p
+                                                  className="text-sm"
+                                                  style={{ whiteSpace: "pre-wrap" }}
+                                              >
+                                                  {comment.content}
+                                              </p>
+                                          </div>
+                                          {session?.id === comment.author.id && (
+                                              <DeleteCommentButton commentId={comment.id} />
+                                          )}
+                                      </article>
+                                  );
+                              })}
                     </div>
                 </section>
             </div>
