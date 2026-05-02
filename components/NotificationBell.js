@@ -44,8 +44,15 @@ export function NotificationBell({ variant, isActive }) {
 				className={`sidebar-nav-item${isActive ? " active" : ""}`}
 				href="/notifications"
 			>
-				<span className="icon icon-bell" aria-hidden="true" />
-				<span>Notifications{count > 0 ? ` (${count})` : ""}</span>
+				<span className="notification-bell">
+					<span className="icon icon-bell" aria-hidden="true" />
+					{count > 0 && (
+						<span className="notification-badge">
+							{count > 99 ? "99+" : count}
+						</span>
+					)}
+				</span>
+				<span>Notifications</span>
 			</a>
 		);
 	}
