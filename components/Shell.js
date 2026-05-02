@@ -28,7 +28,7 @@ export function Shell({ user: initialUser }) {
     }, [initialUser]);
 
     useEffect(() => {
-        if (isAuthPage) return;
+        if (isAuthPage || !initialUser) return;
 
         let cancelled = false;
 
@@ -61,9 +61,7 @@ export function Shell({ user: initialUser }) {
 
     async function handleSignOut() {
         await fetch("/api/auth/signout", { method: "POST" });
-        setUser(null);
-        router.push("/login");
-        router.refresh();
+        router.replace("/login");
     }
 
     if (isAuthPage) return null;
@@ -155,7 +153,10 @@ export function Shell({ user: initialUser }) {
                     ))}
                     {user && (
                         <>
-                            <NotificationBell variant="sidebar" isActive={isActive("/notifications")} />
+                            <NotificationBell
+                                variant="sidebar"
+                                isActive={isActive("/notifications")}
+                            />
                             <Link
                                 className={`sidebar-nav-item${isActive(profileHref) ? " active" : ""}`}
                                 href={profileHref}
@@ -250,10 +251,7 @@ export function Shell({ user: initialUser }) {
                         href="/home?compose=1"
                         aria-label="New post"
                     >
-                        <span
-                            className="icon icon-plus"
-                            aria-hidden="true"
-                        />
+                        <span className="icon icon-plus" aria-hidden="true" />
                         <span className="sr-only">New post</span>
                     </Link>
                 )}
@@ -271,10 +269,7 @@ export function Shell({ user: initialUser }) {
                         href={profileHref}
                         aria-label="Profile"
                     >
-                        <span
-                            className="icon icon-person"
-                            aria-hidden="true"
-                        />
+                        <span className="icon icon-person" aria-hidden="true" />
                         <span className="sr-only">Profile</span>
                     </Link>
                 )}

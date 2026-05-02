@@ -5,6 +5,8 @@ import { useState } from "react";
 import { useToast } from "@/components/Toast";
 import PropTypes from "@/lib/prop-types";
 
+const MAX_COMMENT_LENGTH = 1000;
+
 export function CommentComposer({ postId }) {
     const router = useRouter();
     const showToast = useToast();
@@ -49,12 +51,16 @@ export function CommentComposer({ postId }) {
             <textarea
                 className="textarea"
                 value={content}
+                maxLength={MAX_COMMENT_LENGTH}
                 onChange={(event) => setContent(event.target.value)}
                 placeholder="Write a comment..."
                 disabled={submitting}
                 style={{ minHeight: 72 }}
             />
-            <div className="flex-end">
+            <div className="flex-between gap-3">
+                <span className="char-counter">
+                    {content.length}/{MAX_COMMENT_LENGTH}
+                </span>
                 <button
                     className="btn btn-primary"
                     type="submit"

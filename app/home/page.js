@@ -42,18 +42,31 @@ export default async function HomePage({ searchParams }) {
                 {postsWithViewerLikes.length === 0
                     ? <section className="empty-state card">
                           <h2 className="empty-state-title">
-                              You&apos;re not following anyone yet.
+                              Your feed is quiet.
                           </h2>
                           <p className="empty-state-description">
-                              Find classmates and creators in the global feed.
+                              Follow classmates or start a post to bring it to
+                              life.
                           </p>
-                          <Link className="btn btn-primary" href="/global">
-                              Explore posts
-                          </Link>
+                          <div className="flex gap-2 flex-wrap justify-center">
+                              <Link className="btn btn-primary" href="/global">
+                                  Explore posts
+                              </Link>
+                              <Link
+                                  className="btn btn-ghost"
+                                  href="/home?compose=1"
+                              >
+                                  Start a post
+                              </Link>
+                          </div>
                       </section>
                     : <div id="feed-list">
                           {postsWithViewerLikes.map((post) => (
-                              <PostCard key={post.id} post={post} viewerIsAuthor={post.viewerIsAuthor} />
+                              <PostCard
+                                  key={post.id}
+                                  post={post}
+                                  viewerIsAuthor={post.viewerIsAuthor}
+                              />
                           ))}
                       </div>}
             </div>

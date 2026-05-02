@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata = {
     title: "UNI HUB",
-    description: "Group 7 — CMPS 350 Phase 2",
+    description: "Group 7 - CMPS 350 Phase 2",
 };
 
 function normalizeTheme(value) {
@@ -34,6 +34,7 @@ export default async function RootLayout({ children }) {
     return (
         <html
             lang="en"
+            data-scroll-behavior="smooth"
             data-theme={initialTheme}
             style={{ colorScheme: initialTheme }}
             suppressHydrationWarning

@@ -7,6 +7,14 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { useToast } from "@/components/Toast";
 import PropTypes from "@/lib/prop-types";
 
+const MAX_AVATAR_BYTES = 5 * 1024 * 1024;
+const ALLOWED_AVATAR_TYPES = new Set([
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+    "image/gif",
+]);
+
 export function SettingsForm({ user }) {
     const showToast = useToast();
     const router = useRouter();
@@ -38,94 +46,136 @@ export function SettingsForm({ user }) {
         router.refresh();
     }
 
-    async function handleAvatarChange(e) {
-        const file = e.target.files?.[0];
+    async function handleAvatarChange(event) {
+        const file = event.target.files?.[0];
         if (!file) return;
+
+        if (!ALLOWED_AVATAR_TYPES.has(file.type)) {
+            showToast("Use a JPG, PNG, WebP, or GIF image.", "danger");
+            event.target.value = "";
+            return;
+        }
+
+        if (file.size > MAX_AVATAR_BYTES) {
+            showToast("Avatar must be 5 MB or less.", "danger");
+            event.target.value = "";
+            return;
+        }
+
         setUploading(true);
-        const form = new FormData();
-        form.append("file", file);
-        const res = await fetch("/api/users/me/avatar", {
-            method: "POST",
-            body: form,
-        });
-        setUploading(false);
-        if (!res.ok) {
-            const data = await res.json().catch(() => ({}));
-            showToast(data.error ?? "Avatar upload failed.", "danger");
-            return;
+        try {
+            const form = new FormData();
+            form.append("file", file);
+            const res = await fetch("/api/users/me/avatar", {
+                method: "POST",
+                body: form,
+            });
+
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}));
+                showToast(data.error ?? "Avatar upload failed.", "danger");
+                return;
+            }
+
+            const data = await res.json();
+            setAvatarUrl(data.user.profilePicture);
+            showToast("Avatar updated.", "success");
+            router.refresh();
+        } catch {
+            showToast("Avatar upload failed.", "danger");
+        } finally {
+            setUploading(false);
+            event.target.value = "";
         }
-        const data = await res.json();
-        setAvatarUrl(data.user.profilePicture);
-        showToast("Avatar updated.", "success");
     }
 
-    async function handleSubmit(e) {
-        e.preventDefault();
+    async function handleSubmit(event) {
+        event.preventDefault();
         setSaving(true);
-        const res = await fetch("/api/users/me", {
-            method: "PATCH",
-            headers: { "content-type": "application/json" },
-            body: JSON.stringify({
-                username: username.trim(),
-                bio: bio.trim() || null,
-            }),
-        });
-        setSaving(false);
-        if (!res.ok) {
-            const data = await res.json().catch(() => ({}));
-            showToast(data.error ?? "Save failed.", "danger");
-            return;
+
+        try {
+            const res = await fetch("/api/users/me", {
+                method: "PATCH",
+                headers: { "content-type": "application/json" },
+                body: JSON.stringify({
+                    username: username.trim(),
+                    bio: bio.trim() || null,
+                }),
+            });
+
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}));
+                showToast(data.error ?? "Save failed.", "danger");
+                return;
+            }
+
+            showToast("Profile saved.", "success");
+            router.refresh();
+        } catch {
+            showToast("Save failed.", "danger");
+        } finally {
+            setSaving(false);
         }
-        showToast("Profile saved.", "success");
-        router.refresh();
     }
 
-    async function handleChangePassword(e) {
-        e.preventDefault();
+    async function handleChangePassword(event) {
+        event.preventDefault();
         setChangingPassword(true);
-        const res = await fetch("/api/users/me/password", {
-            method: "POST",
-            headers: { "content-type": "application/json" },
-            body: JSON.stringify({
-                currentPassword,
-                newPassword,
-                confirmNewPassword,
-            }),
-        });
-        setChangingPassword(false);
 
-        if (!res.ok) {
-            const data = await res.json().catch(() => ({}));
-            showToast(data.error ?? "Failed to change password.", "danger");
-            return;
+        try {
+            const res = await fetch("/api/users/me/password", {
+                method: "POST",
+                headers: { "content-type": "application/json" },
+                body: JSON.stringify({
+                    currentPassword,
+                    newPassword,
+                    confirmNewPassword,
+                }),
+            });
+
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}));
+                showToast(data.error ?? "Failed to change password.", "danger");
+                return;
+            }
+
+            setCurrentPassword("");
+            setNewPassword("");
+            setConfirmNewPassword("");
+            setShowChangePassword(false);
+            showToast("Password changed successfully.", "success");
+        } catch {
+            showToast("Failed to change password.", "danger");
+        } finally {
+            setChangingPassword(false);
         }
-
-        setCurrentPassword("");
-        setNewPassword("");
-        setConfirmNewPassword("");
-        setShowChangePassword(false);
-        showToast("Password changed successfully.", "success");
     }
 
-    async function handleDeleteAccount(e) {
-        e.preventDefault();
+    async function handleDeleteAccount(event) {
+        event.preventDefault();
         setDeletingAccount(true);
-        const res = await fetch("/api/users/me", {
-            method: "DELETE",
-            headers: { "content-type": "application/json" },
-            body: JSON.stringify({ password: deletePassword }),
-        });
-        setDeletingAccount(false);
 
-        if (!res.ok) {
-            const data = await res.json().catch(() => ({}));
-            showToast(data.error ?? "Failed to delete account.", "danger");
-            return;
+        try {
+            const res = await fetch("/api/users/me", {
+                method: "DELETE",
+                headers: { "content-type": "application/json" },
+                body: JSON.stringify({ password: deletePassword }),
+            });
+
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}));
+                showToast(data.error ?? "Failed to delete account.", "danger");
+                return;
+            }
+
+            showToast("Account deleted.", "success");
+            router.push("/login");
+            router.refresh();
+        } catch {
+            showToast("Failed to delete account.", "danger");
+        } finally {
+            setDeletingAccount(false);
         }
-
-        showToast("Account deleted.", "success");
-        router.push("/login");
-        router.refresh();
     }
 
     return (
@@ -234,8 +284,8 @@ export function SettingsForm({ user }) {
                                   className="input"
                                   type="password"
                                   value={currentPassword}
-                                  onChange={(e) =>
-                                      setCurrentPassword(e.target.value)
+                                  onChange={(event) =>
+                                      setCurrentPassword(event.target.value)
                                   }
                                   placeholder="Enter current password"
                               />
@@ -252,8 +302,8 @@ export function SettingsForm({ user }) {
                                   className="input"
                                   type="password"
                                   value={newPassword}
-                                  onChange={(e) =>
-                                      setNewPassword(e.target.value)
+                                  onChange={(event) =>
+                                      setNewPassword(event.target.value)
                                   }
                                   placeholder="At least 8 chars, letters and numbers"
                               />
@@ -270,8 +320,8 @@ export function SettingsForm({ user }) {
                                   className="input"
                                   type="password"
                                   value={confirmNewPassword}
-                                  onChange={(e) =>
-                                      setConfirmNewPassword(e.target.value)
+                                  onChange={(event) =>
+                                      setConfirmNewPassword(event.target.value)
                                   }
                                   placeholder="Re-enter new password"
                               />
@@ -284,7 +334,7 @@ export function SettingsForm({ user }) {
                                   onClick={handleChangePassword}
                               >
                                   {changingPassword
-                                      ? "Saving…"
+                                      ? "Saving..."
                                       : "Save Password"}
                               </button>
                               <button
@@ -353,8 +403,8 @@ export function SettingsForm({ user }) {
                                   className="input"
                                   type="password"
                                   value={deletePassword}
-                                  onChange={(e) =>
-                                      setDeletePassword(e.target.value)
+                                  onChange={(event) =>
+                                      setDeletePassword(event.target.value)
                                   }
                                   placeholder="Enter your password to confirm"
                               />
@@ -367,7 +417,7 @@ export function SettingsForm({ user }) {
                                   onClick={handleDeleteAccount}
                               >
                                   {deletingAccount
-                                      ? "Deleting…"
+                                      ? "Deleting..."
                                       : "Permanently Delete Account"}
                               </button>
                               <button
@@ -407,7 +457,7 @@ export function SettingsForm({ user }) {
                         disabled={uploading}
                         onClick={() => fileRef.current?.click()}
                     >
-                        {uploading ? "Uploading…" : "Change avatar"}
+                        {uploading ? "Uploading..." : "Change avatar"}
                     </button>
                     <input
                         ref={fileRef}
@@ -417,7 +467,7 @@ export function SettingsForm({ user }) {
                         onChange={handleAvatarChange}
                     />
                     <span className="input-hint">
-                        JPG, PNG, WebP or GIF · max 5 MB
+                        JPG, PNG, WebP or GIF - max 5 MB
                     </span>
                 </div>
             </div>
@@ -431,12 +481,16 @@ export function SettingsForm({ user }) {
                     className="input"
                     type="text"
                     value={username}
-                    onChange={(e) => setUsername(e.target.value)}
+                    onChange={(event) => setUsername(event.target.value)}
                     required
-                    minLength={1}
-                    maxLength={30}
+                    minLength={3}
+                    maxLength={24}
+                    pattern="[a-z0-9_]{3,24}"
                     autoComplete="username"
                 />
+                <span className="input-hint">
+                    3-24 lowercase letters, numbers, or underscores.
+                </span>
             </div>
 
             <div className="input-group">
@@ -448,15 +502,16 @@ export function SettingsForm({ user }) {
                     className="input"
                     rows={3}
                     value={bio}
-                    onChange={(e) => setBio(e.target.value)}
+                    onChange={(event) => setBio(event.target.value)}
                     maxLength={300}
-                    placeholder="Tell people about yourself…"
+                    placeholder="Tell people about yourself..."
                     style={{ resize: "vertical" }}
                 />
+                <span className="input-hint">{bio.length}/300</span>
             </div>
 
             <button type="submit" className="btn btn-primary" disabled={saving}>
-                {saving ? "Saving…" : "Save changes"}
+                {saving ? "Saving..." : "Save changes"}
             </button>
         </form>
     );

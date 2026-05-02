@@ -22,7 +22,12 @@ export async function POST(request) {
                 { status: 401 },
             );
         }
-        return Response.json({ user });
+        const response = Response.json({ user });
+        response.headers.set(
+            "Cache-Control",
+            "no-store, no-cache, must-revalidate",
+        );
+        return response;
     } catch {
         return Response.json(
             { error: "Invalid email or password." },

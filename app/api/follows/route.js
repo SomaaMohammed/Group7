@@ -1,4 +1,4 @@
-import { requireUser } from "@/lib/auth";
+import { getSession } from "@/lib/auth";
 import { followsRepo } from "@/lib/repo/follows";
 import { notificationsRepo } from "@/lib/repo/notifications";
 
@@ -7,7 +7,11 @@ function getFollowingId(body) {
 }
 
 export async function POST(request) {
-    const user = await requireUser();
+    const user = await getSession();
+    if (!user) {
+        return Response.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const body = await request.json().catch(() => null);
     const followingId = getFollowingId(body);
 
@@ -39,7 +43,11 @@ export async function POST(request) {
 }
 
 export async function DELETE(request) {
-    const user = await requireUser();
+    const user = await getSession();
+    if (!user) {
+        return Response.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const body = await request.json().catch(() => null);
     const followingId = getFollowingId(body);
 
