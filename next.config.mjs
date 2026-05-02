@@ -3,6 +3,9 @@ const nextConfig = {
     /* config options here */
     experimental: {
         viewTransition: true,
+        serverActions: {
+            bodySizeLimit: "26mb",
+        },
     },
     reactCompiler: true,
 };
