@@ -93,6 +93,14 @@ export function Shell({ user: initialUser }) {
                 </div>
                 <div className="app-header-actions">
                     <ThemeToggle />
+                    <Link
+                        className={`icon-btn${isActive("/stats") ? " active" : ""}`}
+                        href="/stats"
+                        aria-label="Statistics"
+                    >
+                        <span className="icon icon-eye" aria-hidden="true" />
+                        <span className="sr-only">Statistics</span>
+                    </Link>
                     {user && <NotificationBell />}
                     {user && (
                         <Link
