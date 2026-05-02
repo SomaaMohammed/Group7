@@ -14,6 +14,8 @@ export const dynamic = "force-dynamic";
 
 export default async function PostPage({ params }) {
     const { id } = await params;
+    const postPath = "/post/" + id;
+    const loginHref = "/login?next=" + encodeURIComponent(postPath);
     const post = await postsRepo.findById(id);
 
     if (!post) notFound();
@@ -53,7 +55,7 @@ export default async function PostPage({ params }) {
                           >
                               <Link
                                   className="text-accent font-semibold"
-                                  href={`/login?next=${encodeURIComponent(`/post/${id}`)}`}
+                                  href={loginHref}
                                   transitionTypes={["nav-forward"]}
                               >
                                   Sign in
