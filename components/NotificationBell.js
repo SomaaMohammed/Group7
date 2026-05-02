@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 
 const POLL_INTERVAL = 12000;
 
-export function NotificationBell() {
+export function NotificationBell({ variant, isActive }) {
 	const [count, setCount] = useState(0);
 
 	const poll = useCallback(async () => {
@@ -37,6 +37,18 @@ export function NotificationBell() {
 			document.removeEventListener("visibilitychange", handleVisibility);
 		};
 	}, [poll]);
+
+	if (variant === "sidebar") {
+		return (
+			<a
+				className={`sidebar-nav-item${isActive ? " active" : ""}`}
+				href="/notifications"
+			>
+				<span className="icon icon-bell" aria-hidden="true" />
+				<span>Notifications{count > 0 ? ` (${count})` : ""}</span>
+			</a>
+		);
+	}
 
 	return (
 		<a
