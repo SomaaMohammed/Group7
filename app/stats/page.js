@@ -429,19 +429,107 @@ export default async function StatsPage() {
 
                         <div className="card stats-bar-chart-wrap">
 
-                            <DisplayBarChartFunc data={perDay} />
+                            <DisplayBarChartFunc data={PostsPerDay} />
                         </div>
                     </section>
  
                     <section className="stats-section" style={{ marginBottom: 0 }}>
                         <p className="stats-section-title">The Top Words</p>
                         <div className="card" style={{ minHeight: "128px" }}>
-                            
-                            <WordCloudSizeRank words={words} />
+
+                            <WordCloudSizeRank words={TopWords} />
                         </div>
                     </section>
                 </div>
-                
+               
+                <div className="stats-two-col" style={{ marginBottom: "var(--space-6)" }}>
+                    <section className="stats-section" style={{ marginBottom: 0 }}>
+                        <p className="stats-section-title">Most Liked Posts</p>
+
+                        <div className="stats-ranked-list">
+                            {RankedTopPosts.map((EachPosting, Index) => (
+                                <div key={EachPosting.id} className="stats-ranked-item">
+                                    <span className={`stats-rank-num${Index < 3 ? " top3" : ""}`}>
+                                        {Index + 1}
+                                    </span>
+                                    <div className="stats-ranked-info">
+                                        <p className="stats-ranked-name"> @{EachPosting.author.username}</p>
+                                        <p className="stats-ranked-meta"> {EachPosting.content.slice(0, 60)} {EachPosting.content.length > 60 ? "…" : ""}</p>
+                                    </div>
+                                    <span className="stats-ranked-count">
+
+                                        ♥ {EachPosting._count.likes}
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+ 
+                    <section className="stats-section" style={{ marginBottom: 0 }}>
+
+                        <p className="stats-section-title">Top Users by Followers</p>
+                        <div className="stats-ranked-list">
+                            {RankedTopUsers.map((EachUser, Index) => (
+                                <div key={EachUser.id} className="stats-ranked-item">
+                                    <span className={`stats-rank-num${Index < 3 ? " top3" : ""}`}>
+                                        {Index + 1}
+                                    </span>
+                                    {EachUser.profilePicture ? (
+                                        <img className="stats-avatar" src={EachUser.profilePicture} alt={EachUser.username} />
+                      
+              
+                                    ) : (
+                                        <div className="stats-avatar-placeholder" aria-hidden="true">
+                                            {EachUser.username[0].toUpperCase()}
+                                        </div>
+                                    )}
+                                    <div className="stats-ranked-info">
+
+                                        <p className="stats-ranked-name">@{EachUser.username}</p>
+                                        <p className="stats-ranked-meta">
+
+                                            {EachUser._count.following} Following
+                                        </p>
+                                    </div>
+                                    <span className="stats-ranked-count">
+                                        {EachUser._count.followers} Followers
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+                </div>
+ 
+            
+                <section className="stats-section">
+                    <p className="stats-section-title">Most Active in The Last 3 months</p>
+                    <div className="stats-ranked-list">
+
+                        {HighestActivity.map((EachUser, Index) => (
+                            
+                            <div key={EachUser.id} className="stats-ranked-item">
+                                <span className={`stats-rank-num${Index < 3 ? " top3" : ""}`}>
+                                    {Index + 1}
+                                </span>
+                                {EachUser.profilePicture ? (
+                                    <img className="stats-avatar" src={EachUser.profilePicture} alt={EachUser.username} />
+                                ) : (
+                                    <div className="stats-avatar-placeholder" aria-hidden="true">
+                                        {EachUser.username[0].toUpperCase()}
+                                    </div>
+                                )}
+
+                                <div className="stats-ranked-info">
+                                    <p className="stats-ranked-name">@{EachUser.username}</p>
+                                </div>
+
+                                <span className="stats-ranked-count">
+                                    {EachUser.postCount} posts
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                </section>
             </div>   
         </>
     );
