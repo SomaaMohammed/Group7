@@ -1,21 +1,21 @@
 import { requireAuth } from "./global/auth.js";
-import db from "./global/db.js";
-import { injectShell } from "./global/shell.js";
-import { applyTheme, getInitialTheme } from "./global/theme.js";
-import { flushQueuedToast, showToast } from "./global/toast.js";
-import { renderPostCard } from "./global/post-card.js";
 import { resolveAvatarUrls } from "./global/avatar.js";
 import {
-    POST_MAX_LENGTH,
+    ACCEPTED_IMAGE_TYPES,
+    ACCEPTED_VIDEO_TYPES,
     MAX_ATTACHMENTS,
     MAX_IMAGE_SIZE,
     MAX_VIDEO_SIZE,
-    ACCEPTED_IMAGE_TYPES,
-    ACCEPTED_VIDEO_TYPES,
+    POST_MAX_LENGTH,
 } from "./global/constants.js";
-import { storage } from "./global/storage.js";
-import { resolveMedia } from "./global/media.js";
+import db from "./global/db.js";
 import { openLightbox } from "./global/lightbox.js";
+import { resolveMedia } from "./global/media.js";
+import { renderPostCard } from "./global/post-card.js";
+import { injectShell } from "./global/shell.js";
+import { storage } from "./global/storage.js";
+import { applyTheme, getInitialTheme } from "./global/theme.js";
+import { flushQueuedToast, showToast } from "./global/toast.js";
 
 const feedList = document.getElementById("feed-list");
 const composerOpenBtn = document.getElementById("composer-open-btn");
@@ -174,14 +174,17 @@ function updateSubmitState() {
 function handleFilesSelected(fileList) {
     clearAttachError();
     const files = [...fileList];
-    const allAccepted = [...ACCEPTED_IMAGE_TYPES, ...ACCEPTED_VIDEO_TYPES];
+    const allAccepted = new Set([
+        ...ACCEPTED_IMAGE_TYPES,
+        ...ACCEPTED_VIDEO_TYPES,
+    ]);
 
     for (const file of files) {
         if (pendingFiles.length >= MAX_ATTACHMENTS) {
             showAttachError(`Maximum ${MAX_ATTACHMENTS} attachments allowed.`);
             break;
         }
-        if (!allAccepted.includes(file.type)) {
+        if (!allAccepted.has(file.type)) {
             showAttachError(`"${file.name}" is not a supported file type.`);
             continue;
         }

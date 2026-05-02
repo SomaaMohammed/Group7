@@ -26,11 +26,15 @@ function writeTable(table, data) {
     localStorage.setItem(table, JSON.stringify(data));
 }
 
+let fallbackIdCounter = 0;
+
 function generateId(prefix) {
-    const randomPart =
-        globalThis.crypto?.randomUUID?.() ??
-        Math.random().toString(36).slice(2, 11);
-    return `${prefix}_${randomPart}`;
+    if (globalThis.crypto?.randomUUID) {
+        return `${prefix}_${globalThis.crypto.randomUUID()}`;
+    }
+
+    fallbackIdCounter += 1;
+    return `${prefix}_${Date.now().toString(36)}_${fallbackIdCounter.toString(36)}`;
 }
 
 function matchesWhere(record, where = {}) {

@@ -468,7 +468,7 @@ pre {
 }
 
 .hidden {
-    display: none !important;
+    display: none;
 }
 
 .invisible {
@@ -1020,7 +1020,7 @@ pre {
 }
 
 .modal-backdrop.hidden {
-    display: none !important;
+    display: none;
 }
 
 .modal {

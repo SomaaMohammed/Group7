@@ -1,6 +1,6 @@
+import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import { usersRepo } from "@/lib/repo/users";
-import { redirect } from "next/navigation";
 import { SettingsForm } from "./SettingsForm";
 
 export const dynamic = "force-dynamic";

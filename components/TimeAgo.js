@@ -1,4 +1,5 @@
 import { formatTime } from "@/lib/format";
+import PropTypes from "@/lib/prop-types";
 
 export function TimeAgo({ date }) {
     const d = date instanceof Date ? date : new Date(date);
@@ -8,3 +9,8 @@ export function TimeAgo({ date }) {
         </time>
     );
 }
+
+TimeAgo.propTypes = {
+    date: PropTypes.oneOfType([PropTypes.instanceOf(Date), PropTypes.string])
+        .isRequired,
+};

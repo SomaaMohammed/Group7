@@ -1,12 +1,12 @@
 import { requireAuth } from "./global/auth.js";
+import { resolveAvatarUrls } from "./global/avatar.js";
 import db from "./global/db.js";
+import { openLightbox } from "./global/lightbox.js";
+import { resolveMedia } from "./global/media.js";
+import { renderPostCard } from "./global/post-card.js";
 import { injectShell } from "./global/shell.js";
 import { applyTheme, getInitialTheme } from "./global/theme.js";
 import { flushQueuedToast } from "./global/toast.js";
-import { renderPostCard } from "./global/post-card.js";
-import { resolveMedia } from "./global/media.js";
-import { resolveAvatarUrls } from "./global/avatar.js";
-import { openLightbox } from "./global/lightbox.js";
 
 const feedList = document.getElementById("feed-list");
 

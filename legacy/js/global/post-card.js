@@ -1,10 +1,10 @@
 // js/global/post-card.js
 // Shared post-card renderer used by both the "Your Feed" and "Global Feed" pages.
 
-import { escapeHtml } from "./sanitize.js";
 import { getAvatarSrc } from "./avatar.js";
-import { formatTime } from "./time.js";
 import { renderMediaGrid } from "./media.js";
+import { escapeHtml } from "./sanitize.js";
+import { formatTime } from "./time.js";
 
 export function renderPostCard(
     post,
