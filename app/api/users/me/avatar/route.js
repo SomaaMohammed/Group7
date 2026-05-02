@@ -1,4 +1,4 @@
-import { requireUser } from "@/lib/auth";
+import { getSession } from "@/lib/auth";
 import { usersRepo } from "@/lib/repo/users";
 import { deleteImage, uploadImage } from "@/lib/storage";
 
@@ -11,7 +11,11 @@ const ALLOWED_MIME = new Set([
 ]);
 
 export async function POST(request) {
-    const user = await requireUser();
+    const user = await getSession();
+    if (!user) {
+        return Response.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const form = await request.formData();
     const file = form.get("file");
     if (!(file instanceof File)) {

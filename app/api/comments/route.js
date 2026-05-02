@@ -1,6 +1,8 @@
 import { getSession } from "@/lib/auth";
 import { commentsRepo } from "@/lib/repo/comments";
 
+const MAX_COMMENT_LENGTH = 1000;
+
 export async function POST(request) {
     const user = await getSession();
 
@@ -9,11 +11,19 @@ export async function POST(request) {
     }
 
     const body = await request.json().catch(() => null);
-    const { postId = "", content = "" } = body || {};
+    const postId = String(body?.postId ?? "").trim();
+    const content = String(body?.content ?? "").trim();
 
-    if (!postId || typeof content !== "string" || content.length === 0) {
+    if (!postId || content.length === 0) {
         return Response.json(
             { error: "postId and content are required." },
+            { status: 400 },
+        );
+    }
+
+    if (content.length > MAX_COMMENT_LENGTH) {
+        return Response.json(
+            { error: "Comments must be 1000 characters or less." },
             { status: 400 },
         );
     }

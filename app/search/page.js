@@ -46,38 +46,36 @@ export default async function SearchPage({ searchParams }) {
                     </div>
                 </form>
 
-                {q && users.length === 0 ? (
-                    <p
-                        className="text-secondary text-center search-empty-state"
-                        style={{ marginTop: 40 }}
-                    >
-                        No users found for &quot;{q}&quot;
-                    </p>
-                ) : (
-                    <div id="feed-list" className="search-results">
-                        {users.map((user, index) => (
-                            <Link
-                                key={user.id}
-                                href={`/user/${user.username}`}
-                                className="card card-interactive search-result"
-                                style={{ animationDelay: `${index * 45}ms` }}
-                            >
-                                <Avatar
-                                    src={user.profilePicture}
-                                    alt={user.username}
-                                />
-                                <div>
-                                    <div className="font-semibold">
-                                        {user.username}
-                                    </div>
-                                    <div className="text-secondary text-sm">
-                                        View profile
-                                    </div>
-                                </div>
-                            </Link>
-                        ))}
-                    </div>
-                )}
+                {q && users.length === 0
+                    ? <p
+                          className="text-secondary text-center search-empty-state"
+                          style={{ marginTop: 40 }}
+                      >
+                          No users found for &quot;{q}&quot;
+                      </p>
+                    : <div id="feed-list" className="search-results">
+                          {users.map((user, index) => (
+                              <Link
+                                  key={user.id}
+                                  href={`/user/${user.username}`}
+                                  className="card card-interactive search-result"
+                                  style={{ animationDelay: `${index * 45}ms` }}
+                              >
+                                  <Avatar
+                                      src={user.profilePicture}
+                                      alt={user.username}
+                                  />
+                                  <div>
+                                      <div className="font-semibold">
+                                          {user.username}
+                                      </div>
+                                      <div className="text-secondary text-sm">
+                                          View profile
+                                      </div>
+                                  </div>
+                              </Link>
+                          ))}
+                      </div>}
             </div>
         </main>
     );

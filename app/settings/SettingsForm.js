@@ -6,6 +6,14 @@ import { Avatar } from "@/components/Avatar";
 import { useToast } from "@/components/Toast";
 import PropTypes from "@/lib/prop-types";
 
+const MAX_AVATAR_BYTES = 5 * 1024 * 1024;
+const ALLOWED_AVATAR_TYPES = new Set([
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+    "image/gif",
+]);
+
 export function SettingsForm({ user }) {
     const showToast = useToast();
     const router = useRouter();
@@ -17,45 +25,76 @@ export function SettingsForm({ user }) {
     const [saving, setSaving] = useState(false);
     const [uploading, setUploading] = useState(false);
 
-    async function handleAvatarChange(e) {
-        const file = e.target.files?.[0];
+    async function handleAvatarChange(event) {
+        const file = event.target.files?.[0];
         if (!file) return;
-        setUploading(true);
-        const form = new FormData();
-        form.append("file", file);
-        const res = await fetch("/api/users/me/avatar", {
-            method: "POST",
-            body: form,
-        });
-        setUploading(false);
-        if (!res.ok) {
-            const data = await res.json().catch(() => ({}));
-            showToast(data.error ?? "Avatar upload failed.", "error");
+
+        if (!ALLOWED_AVATAR_TYPES.has(file.type)) {
+            showToast("Use a JPG, PNG, WebP, or GIF image.", "danger");
+            event.target.value = "";
             return;
         }
-        const data = await res.json();
-        setAvatarUrl(data.user.profilePicture);
-        showToast("Avatar updated.", "success");
+
+        if (file.size > MAX_AVATAR_BYTES) {
+            showToast("Avatar must be 5 MB or less.", "danger");
+            event.target.value = "";
+            return;
+        }
+
+        setUploading(true);
+        try {
+            const form = new FormData();
+            form.append("file", file);
+            const res = await fetch("/api/users/me/avatar", {
+                method: "POST",
+                body: form,
+            });
+
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}));
+                showToast(data.error ?? "Avatar upload failed.", "danger");
+                return;
+            }
+
+            const data = await res.json();
+            setAvatarUrl(data.user.profilePicture);
+            showToast("Avatar updated.", "success");
+            router.refresh();
+        } catch {
+            showToast("Avatar upload failed.", "danger");
+        } finally {
+            setUploading(false);
+            event.target.value = "";
+        }
     }
 
-    async function handleSubmit(e) {
-        e.preventDefault();
+    async function handleSubmit(event) {
+        event.preventDefault();
         setSaving(true);
-        const res = await fetch("/api/users/me", {
-            method: "PATCH",
-            headers: { "content-type": "application/json" },
-            body: JSON.stringify({
-                username: username.trim(),
-                bio: bio.trim() || null,
-            }),
-        });
-        setSaving(false);
-        if (!res.ok) {
-            const data = await res.json().catch(() => ({}));
-            showToast(data.error ?? "Save failed.", "error");
-            return;
+
+        try {
+            const res = await fetch("/api/users/me", {
+                method: "PATCH",
+                headers: { "content-type": "application/json" },
+                body: JSON.stringify({
+                    username: username.trim(),
+                    bio: bio.trim() || null,
+                }),
+            });
+
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}));
+                showToast(data.error ?? "Save failed.", "danger");
+                return;
+            }
+
+            showToast("Profile saved.", "success");
+            router.refresh();
+        } catch {
+            showToast("Save failed.", "danger");
+        } finally {
+            setSaving(false);
         }
-        showToast("Profile saved.", "success");
     }
 
     return (
@@ -83,7 +122,7 @@ export function SettingsForm({ user }) {
                         disabled={uploading}
                         onClick={() => fileRef.current?.click()}
                     >
-                        {uploading ? "Uploading…" : "Change avatar"}
+                        {uploading ? "Uploading..." : "Change avatar"}
                     </button>
                     <input
                         ref={fileRef}
@@ -93,7 +132,7 @@ export function SettingsForm({ user }) {
                         onChange={handleAvatarChange}
                     />
                     <span className="input-hint">
-                        JPG, PNG, WebP or GIF · max 5 MB
+                        JPG, PNG, WebP or GIF - max 5 MB
                     </span>
                 </div>
             </div>
@@ -107,12 +146,16 @@ export function SettingsForm({ user }) {
                     className="input"
                     type="text"
                     value={username}
-                    onChange={(e) => setUsername(e.target.value)}
+                    onChange={(event) => setUsername(event.target.value)}
                     required
-                    minLength={1}
-                    maxLength={30}
+                    minLength={3}
+                    maxLength={24}
+                    pattern="[a-z0-9_]{3,24}"
                     autoComplete="username"
                 />
+                <span className="input-hint">
+                    3-24 lowercase letters, numbers, or underscores.
+                </span>
             </div>
 
             <div className="input-group">
@@ -124,15 +167,16 @@ export function SettingsForm({ user }) {
                     className="input"
                     rows={3}
                     value={bio}
-                    onChange={(e) => setBio(e.target.value)}
+                    onChange={(event) => setBio(event.target.value)}
                     maxLength={300}
-                    placeholder="Tell people about yourself…"
+                    placeholder="Tell people about yourself..."
                     style={{ resize: "vertical" }}
                 />
+                <span className="input-hint">{bio.length}/300</span>
             </div>
 
             <button type="submit" className="btn btn-primary" disabled={saving}>
-                {saving ? "Saving…" : "Save changes"}
+                {saving ? "Saving..." : "Save changes"}
             </button>
         </form>
     );
