@@ -22,17 +22,19 @@ export function EditProfileForm({ user, onCancel, onSaved }) {
     const [username, setUsername] = useState(user.username ?? "");
     const [bio, setBio] = useState(user.bio ?? "");
     const [avatarUrl, setAvatarUrl] = useState(user.profilePicture ?? null);
+    const [pendingFile, setPendingFile] = useState(null);
+    const [pendingRemove, setPendingRemove] = useState(false);
     const [saving, setSaving] = useState(false);
-    const [uploading, setUploading] = useState(false);
-    const [removingAvatar, setRemovingAvatar] = useState(false);
 
     useEffect(() => {
         setUsername(user.username ?? "");
         setBio(user.bio ?? "");
         setAvatarUrl(user.profilePicture ?? null);
+        setPendingFile(null);
+        setPendingRemove(false);
     }, [user.username, user.bio, user.profilePicture]);
 
-    async function handleAvatarChange(event) {
+    function handleAvatarChange(event) {
         const file = event.target.files?.[0];
         if (!file) return;
 
@@ -48,56 +50,16 @@ export function EditProfileForm({ user, onCancel, onSaved }) {
             return;
         }
 
-        setUploading(true);
-        try {
-            const form = new FormData();
-            form.append("file", file);
-            const res = await fetch("/api/users/me/avatar", {
-                method: "POST",
-                body: form,
-            });
-
-            if (!res.ok) {
-                const data = await res.json().catch(() => ({}));
-                showToast(data.error ?? "Avatar upload failed.", "danger");
-                return;
-            }
-
-            const data = await res.json();
-            setAvatarUrl(data.user.profilePicture ?? null);
-            showToast("Avatar updated.", "success");
-            router.refresh();
-        } catch {
-            showToast("Avatar upload failed.", "danger");
-        } finally {
-            setUploading(false);
-            event.target.value = "";
-        }
+        setPendingFile(file);
+        setPendingRemove(false);
+        setAvatarUrl(URL.createObjectURL(file));
+        event.target.value = "";
     }
 
-    async function handleAvatarRemove() {
-        setRemovingAvatar(true);
-        try {
-            const res = await fetch("/api/users/me", {
-                method: "PATCH",
-                headers: { "content-type": "application/json" },
-                body: JSON.stringify({ profilePicture: null }),
-            });
-
-            if (!res.ok) {
-                const data = await res.json().catch(() => ({}));
-                showToast(data.error ?? "Failed to remove avatar.", "danger");
-                return;
-            }
-
-            setAvatarUrl(null);
-            showToast("Avatar removed.", "success");
-            router.refresh();
-        } catch {
-            showToast("Failed to remove avatar.", "danger");
-        } finally {
-            setRemovingAvatar(false);
-        }
+    function handleAvatarRemove() {
+        setPendingFile(null);
+        setPendingRemove(true);
+        setAvatarUrl(null);
     }
 
     async function handleSubmit(event) {
@@ -105,13 +67,38 @@ export function EditProfileForm({ user, onCancel, onSaved }) {
         setSaving(true);
 
         try {
+            let newAvatarUrl;
+
+            if (pendingFile) {
+                const form = new FormData();
+                form.append("file", pendingFile);
+                const avatarRes = await fetch("/api/users/me/avatar", {
+                    method: "POST",
+                    body: form,
+                });
+                if (!avatarRes.ok) {
+                    const data = await avatarRes.json().catch(() => ({}));
+                    showToast(data.error ?? "Avatar upload failed.", "danger");
+                    return;
+                }
+                const avatarData = await avatarRes.json();
+                newAvatarUrl = avatarData.user.profilePicture ?? null;
+            }
+
+            const patch = {
+                username: username.trim(),
+                bio: bio.trim() || null,
+            };
+            if (pendingRemove) {
+                patch.profilePicture = null;
+            } else if (newAvatarUrl !== undefined) {
+                patch.profilePicture = newAvatarUrl;
+            }
+
             const res = await fetch("/api/users/me", {
                 method: "PATCH",
                 headers: { "content-type": "application/json" },
-                body: JSON.stringify({
-                    username: username.trim(),
-                    bio: bio.trim() || null,
-                }),
+                body: JSON.stringify(patch),
             });
 
             if (!res.ok) {
@@ -123,6 +110,8 @@ export function EditProfileForm({ user, onCancel, onSaved }) {
             const data = await res.json();
             const nextUsername = data?.user?.username ?? username.trim();
             showToast("Profile saved.", "success");
+            setPendingFile(null);
+            setPendingRemove(false);
             onSaved?.();
             router.replace(`/user/${nextUsername}`);
             router.refresh();
@@ -137,6 +126,8 @@ export function EditProfileForm({ user, onCancel, onSaved }) {
         setUsername(user.username ?? "");
         setBio(user.bio ?? "");
         setAvatarUrl(user.profilePicture ?? null);
+        setPendingFile(null);
+        setPendingRemove(false);
         onCancel?.();
     }
 
@@ -198,10 +189,10 @@ export function EditProfileForm({ user, onCancel, onSaved }) {
                             <button
                                 type="button"
                                 className="btn btn-outline btn-sm"
-                                disabled={uploading}
+                                disabled={saving}
                                 onClick={() => fileRef.current?.click()}
                             >
-                                {uploading ? "Uploading..." : "Choose Image"}
+                                Choose Image
                             </button>
                             <input
                                 id="edit-avatar"
@@ -214,10 +205,10 @@ export function EditProfileForm({ user, onCancel, onSaved }) {
                             <button
                                 type="button"
                                 className="btn btn-ghost btn-sm"
-                                disabled={removingAvatar || !avatarUrl}
+                                disabled={saving || !avatarUrl}
                                 onClick={handleAvatarRemove}
                             >
-                                {removingAvatar ? "Removing..." : "Remove"}
+                                Remove
                             </button>
                         </div>
                     </div>
