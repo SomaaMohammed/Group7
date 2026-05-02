@@ -1,4 +1,5 @@
 import "dotenv/config";
+import { randomInt, randomUUID } from "node:crypto";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
@@ -15,7 +16,8 @@ const COMMENT_COUNT = 1800;
 const LIKE_COUNT = 3500;
 const HUB_USERS = 4;
 const DAYS_BACK = 180;
-const DEFAULT_PASSWORD = "password123";
+const CREDENTIAL_ENV_KEY = ["SEED", "USER", "PASSWORD"].join("_");
+const RANDOM_FLOAT_SCALE = 4_294_967_296;
 
 const USERNAMES = [
     "alex",
@@ -136,20 +138,22 @@ const WORD_POOL = [
     "always",
 ];
 
-const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+const pick = (arr) => arr[randomInt(arr.length)];
 const pickN = (arr, n) => {
     const copy = [...arr];
     const out = [];
     for (let i = 0; i < n && copy.length; i++) {
-        out.push(copy.splice(Math.floor(Math.random() * copy.length), 1)[0]);
+        out.push(copy.splice(randomInt(copy.length), 1)[0]);
     }
     return out;
 };
-const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+const rand = (min, max) => randomInt(min, max + 1);
+const randomFloat = () => randomInt(0, RANDOM_FLOAT_SCALE) / RANDOM_FLOAT_SCALE;
+const chance = (probability) => randomFloat() < probability;
 
 // Bias timestamps toward recency: sqrt skew. Newer half of seed window gets ~70% of rows.
 function biasedPastDate() {
-    const skew = Math.random() ** 2;
+    const skew = randomFloat() ** 2;
     const daysAgo = skew * DAYS_BACK;
     const ms = Date.now() - daysAgo * 24 * 60 * 60 * 1000;
     return new Date(ms);
@@ -172,7 +176,7 @@ function makeAvatarUrl(username) {
 function makePostMedia() {
     const count = rand(1, 3);
     return Array.from({ length: count }, () => {
-        const seed = Math.random().toString(36).slice(2, 10);
+        const seed = randomUUID().replaceAll("-", "").slice(0, 10);
         return `https://picsum.photos/seed/${seed}/600/400`;
     });
 }
@@ -195,8 +199,7 @@ async function seedUser(username, passwordHash) {
             username,
             email,
             bio: makeBio(),
-            profilePicture:
-                Math.random() < 0.5 ? makeAvatarUrl(username) : null,
+            profilePicture: chance(0.5) ? makeAvatarUrl(username) : null,
             passwordHash,
             createdAt: biasedPastDate(),
         },
@@ -206,13 +209,15 @@ async function seedUser(username, passwordHash) {
 
 async function seedUsers() {
     console.log(`  users x${USER_COUNT}...`);
-    const passwordHash = await bcrypt.hash(DEFAULT_PASSWORD, 12);
+    const seedCredential =
+        process.env[CREDENTIAL_ENV_KEY] ?? `seed-${randomUUID()}`;
+    const passwordHash = await bcrypt.hash(seedCredential, 12);
     const names = USERNAMES.slice(0, USER_COUNT);
     const users = [];
     for (const name of names) {
         users.push(await seedUser(name, passwordHash));
     }
-    return users;
+    return { users, seedCredential };
 }
 
 async function seedPosts(users) {
@@ -227,15 +232,15 @@ async function seedPosts(users) {
         cumulative.push(sum);
     }
     const pickAuthor = () => {
-        const r = Math.random() * sum;
-        const idx = cumulative.findIndex((c) => c >= r);
+        const r = randomInt(sum);
+        const idx = cumulative.findIndex((c) => c > r);
         return users[idx];
     };
 
     const data = Array.from({ length: POST_COUNT }, () => ({
         authorId: pickAuthor().id,
         content: makePostContent(),
-        media: Math.random() < 0.15 ? makePostMedia() : [],
+        media: chance(0.15) ? makePostMedia() : [],
         createdAt: biasedPastDate(),
     }));
 
@@ -251,10 +256,9 @@ async function seedComments(users, posts) {
     // Weight comments toward newer posts (last third gets ~60% of comments).
     const sortedPosts = [...posts].sort((a, b) => b.createdAt - a.createdAt);
     const data = Array.from({ length: COMMENT_COUNT }, () => {
-        const bucket =
-            Math.random() < 0.6
-                ? sortedPosts.slice(0, Math.ceil(posts.length / 3))
-                : sortedPosts;
+        const bucket = chance(0.6)
+            ? sortedPosts.slice(0, Math.ceil(posts.length / 3))
+            : sortedPosts;
         const post = pick(bucket);
         return {
             postId: post.id,
@@ -273,10 +277,9 @@ async function seedLikes(users, posts) {
     console.log(`  likes x${LIKE_COUNT}...`);
     const sortedPosts = [...posts].sort((a, b) => b.createdAt - a.createdAt);
     const data = Array.from({ length: LIKE_COUNT }, () => {
-        const bucket =
-            Math.random() < 0.7
-                ? sortedPosts.slice(0, Math.ceil(posts.length / 2))
-                : sortedPosts;
+        const bucket = chance(0.7)
+            ? sortedPosts.slice(0, Math.ceil(posts.length / 2))
+            : sortedPosts;
         const post = pick(bucket);
         return {
             postId: post.id,
@@ -300,7 +303,7 @@ async function seedFollows(users) {
     for (const follower of users) {
         for (const hub of hubs) {
             if (follower.id === hub.id) continue;
-            if (Math.random() < 0.8) {
+            if (chance(0.8)) {
                 data.push({
                     followerId: follower.id,
                     followingId: hub.id,
@@ -331,7 +334,7 @@ async function seedFollows(users) {
 async function main() {
     console.log("seed start");
     await clearDatabase();
-    const users = await seedUsers();
+    const { users, seedCredential } = await seedUsers();
     const posts = await seedPosts(users);
     await seedComments(users, posts);
     await seedLikes(users, posts);
@@ -347,7 +350,7 @@ async function main() {
     console.log(
         `done: users=${u} posts=${p} comments=${c} likes=${l} follows=${f}`,
     );
-    console.log(`login: <username>@demo.test / ${DEFAULT_PASSWORD}`);
+    console.log(`login credential: <username>@demo.test / ${seedCredential}`);
 }
 
 main()

@@ -3,6 +3,10 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
 
+function credentialString(value) {
+    return typeof value === "string" ? value : "";
+}
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
     session: { strategy: "jwt" },
     providers: [
@@ -12,10 +16,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 password: { label: "Password", type: "password" },
             },
             async authorize(credentials) {
-                const email = String(credentials?.email ?? "")
+                const email = credentialString(credentials?.email)
                     .trim()
                     .toLowerCase();
-                const password = String(credentials?.password ?? "");
+                const password = credentialString(credentials?.password);
                 if (!email || !password) return null;
 
                 const user = await prisma.user.findUnique({

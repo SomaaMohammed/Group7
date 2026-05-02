@@ -1,22 +1,22 @@
 import { requireAuth } from "./global/auth.js";
-import db from "./global/db.js";
-import { goToPost } from "./global/router.js";
-import { injectShell } from "./global/shell.js";
-import { escapeHtml } from "./global/sanitize.js";
-import { resolveAvatarUrls, getAvatarSrc } from "./global/avatar.js";
-import { storage } from "./global/storage.js";
-import { applyTheme, getInitialTheme } from "./global/theme.js";
-import { flushQueuedToast, showToast } from "./global/toast.js";
-import { setError, clearFieldError } from "./global/form.js";
+import { getAvatarSrc, resolveAvatarUrls } from "./global/avatar.js";
 import {
-    USERNAME_MIN_LENGTH,
-    USERNAME_MAX_LENGTH,
     ACCEPTED_IMAGE_TYPES,
     MAX_IMAGE_SIZE,
+    USERNAME_MAX_LENGTH,
+    USERNAME_MIN_LENGTH,
 } from "./global/constants.js";
-import { formatTime } from "./global/time.js";
-import { resolveMedia, renderMediaGrid } from "./global/media.js";
+import db from "./global/db.js";
+import { clearFieldError, setError } from "./global/form.js";
 import { openLightbox } from "./global/lightbox.js";
+import { renderMediaGrid, resolveMedia } from "./global/media.js";
+import { goToPost } from "./global/router.js";
+import { escapeHtml } from "./global/sanitize.js";
+import { injectShell } from "./global/shell.js";
+import { storage } from "./global/storage.js";
+import { applyTheme, getInitialTheme } from "./global/theme.js";
+import { formatTime } from "./global/time.js";
+import { flushQueuedToast, showToast } from "./global/toast.js";
 
 const profileAvatar = document.getElementById("profile-avatar");
 const profileName = document.getElementById("profile-name");
@@ -41,7 +41,6 @@ const bioInputNew = document.getElementById("edit-bio");
 const avatarFileInput = document.getElementById("edit-avatar-file");
 const avatarPreview = document.getElementById("edit-avatar-preview");
 const avatarRemoveBtn = document.getElementById("edit-avatar-remove");
-const avatarHint = document.getElementById("avatar-hint");
 const changeSaveButton = document.getElementById("edit-save-btn");
 const changeCancelButton = document.getElementById("edit-cancel-btn");
 

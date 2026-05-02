@@ -1,16 +1,16 @@
 import { requireAuth } from "./global/auth.js";
-import db from "./global/db.js";
-import { navigateWithToast } from "./global/router.js";
-import { injectShell } from "./global/shell.js";
-import { escapeHtml } from "./global/sanitize.js";
-import { resolveAvatarUrls, getAvatarSrc } from "./global/avatar.js";
-import { applyTheme, getInitialTheme } from "./global/theme.js";
-import { flushQueuedToast, showToast } from "./global/toast.js";
+import { getAvatarSrc, resolveAvatarUrls } from "./global/avatar.js";
 import { COMMENT_MAX_LENGTH } from "./global/constants.js";
-import { formatTime } from "./global/time.js";
-import { storage } from "./global/storage.js";
-import { resolveMedia, renderMediaGrid } from "./global/media.js";
+import db from "./global/db.js";
 import { openLightbox } from "./global/lightbox.js";
+import { renderMediaGrid, resolveMedia } from "./global/media.js";
+import { navigateWithToast } from "./global/router.js";
+import { escapeHtml } from "./global/sanitize.js";
+import { injectShell } from "./global/shell.js";
+import { storage } from "./global/storage.js";
+import { applyTheme, getInitialTheme } from "./global/theme.js";
+import { formatTime } from "./global/time.js";
+import { flushQueuedToast, showToast } from "./global/toast.js";
 
 const postAuthorLink = document.getElementById("post-author-link");
 const postAuthorAvatar = document.getElementById("post-author-avatar");
@@ -25,9 +25,16 @@ const commentForm = document.getElementById("comment-form");
 const commentInput = document.getElementById("comment-input");
 const commentSubmitBtn = document.getElementById("comment-submit-btn");
 const LIKE_PARTICLE_COUNT = 10;
+const RANDOM_FLOAT_SCALE = 4_294_967_296;
 
 let currentUser = null;
 let currentPostData = null;
+
+function randomFloat() {
+    const values = new Uint32Array(1);
+    globalThis.crypto.getRandomValues(values);
+    return values[0] / RANDOM_FLOAT_SCALE;
+}
 
 applyTheme(getInitialTheme());
 
@@ -94,11 +101,21 @@ async function renderPostPage(pageData) {
     if (!pageData) return;
 
     const { post, author } = pageData;
-
     await resolveAvatarUrls(Object.values(pageData.userMap));
 
+    renderAuthorHeader(author);
+    renderPostBody(post);
+    await renderPostMedia(post);
+    renderLikeState(pageData);
+    renderDeleteState(post);
+    renderAuthorLinks(author);
+    renderComments(pageData.comments, pageData.userMap);
+}
+
+function renderAuthorHeader(author) {
+    const username = author?.username || "Unknown user";
+
     if (postAuthorAvatar) {
-        const username = author?.username || "Unknown user";
         postAuthorAvatar.src = getAvatarSrc(
             author,
             "../assets/default-avatar.svg",
@@ -107,41 +124,50 @@ async function renderPostPage(pageData) {
     }
 
     if (postAuthorName) {
-        postAuthorName.textContent = author?.username || "Unknown user";
+        postAuthorName.textContent = username;
     }
+}
 
+function renderPostBody(post) {
     if (postContent) {
         postContent.textContent = post.content || "";
-    }
-
-    const postMedia = document.getElementById("post-media");
-    if (postMedia) {
-        if (post.mediaIds?.length) {
-            const mediaItems = await resolveMedia(post.mediaIds);
-            postMedia.innerHTML = renderMediaGrid(mediaItems);
-
-            postMedia.addEventListener("click", (e) => {
-                const gridItem = e.target.closest(".media-grid-item");
-                if (!gridItem) return;
-                e.preventDefault();
-                const grid = gridItem.closest(".media-grid");
-                const items = [...grid.querySelectorAll(".media-grid-item")];
-                const index = items.indexOf(gridItem);
-                const lightboxItems = items.map((item) => ({
-                    url: item.querySelector("img,video")?.src,
-                    mimeType: item.dataset.mimeType,
-                }));
-                openLightbox(lightboxItems, index);
-            });
-        } else {
-            postMedia.innerHTML = "";
-        }
     }
 
     if (postTimestamp) {
         postTimestamp.textContent = formatTime(post.createdAt);
     }
+}
 
+async function renderPostMedia(post) {
+    const postMedia = document.getElementById("post-media");
+    if (!postMedia) return;
+
+    if (!post.mediaIds?.length) {
+        postMedia.innerHTML = "";
+        return;
+    }
+
+    const mediaItems = await resolveMedia(post.mediaIds);
+    postMedia.innerHTML = renderMediaGrid(mediaItems);
+    postMedia.addEventListener("click", openPostMediaLightbox);
+}
+
+function openPostMediaLightbox(event) {
+    const gridItem = event.target.closest(".media-grid-item");
+    if (!gridItem) return;
+
+    event.preventDefault();
+    const grid = gridItem.closest(".media-grid");
+    const items = [...grid.querySelectorAll(".media-grid-item")];
+    const index = items.indexOf(gridItem);
+    const lightboxItems = items.map((item) => ({
+        url: item.querySelector("img,video")?.src,
+        mimeType: item.dataset.mimeType,
+    }));
+    openLightbox(lightboxItems, index);
+}
+
+function renderLikeState(pageData) {
     if (postLikeCount) {
         postLikeCount.textContent = String(pageData.likes.length);
     }
@@ -152,12 +178,16 @@ async function renderPostPage(pageData) {
         likeBtn.setAttribute("aria-label", `${likeAction} post`);
         likeBtn.setAttribute("title", `${likeAction} post`);
     }
+}
 
+function renderDeleteState(post) {
     if (deleteBtn) {
         const isOwnPost = post.authorId === currentUser.id;
         deleteBtn.classList.toggle("hidden", !isOwnPost);
     }
+}
 
+function renderAuthorLinks(author) {
     if (author?.id) {
         const profileHref = `user.html?id=${encodeURIComponent(author.id)}`;
         if (postAuthorLink) {
@@ -175,8 +205,6 @@ async function renderPostPage(pageData) {
             );
         }
     }
-
-    renderComments(pageData.comments, pageData.userMap);
 }
 
 function bindLikeHandler() {
@@ -261,7 +289,7 @@ function triggerLikeAnimation() {
         const particle = document.createElement("span");
         particle.className = "like-particle";
         const angle = (Math.PI * 2 * i) / LIKE_PARTICLE_COUNT;
-        const distance = 18 + Math.random() * 14;
+        const distance = 18 + randomFloat() * 14;
         const tx = `${Math.cos(angle) * distance}px`;
         const ty = `${Math.sin(angle) * distance}px`;
         particle.style.setProperty("--tx", tx);
@@ -272,7 +300,9 @@ function triggerLikeAnimation() {
 
     setTimeout(() => {
         likeBtn.classList.remove("like-pop");
-        particles.forEach((particle) => particle.remove());
+        particles.forEach((particle) => {
+            particle.remove();
+        });
     }, 560);
 }
 

@@ -10,10 +10,10 @@
 //   </body>
 
 import { getCurrentUser } from "./auth.js";
-import { goToHome, goToHomeNewPost } from "./router.js";
+import { getAvatarSrc, resolveAvatarUrls } from "./avatar.js";
+import { goToHomeNewPost } from "./router.js";
 import { escapeHtml } from "./sanitize.js";
 import { setupThemeToggle } from "./theme.js";
-import { resolveAvatarUrls, getAvatarSrc } from "./avatar.js";
 
 export async function injectShell() {
     const user = await getCurrentUser();

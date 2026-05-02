@@ -1,10 +1,18 @@
 "use client";
 
 import { useState } from "react";
+import PropTypes from "@/lib/prop-types";
 
 export function FollowButton({ followingId, initialFollowing }) {
     const [isFollowing, setIsFollowing] = useState(Boolean(initialFollowing));
     const [pending, setPending] = useState(false);
+    let label = "Follow";
+
+    if (pending) {
+        label = "...";
+    } else if (isFollowing) {
+        label = "Following";
+    }
 
     async function toggle() {
         setPending(true);
@@ -26,7 +34,12 @@ export function FollowButton({ followingId, initialFollowing }) {
             onClick={toggle}
             disabled={pending}
         >
-            {pending ? "..." : isFollowing ? "Following" : "Follow"}
+            {label}
         </button>
     );
 }
+
+FollowButton.propTypes = {
+    followingId: PropTypes.string.isRequired,
+    initialFollowing: PropTypes.bool.isRequired,
+};
