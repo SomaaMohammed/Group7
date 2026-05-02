@@ -1,8 +1,8 @@
-import Image from "next/image";
 import Link from "next/link";
 import PropTypes from "@/lib/prop-types";
 import { Avatar } from "./Avatar";
 import { LikeButton } from "./LikeButton";
+import { PostMediaGrid } from "./PostMediaGrid";
 import { TimeAgo } from "./TimeAgo";
 
 export function PostCard({ post }) {
@@ -40,28 +40,7 @@ export function PostCard({ post }) {
                 </div>
             </div>
             <p className="post-card-content">{content}</p>
-            {media?.length > 0 && (
-                <div
-                    className={`media-grid media-grid-${Math.min(media.length, 4)}`}
-                >
-                    {media.slice(0, 4).map((url, i) => (
-                        <div
-                            key={url}
-                            className="media-grid-item"
-                            data-index={i}
-                        >
-                            <Image
-                                src={url}
-                                alt={`Attachment ${i + 1}`}
-                                fill
-                                sizes="(max-width: 768px) 100vw, 680px"
-                                style={{ objectFit: "cover" }}
-                                unoptimized
-                            />
-                        </div>
-                    ))}
-                </div>
-            )}
+            {media?.length > 0 && <PostMediaGrid media={media} />}
             <div className="flex gap-4 text-secondary text-sm post-card-stats">
                 <LikeButton
                     postId={id}
