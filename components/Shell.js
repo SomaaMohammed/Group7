@@ -13,6 +13,7 @@ const NAV = [
     { href: "/global", label: "Global Feed", icon: "icon-world" },
     { href: "/home", label: "Your Feed", icon: "icon-home" },
     { href: "/search", label: "Search", icon: "icon-search" },
+    { href: "/stats", label: "Statistics", icon: "icon-eye" },
 ];
 
 // When user is present: inject profile + settings nav. Otherwise render anon-safe shell.
