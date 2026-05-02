@@ -1,17 +1,114 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useToast } from "@/components/Toast";
 import PropTypes from "@/lib/prop-types";
+
+const MAX_ATTACHMENTS = 4;
+const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+
+function makeAttachment(file) {
+    return {
+        id: `${file.name}-${file.size}-${file.lastModified}-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+        file,
+        url: URL.createObjectURL(file),
+    };
+}
+
+function revokeAttachments(attachments) {
+    for (const attachment of attachments) {
+        URL.revokeObjectURL(attachment.url);
+    }
+}
 
 export function PostComposer({ defaultOpen = false }) {
     const router = useRouter();
     const showToast = useToast();
+    const mediaInputRef = useRef(null);
+    const attachmentsRef = useRef([]);
     const [open, setOpen] = useState(defaultOpen);
     const [content, setContent] = useState("");
-    const [files, setFiles] = useState([]);
+    const [attachments, setAttachments] = useState([]);
     const [posting, setPosting] = useState(false);
+
+    useEffect(() => {
+        attachmentsRef.current = attachments;
+    }, [attachments]);
+
+    useEffect(() => {
+        return () => revokeAttachments(attachmentsRef.current);
+    }, []);
+
+    function resetMediaInput() {
+        if (mediaInputRef.current) {
+            mediaInputRef.current.value = "";
+        }
+    }
+
+    function clearAttachments() {
+        revokeAttachments(attachmentsRef.current);
+        attachmentsRef.current = [];
+        setAttachments([]);
+        resetMediaInput();
+    }
+
+    function handleMediaChange(event) {
+        const selectedFiles = Array.from(event.target.files || []);
+        resetMediaInput();
+
+        if (selectedFiles.length === 0) return;
+
+        const availableSlots = MAX_ATTACHMENTS - attachments.length;
+        if (availableSlots <= 0) {
+            showToast(
+                `You can attach up to ${MAX_ATTACHMENTS} images.`,
+                "danger",
+            );
+            return;
+        }
+
+        const nextAttachments = [];
+        const errors = new Set();
+
+        for (const file of selectedFiles) {
+            if (nextAttachments.length >= availableSlots) {
+                errors.add(`You can attach up to ${MAX_ATTACHMENTS} images.`);
+                break;
+            }
+
+            if (!file.type.startsWith("image/")) {
+                errors.add("Only image files can be attached.");
+                continue;
+            }
+
+            if (file.size > MAX_IMAGE_BYTES) {
+                errors.add("Each image must be under 5 MB.");
+                continue;
+            }
+
+            nextAttachments.push(makeAttachment(file));
+        }
+
+        if (nextAttachments.length > 0) {
+            setAttachments((current) => [...current, ...nextAttachments]);
+        }
+
+        const firstError = errors.values().next().value;
+        if (firstError) {
+            showToast(firstError, "danger");
+        }
+    }
+
+    function removeAttachment(id) {
+        setAttachments((current) => {
+            const removed = current.find((attachment) => attachment.id === id);
+            if (removed) {
+                URL.revokeObjectURL(removed.url);
+            }
+            return current.filter((attachment) => attachment.id !== id);
+        });
+    }
 
     async function handleSubmit(event) {
         event.preventDefault();
@@ -26,7 +123,7 @@ export function PostComposer({ defaultOpen = false }) {
         try {
             const mediaUrls = [];
 
-            for (const file of files.slice(0, 4)) {
+            for (const { file } of attachments.slice(0, MAX_ATTACHMENTS)) {
                 const formData = new FormData();
                 formData.append("file", file);
 
@@ -56,7 +153,7 @@ export function PostComposer({ defaultOpen = false }) {
             }
 
             setContent("");
-            setFiles([]);
+            clearAttachments();
             setOpen(false);
             showToast("Post created.", "success");
             router.replace("/home");
@@ -104,24 +201,52 @@ export function PostComposer({ defaultOpen = false }) {
                     {" Media"}
                 </label>
                 <input
+                    ref={mediaInputRef}
                     id="post-media"
                     className="sr-only"
                     type="file"
                     multiple
                     accept="image/*"
                     disabled={posting}
-                    onChange={(event) =>
-                        setFiles(Array.from(event.target.files || []))
-                    }
+                    onChange={handleMediaChange}
                 />
                 <span className="char-counter">
                     {`${content.length}/2000${
-                        files.length > 0
-                            ? `, ${Math.min(files.length, 4)} image(s)`
+                        attachments.length > 0
+                            ? `, ${attachments.length} image(s)`
                             : ""
                     }`}
                 </span>
             </div>
+
+            {attachments.length > 0 && (
+                <ul
+                    className="attachment-previews"
+                    aria-label="Selected image previews"
+                >
+                    {attachments.map((attachment, index) => (
+                        <li className="attachment-preview" key={attachment.id}>
+                            {/* biome-ignore lint/performance/noImgElement: Object URLs are local upload previews and cannot be optimized by next/image. */}
+                            <img
+                                src={attachment.url}
+                                alt={`Preview ${index + 1}: ${attachment.file.name}`}
+                            />
+                            <button
+                                className="attachment-preview-remove"
+                                type="button"
+                                disabled={posting}
+                                onClick={() => removeAttachment(attachment.id)}
+                                aria-label={`Remove ${attachment.file.name}`}
+                            >
+                                <span
+                                    className="icon icon-trash"
+                                    aria-hidden="true"
+                                />
+                            </button>
+                        </li>
+                    ))}
+                </ul>
+            )}
 
             <div className="flex gap-2">
                 <button
@@ -138,7 +263,7 @@ export function PostComposer({ defaultOpen = false }) {
                     onClick={() => {
                         setOpen(false);
                         setContent("");
-                        setFiles([]);
+                        clearAttachments();
                     }}
                 >
                     Cancel

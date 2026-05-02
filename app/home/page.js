@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { PostCard } from "@/components/PostCard";
 import { PostComposer } from "@/components/PostComposer";
@@ -45,9 +46,9 @@ export default async function HomePage({ searchParams }) {
                           <p className="empty-state-description">
                               Find classmates and creators in the global feed.
                           </p>
-                          <a className="btn btn-primary" href="/global">
+                          <Link className="btn btn-primary" href="/global">
                               Explore posts
-                          </a>
+                          </Link>
                       </section>
                     : <div id="feed-list">
                           {postsWithViewerLikes.map((post) => (

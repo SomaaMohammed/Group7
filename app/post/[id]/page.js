@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Avatar } from "@/components/Avatar";
 import { CommentComposer } from "@/components/CommentComposer";
@@ -28,7 +29,7 @@ export default async function PostPage({ params }) {
         <main className="app-main">
             <div className="content-column page-enter">
                 <h1 className="page-title">Post</h1>
-                <PostCard post={{ ...post, viewerLiked }} />
+                <PostCard post={{ ...post, viewerLiked }} mediaDisplay="full" />
 
                 <section className="card" style={{ marginTop: 16 }}>
                     <div className="flex-between" style={{ marginBottom: 16 }}>
@@ -45,12 +46,12 @@ export default async function PostPage({ params }) {
                               className="text-secondary text-sm"
                               style={{ marginBottom: 16 }}
                           >
-                              <a
+                              <Link
                                   className="text-accent font-semibold"
                                   href="/login"
                               >
                                   Sign in
-                              </a>{" "}
+                              </Link>{" "}
                               to join the conversation.
                           </p>}
 

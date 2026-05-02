@@ -1,7 +1,9 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import PropTypes from "@/lib/prop-types";
 import { Avatar } from "./Avatar";
 import { NotificationBell } from "./NotificationBell";
@@ -14,13 +16,51 @@ const NAV = [
 ];
 
 // When user is present: inject profile + settings nav. Otherwise render anon-safe shell.
-export function Shell({ user }) {
+export function Shell({ user: initialUser }) {
     const pathname = usePathname() ?? "";
     const router = useRouter();
+    const [user, setUser] = useState(initialUser);
     const isAuthPage = pathname === "/login" || pathname === "/register";
+
+    useEffect(() => {
+        setUser(initialUser);
+    }, [initialUser]);
+
+    useEffect(() => {
+        if (isAuthPage) return;
+
+        let cancelled = false;
+
+        async function refreshShellUser() {
+            try {
+                const response = await fetch("/api/users/me", {
+                    cache: "no-store",
+                });
+
+                if (cancelled) return;
+
+                if (!response.ok) {
+                    setUser(null);
+                    return;
+                }
+
+                const data = await response.json();
+                setUser(data?.user ?? null);
+            } catch {
+                if (!cancelled) setUser(initialUser ?? null);
+            }
+        }
+
+        refreshShellUser();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [initialUser, isAuthPage]);
 
     async function handleSignOut() {
         await fetch("/api/auth/signout", { method: "POST" });
+        setUser(null);
         router.push("/login");
         router.refresh();
     }
@@ -35,7 +75,7 @@ export function Shell({ user }) {
         <>
             <header className="app-header">
                 <div className="app-header-identity">
-                    <a
+                    <Link
                         className="app-header-brand"
                         href="/home"
                         aria-label="UNI HUB home"
@@ -48,13 +88,13 @@ export function Shell({ user }) {
                             unoptimized
                         />
                         <span>UNI HUB</span>
-                    </a>
+                    </Link>
                 </div>
                 <div className="app-header-actions">
                     <ThemeToggle />
                     {user && <NotificationBell />}
                     {user && (
-                        <a
+                        <Link
                             className="icon-btn app-header-settings"
                             href="/settings"
                             aria-label="Settings"
@@ -64,14 +104,14 @@ export function Shell({ user }) {
                                 aria-hidden="true"
                             />
                             <span className="sr-only">Settings</span>
-                        </a>
+                        </Link>
                     )}
                 </div>
             </header>
 
             <aside className="app-sidebar">
                 <div className="sidebar-brand-row">
-                    <a
+                    <Link
                         className="sidebar-brand-link"
                         href="/home"
                         aria-label="UNI HUB home"
@@ -86,13 +126,13 @@ export function Shell({ user }) {
                         <div className="sidebar-brand">
                             <p>UNI HUB</p>
                         </div>
-                    </a>
+                    </Link>
                     <ThemeToggle />
                 </div>
 
                 <nav className="sidebar-nav">
                     {NAV.map(({ href, label, icon }) => (
-                        <a
+                        <Link
                             key={href}
                             className={`sidebar-nav-item${isActive(href) ? " active" : ""}`}
                             href={href}
@@ -102,12 +142,12 @@ export function Shell({ user }) {
                                 aria-hidden="true"
                             />
                             <span>{label}</span>
-                        </a>
+                        </Link>
                     ))}
                     {user && (
                         <>
                             <NotificationBell variant="sidebar" isActive={isActive("/notifications")} />
-                            <a
+                            <Link
                                 className={`sidebar-nav-item${isActive(profileHref) ? " active" : ""}`}
                                 href={profileHref}
                             >
@@ -116,8 +156,8 @@ export function Shell({ user }) {
                                     aria-hidden="true"
                                 />
                                 <span>Profile</span>
-                            </a>
-                            <a
+                            </Link>
+                            <Link
                                 className={`sidebar-nav-item${isActive("/settings") ? " active" : ""}`}
                                 href="/settings"
                             >
@@ -126,7 +166,7 @@ export function Shell({ user }) {
                                     aria-hidden="true"
                                 />
                                 <span>Settings</span>
-                            </a>
+                            </Link>
                         </>
                     )}
                 </nav>
@@ -134,15 +174,15 @@ export function Shell({ user }) {
                 {user && (
                     <>
                         <div className="sidebar-new-post">
-                            <a
+                            <Link
                                 className="btn btn-primary"
                                 href="/home?compose=1"
                             >
                                 New Post
-                            </a>
+                            </Link>
                         </div>
                         <div className="sidebar-user-row">
-                            <a className="sidebar-user" href={profileHref}>
+                            <Link className="sidebar-user" href={profileHref}>
                                 <Avatar
                                     user={user}
                                     size="sm"
@@ -156,7 +196,7 @@ export function Shell({ user }) {
                                         @{user.username}
                                     </span>
                                 </div>
-                            </a>
+                            </Link>
                             <button
                                 type="button"
                                 className="btn btn-ghost btn-sm mr-7"
@@ -171,32 +211,32 @@ export function Shell({ user }) {
                 )}
                 {!user && (
                     <div className="sidebar-new-post">
-                        <a className="btn btn-primary" href="/login">
+                        <Link className="btn btn-primary" href="/login">
                             Sign in
-                        </a>
+                        </Link>
                     </div>
                 )}
             </aside>
 
             <nav className="bottom-nav">
-                <a
+                <Link
                     className={`bottom-nav-item${isActive("/home") ? " active" : ""}`}
                     href="/home"
                     aria-label="Your Feed"
                 >
                     <span className="icon icon-home" aria-hidden="true" />
                     <span className="sr-only">Your Feed</span>
-                </a>
-                <a
+                </Link>
+                <Link
                     className={`bottom-nav-item${isActive("/global") ? " active" : ""}`}
                     href="/global"
                     aria-label="Global Feed"
                 >
                     <span className="icon icon-world" aria-hidden="true" />
                     <span className="sr-only">Global Feed</span>
-                </a>
+                </Link>
                 {user && (
-                    <a
+                    <Link
                         className="bottom-nav-fab"
                         href="/home?compose=1"
                         aria-label="New post"
@@ -206,18 +246,18 @@ export function Shell({ user }) {
                             aria-hidden="true"
                         />
                         <span className="sr-only">New post</span>
-                    </a>
+                    </Link>
                 )}
-                <a
+                <Link
                     className={`bottom-nav-item${isActive("/search") ? " active" : ""}`}
                     href="/search"
                     aria-label="Search"
                 >
                     <span className="icon icon-search" aria-hidden="true" />
                     <span className="sr-only">Search</span>
-                </a>
+                </Link>
                 {user && (
-                    <a
+                    <Link
                         className={`bottom-nav-item${isActive(profileHref) ? " active" : ""}`}
                         href={profileHref}
                         aria-label="Profile"
@@ -227,7 +267,7 @@ export function Shell({ user }) {
                             aria-hidden="true"
                         />
                         <span className="sr-only">Profile</span>
-                    </a>
+                    </Link>
                 )}
             </nav>
         </>

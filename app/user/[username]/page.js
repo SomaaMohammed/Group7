@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Avatar } from "@/components/Avatar";
 import { PostCard } from "@/components/PostCard";
@@ -70,9 +71,9 @@ export default async function UserProfilePage({ params }) {
                             />
                         )}
                         {!viewer && (
-                            <a className="btn btn-primary" href="/login">
+                            <Link className="btn btn-primary" href="/login">
                                 Sign in
-                            </a>
+                            </Link>
                         )}
                     </div>
                     <div

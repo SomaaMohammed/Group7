@@ -17,9 +17,11 @@ export function ThemeToggle() {
     useEffect(() => {
         if (!theme) return;
         document.documentElement.dataset.theme = theme;
-        if (document.body) document.body.dataset.theme = theme;
+        document.documentElement.style.colorScheme = theme;
         try {
             localStorage.setItem("theme", theme);
+            // biome-ignore lint/suspicious/noDocumentCookie: Keep server-rendered theme in sync for no-flash page loads.
+            document.cookie = `theme=${theme}; Path=/; Max-Age=31536000; SameSite=Lax`;
         } catch {}
     }, [theme]);
 
@@ -30,6 +32,7 @@ export function ThemeToggle() {
                 className="icon-btn theme-toggle-btn"
                 type="button"
                 data-theme-toggle
+                data-target-theme="dark"
                 aria-label="Toggle theme"
                 suppressHydrationWarning
             />
@@ -45,6 +48,7 @@ export function ThemeToggle() {
             className="icon-btn theme-toggle-btn"
             type="button"
             data-theme-toggle
+            data-target-theme={target}
             aria-label={`Switch to ${label} theme`}
             title={`Switch to ${label} theme`}
             onClick={() => setTheme(target)}
