@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Avatar } from "@/components/Avatar";
 import { CommentComposer } from "@/components/CommentComposer";
@@ -45,12 +46,12 @@ export default async function PostPage({ params }) {
                               className="text-secondary text-sm"
                               style={{ marginBottom: 16 }}
                           >
-                              <a
+                              <Link
                                   className="text-accent font-semibold"
                                   href="/login"
                               >
                                   Sign in
-                              </a>{" "}
+                              </Link>{" "}
                               to join the conversation.
                           </p>}
 

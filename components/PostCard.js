@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import PropTypes from "@/lib/prop-types";
 import { Avatar } from "./Avatar";
 import { LikeButton } from "./LikeButton";
@@ -12,28 +13,28 @@ export function PostCard({ post }) {
             className="card card-interactive post-card"
             aria-label={`Post by ${author.username}`}
         >
-            <a
+            <Link
                 className="post-card-stretched-link"
                 href={`/post/${id}`}
                 aria-label="View post details"
             >
                 <span className="sr-only">View post details</span>
-            </a>
+            </Link>
             <div className="flex items-center gap-3 post-card-header">
-                <a
+                <Link
                     className="post-card-user-link"
                     href={`/user/${author.username}`}
                     aria-label={`View ${author.username}'s profile`}
                 >
                     <Avatar user={author} size="sm" alt="" />
-                </a>
+                </Link>
                 <div>
-                    <a
+                    <Link
                         className="font-semibold post-card-username post-card-user-link"
                         href={`/user/${author.username}`}
                     >
                         {author.username}
-                    </a>
+                    </Link>
                     {" - "}
                     <TimeAgo date={createdAt} />
                 </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import PropTypes from "@/lib/prop-types";
 import { Avatar } from "./Avatar";
@@ -34,7 +35,7 @@ export function Shell({ user }) {
         <>
             <header className="app-header">
                 <div className="app-header-identity">
-                    <a
+                    <Link
                         className="app-header-brand"
                         href="/home"
                         aria-label="UNI HUB home"
@@ -47,12 +48,12 @@ export function Shell({ user }) {
                             unoptimized
                         />
                         <span>UNI HUB</span>
-                    </a>
+                    </Link>
                 </div>
                 <div className="app-header-actions">
                     <ThemeToggle />
                     {user && (
-                        <a
+                        <Link
                             className="icon-btn app-header-settings"
                             href="/settings"
                             aria-label="Settings"
@@ -62,14 +63,14 @@ export function Shell({ user }) {
                                 aria-hidden="true"
                             />
                             <span className="sr-only">Settings</span>
-                        </a>
+                        </Link>
                     )}
                 </div>
             </header>
 
             <aside className="app-sidebar">
                 <div className="sidebar-brand-row">
-                    <a
+                    <Link
                         className="sidebar-brand-link"
                         href="/home"
                         aria-label="UNI HUB home"
@@ -84,13 +85,13 @@ export function Shell({ user }) {
                         <div className="sidebar-brand">
                             <p>UNI HUB</p>
                         </div>
-                    </a>
+                    </Link>
                     <ThemeToggle />
                 </div>
 
                 <nav className="sidebar-nav">
                     {NAV.map(({ href, label, icon }) => (
-                        <a
+                        <Link
                             key={href}
                             className={`sidebar-nav-item${isActive(href) ? " active" : ""}`}
                             href={href}
@@ -100,11 +101,11 @@ export function Shell({ user }) {
                                 aria-hidden="true"
                             />
                             <span>{label}</span>
-                        </a>
+                        </Link>
                     ))}
                     {user && (
                         <>
-                            <a
+                            <Link
                                 className={`sidebar-nav-item${isActive(profileHref) ? " active" : ""}`}
                                 href={profileHref}
                             >
@@ -113,8 +114,8 @@ export function Shell({ user }) {
                                     aria-hidden="true"
                                 />
                                 <span>Profile</span>
-                            </a>
-                            <a
+                            </Link>
+                            <Link
                                 className={`sidebar-nav-item${isActive("/settings") ? " active" : ""}`}
                                 href="/settings"
                             >
@@ -123,7 +124,7 @@ export function Shell({ user }) {
                                     aria-hidden="true"
                                 />
                                 <span>Settings</span>
-                            </a>
+                            </Link>
                         </>
                     )}
                 </nav>
@@ -131,15 +132,15 @@ export function Shell({ user }) {
                 {user && (
                     <>
                         <div className="sidebar-new-post">
-                            <a
+                            <Link
                                 className="btn btn-primary"
                                 href="/home?compose=1"
                             >
                                 New Post
-                            </a>
+                            </Link>
                         </div>
                         <div className="sidebar-user-row">
-                            <a className="sidebar-user" href={profileHref}>
+                            <Link className="sidebar-user" href={profileHref}>
                                 <Avatar
                                     user={user}
                                     size="sm"
@@ -153,7 +154,7 @@ export function Shell({ user }) {
                                         @{user.username}
                                     </span>
                                 </div>
-                            </a>
+                            </Link>
                             <button
                                 type="button"
                                 className="btn btn-ghost btn-sm mr-7"
@@ -168,16 +169,16 @@ export function Shell({ user }) {
                 )}
                 {!user && (
                     <div className="sidebar-new-post">
-                        <a className="btn btn-primary" href="/login">
+                        <Link className="btn btn-primary" href="/login">
                             Sign in
-                        </a>
+                        </Link>
                     </div>
                 )}
             </aside>
 
             <nav className="bottom-nav">
                 {NAV.map(({ href, label, icon }) => (
-                    <a
+                    <Link
                         key={href}
                         className={`bottom-nav-item${isActive(href) ? " active" : ""}`}
                         href={href}
@@ -185,11 +186,11 @@ export function Shell({ user }) {
                     >
                         <span className={`icon ${icon}`} aria-hidden="true" />
                         <span className="sr-only">{label}</span>
-                    </a>
+                    </Link>
                 ))}
                 {user && (
                     <>
-                        <a
+                        <Link
                             className="bottom-nav-fab"
                             href="/home?compose=1"
                             aria-label="New post"
@@ -199,8 +200,8 @@ export function Shell({ user }) {
                                 aria-hidden="true"
                             />
                             <span className="sr-only">New post</span>
-                        </a>
-                        <a
+                        </Link>
+                        <Link
                             className={`bottom-nav-item${isActive(profileHref) ? " active" : ""}`}
                             href={profileHref}
                             aria-label="Profile"
@@ -210,7 +211,7 @@ export function Shell({ user }) {
                                 aria-hidden="true"
                             />
                             <span className="sr-only">Profile</span>
-                        </a>
+                        </Link>
                     </>
                 )}
             </nav>
