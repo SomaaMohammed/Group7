@@ -56,7 +56,6 @@ export function SettingsForm({ user }) {
             return;
         }
         showToast("Profile saved.", "success");
-        router.refresh();
     }
 
     return (

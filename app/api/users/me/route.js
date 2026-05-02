@@ -4,7 +4,10 @@ import { usersRepo } from "@/lib/repo/users";
 export async function GET() {
     const user = await requireUser();
     const profile = await usersRepo.findById(user.id);
-    return Response.json({ user: profile });
+    
+    const response = Response.json({ user: profile });
+    response.headers.set("Cache-Control", "private, max-age=60");
+    return response;
 }
 
 export async function PATCH(request) {
@@ -27,7 +30,9 @@ export async function PATCH(request) {
 
     try {
         const updated = await usersRepo.update(user.id, patch);
-        return Response.json({ user: updated });
+        const response = Response.json({ user: updated });
+        response.headers.set("Cache-Control", "no-store, no-cache, must-revalidate");
+        return response;
     } catch (error) {
         if (error?.code === "P2002") {
             return Response.json(

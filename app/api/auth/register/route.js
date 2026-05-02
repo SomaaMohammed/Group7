@@ -32,7 +32,9 @@ export async function POST(request) {
 
     try {
         const user = await signUp({ email, username, password });
-        return Response.json({ user }, { status: 201 });
+        const response = Response.json({ user }, { status: 201 });
+        response.headers.set("Cache-Control", "no-store, no-cache, must-revalidate");
+        return response;
     } catch (error) {
         if (error?.code === "P2002") {
             return Response.json(

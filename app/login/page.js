@@ -41,8 +41,7 @@ export default function LoginPage() {
             setError("Invalid email or password.");
             return;
         }
-        router.replace("/global");
-        router.refresh();
+        router.replace("/home");
     }
 
     return (

@@ -26,7 +26,7 @@ export function Shell({ user: initialUser }) {
     }, [initialUser]);
 
     useEffect(() => {
-        if (isAuthPage) return;
+        if (isAuthPage || !initialUser) return;
 
         let cancelled = false;
 
@@ -59,9 +59,7 @@ export function Shell({ user: initialUser }) {
 
     async function handleSignOut() {
         await fetch("/api/auth/signout", { method: "POST" });
-        setUser(null);
-        router.push("/login");
-        router.refresh();
+        router.replace("/login");
     }
 
     if (isAuthPage) return null;
