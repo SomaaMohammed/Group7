@@ -1,6 +1,14 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import {
+    createContext,
+    useCallback,
+    useContext,
+    useEffect,
+    useMemo,
+    useState,
+} from "react";
+import PropTypes from "@/lib/prop-types";
 
 const ToastContext = createContext(null);
 const ALLOWED = new Set(["success", "danger", "info"]);
@@ -10,17 +18,24 @@ let nextId = 0;
 export function ToastProvider({ children }) {
     const [toasts, setToasts] = useState([]);
 
-    const show = useCallback((message, type = "info") => {
-        const t = {
-            id: ++nextId,
-            message: String(message ?? ""),
-            type: ALLOWED.has(type) ? type : "info",
-        };
-        setToasts((prev) => [...prev, t]);
-        setTimeout(() => {
-            setToasts((prev) => prev.filter((x) => x.id !== t.id));
-        }, 3000);
+    const remove = useCallback((toastId) => {
+        setToasts((prev) => prev.filter((toast) => toast.id !== toastId));
     }, []);
+
+    const show = useCallback(
+        (message, type = "info") => {
+            const t = {
+                id: ++nextId,
+                message: String(message ?? ""),
+                type: ALLOWED.has(type) ? type : "info",
+            };
+            setToasts((prev) => [...prev, t]);
+            setTimeout(() => remove(t.id), 3000);
+        },
+        [remove],
+    );
+
+    const value = useMemo(() => ({ show }), [show]);
 
     // Pull any queued toast written before a navigation.
     useEffect(() => {
@@ -34,7 +49,7 @@ export function ToastProvider({ children }) {
     }, [show]);
 
     return (
-        <ToastContext.Provider value={{ show }}>
+        <ToastContext.Provider value={value}>
             {children}
             <div className="toast-container">
                 {toasts.map((t) => (
@@ -47,6 +62,10 @@ export function ToastProvider({ children }) {
     );
 }
 
+ToastProvider.propTypes = {
+    children: PropTypes.node.isRequired,
+};
+
 export function useToast() {
     const ctx = useContext(ToastContext);
     if (!ctx) throw new Error("useToast must be used inside <ToastProvider>");
@@ -58,7 +77,10 @@ export function queueToast(message, type = "info") {
     try {
         sessionStorage.setItem(
             PENDING_KEY,
-            JSON.stringify({ message: String(message ?? ""), type: ALLOWED.has(type) ? type : "info" }),
+            JSON.stringify({
+                message: String(message ?? ""),
+                type: ALLOWED.has(type) ? type : "info",
+            }),
         );
     } catch {}
 }

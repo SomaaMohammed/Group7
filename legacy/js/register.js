@@ -1,3 +1,8 @@
+import {
+    PASSWORD_MIN_LENGTH,
+    USERNAME_MAX_LENGTH,
+    USERNAME_MIN_LENGTH,
+} from "./global/constants.js";
 import db from "./global/db.js";
 import {
     clearFieldError,
@@ -8,11 +13,6 @@ import {
 } from "./global/form.js";
 import { goToLogin } from "./global/router.js";
 import { setupThemeToggle } from "./global/theme.js";
-import {
-    PASSWORD_MIN_LENGTH,
-    USERNAME_MAX_LENGTH,
-    USERNAME_MIN_LENGTH,
-} from "./global/constants.js";
 
 const form = document.getElementById("register-form");
 const themeToggleButton = document.getElementById("theme-toggle");

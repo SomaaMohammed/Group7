@@ -1,6 +1,6 @@
 // js/global/storage.js
 // IndexedDB blob storage — the ONLY file that touches IndexedDB.
-// API mirrors a remote object-store intentionally — migrating to S3/Supabase
+// API mirrors a remote object store intentionally.
 // in Phase 2 means rewriting only this file.
 //
 // Record schema:
@@ -15,9 +15,10 @@ let dbPromise = null;
 
 /** @type {Map<string, string>} */
 const urlCache = new Map();
+let fallbackMediaCounter = 0;
 
 function openDb() {
-    if (dbPromise) return dbPromise;
+    if (dbPromise !== null) return dbPromise;
 
     dbPromise = new Promise((resolve, reject) => {
         const request = indexedDB.open(DB_NAME, DB_VERSION);
@@ -37,10 +38,12 @@ function openDb() {
 }
 
 function generateMediaId() {
-    const randomPart =
-        globalThis.crypto?.randomUUID?.() ??
-        Math.random().toString(36).slice(2, 11);
-    return `med_${randomPart}`;
+    if (globalThis.crypto?.randomUUID) {
+        return `med_${globalThis.crypto.randomUUID()}`;
+    }
+
+    fallbackMediaCounter += 1;
+    return `med_${Date.now().toString(36)}_${fallbackMediaCounter.toString(36)}`;
 }
 
 /**

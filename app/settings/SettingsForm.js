@@ -1,9 +1,10 @@
 "use client";
 
-import { Avatar } from "@/components/Avatar";
-import { useToast } from "@/components/Toast";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
+import { Avatar } from "@/components/Avatar";
+import { useToast } from "@/components/Toast";
+import PropTypes from "@/lib/prop-types";
 
 export function SettingsForm({ user }) {
     const showToast = useToast();
@@ -43,7 +44,10 @@ export function SettingsForm({ user }) {
         const res = await fetch("/api/users/me", {
             method: "PATCH",
             headers: { "content-type": "application/json" },
-            body: JSON.stringify({ username: username.trim(), bio: bio.trim() || null }),
+            body: JSON.stringify({
+                username: username.trim(),
+                bio: bio.trim() || null,
+            }),
         });
         setSaving(false);
         if (!res.ok) {
@@ -56,12 +60,24 @@ export function SettingsForm({ user }) {
     }
 
     return (
-        <form className="card" onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-            <h2 className="page-title" style={{ marginBottom: 0 }}>Edit profile</h2>
+        <form
+            className="card"
+            onSubmit={handleSubmit}
+            style={{ display: "flex", flexDirection: "column", gap: 16 }}
+        >
+            <h2 className="page-title" style={{ marginBottom: 0 }}>
+                Edit profile
+            </h2>
 
             <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-                <Avatar user={{ profilePicture: avatarUrl, username }} size="xl" alt="Your avatar" />
-                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                <Avatar
+                    user={{ profilePicture: avatarUrl, username }}
+                    size="xl"
+                    alt="Your avatar"
+                />
+                <div
+                    style={{ display: "flex", flexDirection: "column", gap: 8 }}
+                >
                     <button
                         type="button"
                         className="btn btn-outline btn-sm"
@@ -77,12 +93,16 @@ export function SettingsForm({ user }) {
                         style={{ display: "none" }}
                         onChange={handleAvatarChange}
                     />
-                    <span className="input-hint">JPG, PNG, WebP or GIF · max 5 MB</span>
+                    <span className="input-hint">
+                        JPG, PNG, WebP or GIF · max 5 MB
+                    </span>
                 </div>
             </div>
 
             <div className="input-group">
-                <label className="input-label" htmlFor="username">Username</label>
+                <label className="input-label" htmlFor="username">
+                    Username
+                </label>
                 <input
                     id="username"
                     className="input"
@@ -97,7 +117,9 @@ export function SettingsForm({ user }) {
             </div>
 
             <div className="input-group">
-                <label className="input-label" htmlFor="bio">Bio</label>
+                <label className="input-label" htmlFor="bio">
+                    Bio
+                </label>
                 <textarea
                     id="bio"
                     className="input"
@@ -116,3 +138,11 @@ export function SettingsForm({ user }) {
         </form>
     );
 }
+
+SettingsForm.propTypes = {
+    user: PropTypes.shape({
+        username: PropTypes.string,
+        bio: PropTypes.string,
+        profilePicture: PropTypes.string,
+    }).isRequired,
+};

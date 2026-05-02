@@ -1,19 +1,19 @@
-import { requireAuth, getCurrentUser, logout } from "./global/auth.js";
+import { getCurrentUser, logout, requireAuth } from "./global/auth.js";
+import { PASSWORD_MIN_LENGTH } from "./global/constants.js";
 import db from "./global/db.js";
-import { storage } from "./global/storage.js";
+import { clearFieldError, setError } from "./global/form.js";
 import { injectShell } from "./global/shell.js";
+import { storage } from "./global/storage.js";
 import {
     applyTheme,
     getInitialTheme,
     setupThemeToggle,
 } from "./global/theme.js";
 import { flushQueuedToast, showToast } from "./global/toast.js";
-import { setError, clearFieldError } from "./global/form.js";
-import { PASSWORD_MIN_LENGTH } from "./global/constants.js";
 
 applyTheme(getInitialTheme());
 
-const currentUser = await requireAuth();
+await requireAuth();
 await injectShell();
 flushQueuedToast();
 
